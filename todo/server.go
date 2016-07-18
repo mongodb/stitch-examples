@@ -13,7 +13,11 @@ import (
 func main() {
 	reg := simple.NewRegistry()
 
-	reg.Register(simple.NewApp("test", []simple.NamedService{{"mdb1", mongodb.New(mongodb.Settings{Url: "mongodb://localhost:27017"})}}))
+	reg.Register(simple.NewApp(
+		"test",
+		[]simple.NamedService{{"mdb1", mongodb.New(mongodb.Settings{Url: "mongodb://localhost:27017"})}},
+		nil,
+		nil))
 	apiSrv := api.New(reg)
 	err := http.ListenAndServe(":8080", apiSrv.Handler())
 	if err != nil {
