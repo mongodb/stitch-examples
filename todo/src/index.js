@@ -58,7 +58,10 @@ var TodoList = React.createClass({
           <button onClick={this.clear}>Clean up</button>
         </div>
         <ul>
-        { this.state.items.map((item) => {
+        { 
+          this.state.items.length == 0
+          ?  <div>list is empty :(</div>
+           : this.state.items.map((item) => {
             return <TodoItem key={item._id.$oid} item={item} checkHandler={this.checkHandler}/>;
           }) 
         }
