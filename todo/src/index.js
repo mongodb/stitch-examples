@@ -74,5 +74,9 @@ var TodoList = React.createClass({
 let list = <TodoList items={[]}/>
 
 $(document).ready(() => {
+  if (client.recoverAuth() == null) {
+    client.authWithOAuth("google")
+    return
+  }
   ReactDOM.render(list, document.getElementById('app'))
 })

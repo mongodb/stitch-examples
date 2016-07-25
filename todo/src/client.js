@@ -1,7 +1,12 @@
+import cookie from 'cookie_js'
+
 export default class MongoClient {
   constructor(db) {
     this.db = db;
-    this.baseUrl = "http://localhost:8080/v1/app/test/svc/mdb1"
+    this.app = "test"
+    this.baseUrl = `http://localhost:8080/v1/app/${this.app}`
+    this.mongoSvcUrl = `${this.baseUrl}/svc/mdb1`
+    this.authUrl = `${this.baseUrl}/auth`
   }
 
   getBaseArgs(action, collection){
@@ -14,12 +19,19 @@ export default class MongoClient {
     }
   }
   execute(body, callback){
+    if (this._authToken() === null) {
+      throw "Must auth before execute"
+    }
+
     $.ajax({
       type: 'POST',
       contentType: "application/json",
-      url: this.baseUrl,
+      url: this.mongoSvcUrl,
       data: JSON.stringify(body),
-      dataType: 'json'
+      dataType: 'json',
+      headers: {
+        'Authorization': `Bearer ${this._authToken()}`
+      }
     }).done((data) => callback(data))
   }
 
@@ -53,6 +65,37 @@ export default class MongoClient {
     body.arguments["upsert"] = upsert;
     body.arguments["multi"] = multi;
     this.execute(body, callback)
+  }
+
+  authWithOAuth(providerName){
+    window.location.replace(`${this.authUrl}/oauth2/${providerName}?redirect=${encodeURI(window.location)}`);
+  }
+
+  _authToken(){
+    return localStorage.getItem("authToken")
+  }
+
+  recoverAuth(){
+
+    if (this._authToken() !== null) {
+      return this._authToken()
+    }
+
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    var authToken = null
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        if (decodeURIComponent(pair[0]) == "auth_token") {
+            authToken = decodeURIComponent(pair[1]);
+        }
+    }
+
+    if (authToken !== "") {
+      localStorage.setItem("authToken", authToken)
+    }
+
+    return this._authToken()
   }
 }
 
