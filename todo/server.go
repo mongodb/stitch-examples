@@ -1,34 +1,33 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
 	"os"
 
-	. "github.com/erh/baas"
 	"github.com/erh/baas/action/builtin/mongodb"
 	"github.com/erh/baas/action/builtin/simple"
 	"github.com/erh/baas/api"
 	"github.com/erh/baas/auth"
 	"github.com/erh/baas/auth/builtin/oauth2/google"
+	"github.com/erh/baas/config"
 )
 
-var config = `
+var confStr = `
 {
-	"apiServer": {
-		"port": 8080
-	},
-	"auth": {
-		"saml": {
-			"spCertPath": "./test_data/saml_sp.crt",
-			"spKeyPath": "./test_data/saml_sp.key"
-		},
-		"cookieHashKey": "F+43gQpES4aoi9U+8t1V1KWqtsldNh+fqZBvOhaVPRt814FPGNtPKLthy2ty/Vc0",
-		"cookieBlockKey": "jTMu3vNVyGy4MNLs/GEdHrif1FG7HSYh",
-		"jwtSigningKey": "K!@#JIJ!@#*LANNZK!@#IOJDLWJRGG^!G#NCBGAS"
-	}
+  "auth": {
+    "saml": {
+      "enabled": false
+    },
+    "authRequest": {
+      "cookieHashKey": "F+43gQpES4aoi9U+8t1V1KWqtsldNh+fqZBvOhaVPRt814FPGNtPKLthy2ty/Vc0",
+      "cookieBlockKey": "jTMu3vNVyGy4MNLs/GEdHrif1FG7HSYh"
+    },
+    "session": {
+      "jwtSigningKey": "K!@#JIJ!@#*LANNZK!@#IOJDLWJRGG^!G#NCBGAS"
+    }
+  }
 }
 `
 
@@ -45,8 +44,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := json.Unmarshal([]byte(config), &GlobalConfig); err != nil {
-		panic(err)
+	conf, err := config.Parse(confStr)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	reg := simple.NewRegistry()
@@ -61,9 +62,14 @@ func main() {
 				"clientSecret": *googleClientSecret,
 			},
 		}))
-	apiSrv := api.New(reg)
-	err := http.ListenAndServe(":8080", apiSrv.Handler())
+
+	apiSrv, err := api.New(conf, reg)
 	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if err := http.ListenAndServe(":8080", apiSrv.Handler()); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
