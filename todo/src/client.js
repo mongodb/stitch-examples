@@ -1,7 +1,7 @@
 export default class MongoClient {
   constructor(db) {
     this.db = db;
-    this.baseUrl = "http://localhost:8080/v1/app/test/mdb1"
+    this.baseUrl = "http://localhost:8080/v1/app/test/svc/mdb1"
   }
 
   getBaseArgs(action, collection){
