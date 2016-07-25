@@ -88,10 +88,11 @@ export default class MongoClient {
         var pair = vars[i].split('=');
         if (decodeURIComponent(pair[0]) == "auth_token") {
             authToken = decodeURIComponent(pair[1]);
+            window.history.replaceState(null, "", window.location.href.split('?')[0])
         }
     }
 
-    if (authToken !== "") {
+    if (authToken !== null) {
       localStorage.setItem("authToken", authToken)
     }
 
