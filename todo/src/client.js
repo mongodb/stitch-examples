@@ -71,29 +71,42 @@ export default class MongoClient {
     window.location.replace(`${this.authUrl}/oauth2/${providerName}?redirect=${encodeURI(window.location)}`);
   }
 
+  logout() {
+    $.ajax({
+      type: 'DELETE',
+      url: this.authUrl + "/logout",
+      headers: {
+        'Authorization': `Bearer ${this._session()}`
+      }
+    }).done((data) => {
+      localStorage.removeItem("session");
+      location.reload();
+    })
+  }
+
   _session(){
-    return localStorage.getItem("session")
+    return localStorage.getItem("session");
   }
 
   recoverAuth(){
 
     if (this._session() !== null) {
-      return this._session()
+      return this._session();
     }
 
     var query = window.location.search.substring(1);
     var vars = query.split('&');
-    var session = null
+    var session = null;
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split('=');
         if (decodeURIComponent(pair[0]) == "session") {
             session = decodeURIComponent(pair[1]);
-            window.history.replaceState(null, "", window.location.href.split('?')[0])
+            window.history.replaceState(null, "", window.location.href.split('?')[0]);
         }
     }
 
     if (session !== null) {
-      localStorage.setItem("session", session)
+      localStorage.setItem("session", session);
     }
 
     return this._session()

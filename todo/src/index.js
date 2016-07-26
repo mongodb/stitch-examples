@@ -75,8 +75,16 @@ let list = <TodoList items={[]}/>
 
 $(document).ready(() => {
   if (client.recoverAuth() == null) {
-    client.authWithOAuth("google")
-    return
+    $("#login_oauth2_google").prop('disabled', false);
+    $("#login_oauth2_google").click(function(e) {
+      client.authWithOAuth("google");
+    });
+    return;
   }
-  ReactDOM.render(list, document.getElementById('app'))
+
+  $("#logout").prop('disabled', false);
+  $("#logout").click(function(e) {
+    client.logout();
+  });
+  ReactDOM.render(list, document.getElementById('app'));
 })
