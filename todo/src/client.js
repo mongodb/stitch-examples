@@ -81,7 +81,12 @@ export default class MongoClient {
     }).done((data) => {
       localStorage.removeItem("session");
       location.reload();
-    })
+    }).fail((data) => {
+      // This is probably the wrong thing to do since it could have
+      // failed for other reasons.
+      localStorage.removeItem("session");
+      location.reload();
+    });
   }
 
   _session(){
