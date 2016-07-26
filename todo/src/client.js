@@ -19,7 +19,7 @@ export default class MongoClient {
     }
   }
   execute(body, callback){
-    if (this._authToken() === null) {
+    if (this._session() === null) {
       throw "Must auth before execute"
     }
 
@@ -30,7 +30,7 @@ export default class MongoClient {
       data: JSON.stringify(body),
       dataType: 'json',
       headers: {
-        'Authorization': `Bearer ${this._authToken()}`
+        'Authorization': `Bearer ${this._session()}`
       }
     }).done((data) => callback(data))
   }
@@ -71,32 +71,32 @@ export default class MongoClient {
     window.location.replace(`${this.authUrl}/oauth2/${providerName}?redirect=${encodeURI(window.location)}`);
   }
 
-  _authToken(){
-    return localStorage.getItem("authToken")
+  _session(){
+    return localStorage.getItem("session")
   }
 
   recoverAuth(){
 
-    if (this._authToken() !== null) {
-      return this._authToken()
+    if (this._session() !== null) {
+      return this._session()
     }
 
     var query = window.location.search.substring(1);
     var vars = query.split('&');
-    var authToken = null
+    var session = null
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split('=');
-        if (decodeURIComponent(pair[0]) == "auth_token") {
-            authToken = decodeURIComponent(pair[1]);
+        if (decodeURIComponent(pair[0]) == "session") {
+            session = decodeURIComponent(pair[1]);
             window.history.replaceState(null, "", window.location.href.split('?')[0])
         }
     }
 
-    if (authToken !== null) {
-      localStorage.setItem("authToken", authToken)
+    if (session !== null) {
+      localStorage.setItem("session", session)
     }
 
-    return this._authToken()
+    return this._session()
   }
 }
 
