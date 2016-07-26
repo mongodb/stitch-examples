@@ -16,18 +16,22 @@ import (
 
 var confStr = `
 {
-  "auth": {
-    "saml": {
-      "enabled": false
-    },
-    "authRequest": {
-      "cookieHashKey": "F+43gQpES4aoi9U+8t1V1KWqtsldNh+fqZBvOhaVPRt814FPGNtPKLthy2ty/Vc0",
-      "cookieBlockKey": "jTMu3vNVyGy4MNLs/GEdHrif1FG7HSYh"
-    },
-    "session": {
-      "jwtSigningKey": "K!@#JIJ!@#*LANNZK!@#IOJDLWJRGG^!G#NCBGAS"
-    }
-  }
+	"auth": {
+		"saml": {
+			"enabled": false
+		},
+			"authRequest": {
+			"cookieHashKey": "F+43gQpES4aoi9U+8t1V1KWqtsldNh+fqZBvOhaVPRt814FPGNtPKLthy2ty/Vc0",
+			"cookieBlockKey": "jTMu3vNVyGy4MNLs/GEdHrif1FG7HSYh"
+		},
+		"session": {
+			"store": "mongodb",
+			"jwtSigningKey": "K!@#JIJ!@#*LANNZK!@#IOJDLWJRGG^!G#NCBGAS"
+		}
+	},
+	"db": {
+		"mongoDBURI": "mongodb://localhost:27017"
+	}
 }
 `
 
