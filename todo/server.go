@@ -10,6 +10,7 @@ import (
 	"github.com/erh/baas/action/builtin/simple"
 	"github.com/erh/baas/api"
 	"github.com/erh/baas/auth"
+	"github.com/erh/baas/auth/builtin/oauth2/facebook"
 	"github.com/erh/baas/auth/builtin/oauth2/google"
 	"github.com/erh/baas/config"
 
@@ -41,8 +42,10 @@ var confStr = `
 `
 
 var (
-	googleClientId     = flag.String("googleClientId", "", "Google OAuth2 Client ID")
-	googleClientSecret = flag.String("googleClientSecret", "", "Google OAuth2 Client Secret")
+	googleClientId       = flag.String("googleClientId", "", "Google OAuth2 Client ID")
+	googleClientSecret   = flag.String("googleClientSecret", "", "Google OAuth2 Client Secret")
+	facebookClientId     = flag.String("facebookClientId", "", "Facebook OAuth2 Client ID")
+	facebookClientSecret = flag.String("facebookClientSecret", "", "Facebook OAuth2 Client Secret")
 )
 
 func main() {
@@ -59,19 +62,28 @@ func main() {
 		os.Exit(1)
 	}
 
-	reg := simple.NewRegistry()
+	supportedProviders := []auth.ProviderName{google.Name}
+	providerConfigs := map[auth.ProviderName]auth.ProviderConfig{
+		google.Name: auth.ProviderConfig{
+			"clientId":     *googleClientId,
+			"clientSecret": *googleClientSecret,
+		}}
 
+	if *facebookClientId != "" && *facebookClientSecret != "" {
+		supportedProviders = append(supportedProviders, facebook.Name)
+		providerConfigs[facebook.Name] = auth.ProviderConfig{
+			"clientId":     *facebookClientId,
+			"clientSecret": *facebookClientSecret,
+		}
+	}
+
+	reg := simple.NewRegistry()
 	reg.Register(simple.NewApp(
 		"test",
 		bson.ObjectIdHex("5798ce26772e2e205627c273"),
 		[]simple.NamedService{{"mdb1", mongodb.New(mongodb.Settings{Url: "mongodb://localhost:27017"})}},
-		[]auth.ProviderName{google.Name},
-		map[auth.ProviderName]auth.ProviderConfig{
-			google.Name: auth.ProviderConfig{
-				"clientId":     *googleClientId,
-				"clientSecret": *googleClientSecret,
-			},
-		}))
+		supportedProviders,
+		providerConfigs))
 
 	apiSrv, err := api.New(conf, reg)
 	if err != nil {

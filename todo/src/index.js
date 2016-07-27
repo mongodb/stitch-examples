@@ -79,6 +79,10 @@ $(document).ready(() => {
     $("#login_oauth2_google").click(function(e) {
       client.authWithOAuth("google");
     });
+    $("#login_oauth2_fb").prop('disabled', false);
+    $("#login_oauth2_fb").click(function(e) {
+      client.authWithOAuth("facebook");
+    });
     return;
   }
 
