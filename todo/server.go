@@ -12,6 +12,8 @@ import (
 	"github.com/erh/baas/auth"
 	"github.com/erh/baas/auth/builtin/oauth2/google"
 	"github.com/erh/baas/config"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 var confStr = `
@@ -27,6 +29,9 @@ var confStr = `
 		"session": {
 			"store": "mongodb",
 			"jwtSigningKey": "K!@#JIJ!@#*LANNZK!@#IOJDLWJRGG^!G#NCBGAS"
+		},
+		"user": {
+			"store": "mongodb"
 		}
 	},
 	"db": {
@@ -58,6 +63,7 @@ func main() {
 
 	reg.Register(simple.NewApp(
 		"test",
+		bson.ObjectIdHex("5798ce26772e2e205627c273"),
 		[]simple.NamedService{{"mdb1", mongodb.New(mongodb.Settings{Url: "mongodb://localhost:27017"})}},
 		[]auth.ProviderName{google.Name},
 		map[auth.ProviderName]auth.ProviderConfig{
