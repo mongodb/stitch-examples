@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MongoClient from './client.js';
+import MongoClient from 'baas';
 
-let client = new MongoClient("baas_test")
+let client = new MongoClient("baas_test", "http://localhost:8080/v1/app/test")
 
 function TodoItem({item=null, checkHandler=null}){
   let itemClass = item.checked ? "done" : "";
