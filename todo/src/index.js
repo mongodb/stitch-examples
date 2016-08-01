@@ -86,6 +86,8 @@ $(document).ready(() => {
     return;
   }
 
+  $("#uid").text(`Logged in as ${client.auth()['user']['_id']} via ${client.auth()['provider'].split("/")[1]}`);
+
   $("#logout").prop('disabled', false);
   $("#logout").click(function(e) {
     client.logout();
