@@ -74,7 +74,7 @@ var TodoList = React.createClass({
 let list = <TodoList items={[]}/>
 
 $(document).ready(() => {
-  if (client.recoverAuth() == null) {
+  if (client.auth() == null) {
     $("#login_oauth2_google").prop('disabled', false);
     $("#login_oauth2_google").click(function(e) {
       client.authWithOAuth("google");
@@ -89,6 +89,14 @@ $(document).ready(() => {
   $("#logout").prop('disabled', false);
   $("#logout").click(function(e) {
     client.logout();
+  });
+  $("#link_oauth2_google").prop('disabled', false);
+  $("#link_oauth2_google").click(function(e) {
+    client.linkWithOAuth("google");
+  });
+  $("#link_oauth2_fb").prop('disabled', false);
+  $("#link_oauth2_fb").click(function(e) {
+    client.linkWithOAuth("facebook");
   });
   ReactDOM.render(list, document.getElementById('app'));
 })
