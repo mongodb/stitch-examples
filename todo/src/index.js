@@ -22,7 +22,8 @@ var TodoList = React.createClass({
   setItems: function(items){ this.setState({items:items}) },
   loadList: function(){
     let obj = this;
-    client.find("todo", {}, null, function(data){
+    // TODO: use rules
+    client.find("todo", {"user": {"$oid": client.auth()['user']['_id']}}, null, function(data){
       obj.setState({items:data.result})
     })
   },
@@ -30,7 +31,8 @@ var TodoList = React.createClass({
   getInitialState: () => {return {items:[]}},
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
-    client.update("todo", {_id:id}, {$set:{"checked":status}}, false, false, () => {
+    // TODO: use rules
+    client.update("todo", {"_id":id, "user": {"$oid": client.auth()['user']['_id']}}, {$set:{"checked":status}}, false, false, () => {
       this.loadList();
     })
   },
@@ -39,13 +41,15 @@ var TodoList = React.createClass({
     if(event.keyCode != 13 ){
       return
     }
-    client.insert("todo", [{text:event.target.value}], () => {
+    // TODO: use rules
+    client.insert("todo", [{text:event.target.value, "user": {"$oid": client.auth()['user']['_id']}}], () => {
       this.loadList();
     })
   },
 
   clear: function(){
-    client.remove("todo", {checked:true}, false, () => {
+    // TODO: use rules
+    client.remove("todo", {checked:true, "user": {"$oid": client.auth()['user']['_id']}}, false, () => {
       this.loadList();
     })
   },
