@@ -1,7 +1,7 @@
 {
 	"auth": {
 		"saml": {
-			"enabled": false
+			"disabled": true
 		},
 			"authRequest": {
 			"cookieHashKey": "F+43gQpES4aoi9U+8t1V1KWqtsldNh+fqZBvOhaVPRt814FPGNtPKLthy2ty/Vc0",
