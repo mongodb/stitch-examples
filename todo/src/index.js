@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MongoClient from 'baas';
 
-let client = new MongoClient("baas_test", "http://localhost:8080/v1/app/test")
+let client = new MongoClient("baas_test", "http://localhost:8080/v1/app/todo")
 
 function TodoItem({item=null, checkHandler=null}){
   let itemClass = item.checked ? "done" : "";
@@ -22,8 +22,7 @@ var TodoList = React.createClass({
   setItems: function(items){ this.setState({items:items}) },
   loadList: function(){
     let obj = this;
-    // TODO: use rules
-    client.find("todo", {"user": {"$oid": client.authedId()}}, null, function(data){
+    client.find("todo", null, null, function(data){
       obj.setState({items:data.result})
     })
   },
@@ -31,8 +30,7 @@ var TodoList = React.createClass({
   getInitialState: () => {return {items:[]}},
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
-    // TODO: use rules
-    client.update("todo", {"_id":id, "user": {"$oid": client.authedId()}}, {$set:{"checked":status}}, false, false, () => {
+    client.update("todo", {"_id":id}, {$set:{"checked":status}}, false, false, () => {
       this.loadList();
     })
   },
@@ -41,15 +39,13 @@ var TodoList = React.createClass({
     if(event.keyCode != 13 ){
       return
     }
-    // TODO: use rules
     client.insert("todo", [{text:event.target.value, "user": {"$oid": client.authedId()}}], () => {
       this.loadList();
     })
   },
 
   clear: function(){
-    // TODO: use rules
-    client.remove("todo", {checked:true, "user": {"$oid": client.authedId()}}, false, () => {
+    client.remove("todo", {checked:true}, false, () => {
       this.loadList();
     })
   },

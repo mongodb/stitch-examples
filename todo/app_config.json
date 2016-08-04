@@ -1,0 +1,36 @@
+{
+	"_id" : ObjectId("57a3a034a582c2a631013acf"),
+	"name" : "todo",
+	"domainId" : ObjectId("5798ce26772e2e205627c273"),
+	"services" : {
+		"mdb1" : {
+			"type" : "mongodb",
+			"config" : {
+				"uri" : "mongodb://localhost:27017"
+			},
+			"rules" : {
+				"baas_test/todo" : [
+					{
+						"type" : 0,
+						"spec" : {
+							"user" : "$AUTH.UID"
+						},
+						"actions" : [
+							"*"
+						]
+					}
+				]
+			}
+		}
+	},
+	"authProviders" : {
+		"oauth2/google" : {
+			"clientId" : "CLIENT-ID",
+			"clientSecret" : "CLIENT-SECRET"
+		},
+		"oauth2/facebook" : {
+			"clientId" : "CLIENT-ID",
+			"clientSecret" : "CLIENT-SECRET"
+		}
+	}
+}
