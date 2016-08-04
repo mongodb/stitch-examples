@@ -23,7 +23,7 @@ var TodoList = React.createClass({
   loadList: function(){
     let obj = this;
     // TODO: use rules
-    client.find("todo", {"user": {"$oid": client.auth()['user']['_id']}}, null, function(data){
+    client.find("todo", {"user": {"$oid": client.authedId()}}, null, function(data){
       obj.setState({items:data.result})
     })
   },
@@ -32,7 +32,7 @@ var TodoList = React.createClass({
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
     // TODO: use rules
-    client.update("todo", {"_id":id, "user": {"$oid": client.auth()['user']['_id']}}, {$set:{"checked":status}}, false, false, () => {
+    client.update("todo", {"_id":id, "user": {"$oid": client.authedId()}}, {$set:{"checked":status}}, false, false, () => {
       this.loadList();
     })
   },
@@ -42,14 +42,14 @@ var TodoList = React.createClass({
       return
     }
     // TODO: use rules
-    client.insert("todo", [{text:event.target.value, "user": {"$oid": client.auth()['user']['_id']}}], () => {
+    client.insert("todo", [{text:event.target.value, "user": {"$oid": client.authedId()}}], () => {
       this.loadList();
     })
   },
 
   clear: function(){
     // TODO: use rules
-    client.remove("todo", {checked:true, "user": {"$oid": client.auth()['user']['_id']}}, false, () => {
+    client.remove("todo", {checked:true, "user": {"$oid": client.authedId()}}, false, () => {
       this.loadList();
     })
   },
@@ -90,7 +90,7 @@ $(document).ready(() => {
     return;
   }
 
-  $("#uid").text(`Logged in as ${client.auth()['user']['_id']} via ${client.auth()['provider'].split("/")[1]}`);
+  $("#uid").text(`Logged in as ${client.authedId()} via ${client.auth()['provider'].split("/")[1]}`);
 
   $("#logout").prop('disabled', false);
   $("#logout").click(function(e) {
