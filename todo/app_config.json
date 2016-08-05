@@ -1,6 +1,6 @@
 {
 	"_id" : ObjectId("57a3a034a582c2a631013acf"),
-	"name" : "todo",
+	"name" : "todo_app",
 	"domainId" : ObjectId("5798ce26772e2e205627c273"),
 	"services" : {
 		"mdb1" : {
