@@ -9,7 +9,7 @@
 				"uri" : "mongodb://localhost:27017"
 			},
 			"rules" : {
-				"baas_test/todo" : [
+				"todo/items" : [
 					{
 						"type" : 0,
 						"spec" : {
