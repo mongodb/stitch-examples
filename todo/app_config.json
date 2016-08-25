@@ -8,19 +8,21 @@
 			"config" : {
 				"uri" : "mongodb://localhost:27017"
 			},
-			"rules" : {
-				"todo/items" : [
-					{
-						"type" : 0,
-						"spec" : {
-							"user" : "$AUTH.UID"
-						},
-						"actions" : [
-							"*"
-						]
+			"rules": [
+				{
+					"namespace": "todo/items",
+					"actions": ["find", "update", "insert", "delete", "aggregate"],
+					"fields": {
+						"mutable": ["text", "user", "checked"]
+					},
+					"filter": {
+						"user": "$AUTH.id"
+					},
+					"validate": {
+						"user": "$AUTH.id"	
 					}
-				]
-			}
+				}
+			]
 		}
 	},
 	"authProviders" : {
