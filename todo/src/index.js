@@ -32,7 +32,7 @@ var TodoList = React.createClass({
   checkHandler: function(id, status){
     client.update("items", {"_id":id}, {$set:{"checked":status}}, false, false, () => {
       this.loadList();
-    })
+    }, {"rule": "checked"})
   },
 
   addItem: function(event){
