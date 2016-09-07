@@ -46,6 +46,7 @@
 		"oauth2/facebook" : {
 			"clientId" : "CLIENT-ID",
 			"clientSecret" : "CLIENT-SECRET"
-		}
+		},
+		"local/userpass" : {}
 	}
 }
