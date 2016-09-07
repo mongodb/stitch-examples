@@ -3,39 +3,11 @@
 	"name" : "todo_app",
 	"domainId" : ObjectId("5798ce26772e2e205627c273"),
 	"services" : {
-		"mdb1" : {
-			"type" : "mongodb",
+		"sqs1" : {
+			"type" : "sqs",
 			"config" : {
-				"uri" : "mongodb://localhost:27017"
-			},
-			"rules": [
-				{
-					"namespace": "todo/items",
-					"index": 0,
-					"actions": ["find", "update", "insert", "delete", "aggregate"],
-					"fields": {
-						"mutable": ["text", "user"]
-					},
-					"filter": {
-						"user": "$var.$auth.id"
-					},
-					"validate": {
-						"user": "$var.$auth.id"	
-					}
-				},
-				{
-					"namespace": "todo/items",
-					"index": 1,
-					"name": "checked",
-					"actions": ["update"],
-					"fields": {
-						"mutable": ["checked"]
-					},
-					"filter": {
-						"user": "$var.$auth.id"
-					}
-				}
-			]
+				"region" : "us-west-2"
+			}
 		}
 	},
 	"authProviders" : {

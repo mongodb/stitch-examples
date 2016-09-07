@@ -1,4 +1,5 @@
 {
+	"appRegistry":"mongodb",
 	"auth": {
 		"saml": {
 			"disabled": true
