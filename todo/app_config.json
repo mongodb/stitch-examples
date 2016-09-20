@@ -9,11 +9,12 @@
 			"config" : {
 				"uri" : "mongodb://localhost:27017"
 			},
-			"rules": [
-				{
-					"namespace": "todo/items",
-					"index": 0,
+			"rules": {
+				"57e166d3dbfb7b11767bc84f": {
+					"_id": ObjectId("57e166d3dbfb7b11767bc84f"),
+					"priority": 0,
 					"actions": ["find", "update", "insert", "delete", "aggregate"],
+					"namespace": "todo.items",
 					"fields": {
 						"mutable": ["text", "user"]
 					},
@@ -24,11 +25,12 @@
 						"user": "$var.$auth.id"	
 					}
 				},
-				{
-					"namespace": "todo/items",
-					"index": 1,
+				"57e166efdbfb7b11767bc850": {
+					"_id": ObjectId("57e166efdbfb7b11767bc850"),
+					"priority": 1,
 					"name": "checked",
 					"actions": ["update"],
+					"namespace": "todo.items",
 					"fields": {
 						"mutable": ["checked"]
 					},
@@ -36,7 +38,7 @@
 						"user": "$var.$auth.id"
 					}
 				}
-			]
+			}
 		}
 	},
 	"authProviders" : {
