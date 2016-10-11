@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MongoClient } from 'baas';
+import {BaasClient, MongoClient} from 'baas';
 
-let client = new MongoClient("todo", "http://localhost:8080/v1/app/todo-app")
+//let client = new MongoClient("todo", "http://localhost:8080/v1/app/todo-app")
+let baasClient = new BaasClient("http://localhost:8080/v1/app/todo-app")
+let client = new MongoClient(baasClient, "mdb1")
 
 function TodoItem({item=null, checkHandler=null}){
   let itemClass = item.checked ? "done" : "";
@@ -22,7 +24,7 @@ var TodoList = React.createClass({
   setItems: function(items){ this.setState({items:items}) },
   loadList: function(){
     let obj = this;
-    client.find("items", null, null, function(data){
+    client.find("todo", "items", null, null, function(data){
       obj.setState({items:data.result})
     })
   },
@@ -30,7 +32,7 @@ var TodoList = React.createClass({
   getInitialState: () => {return {items:[]}},
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
-    client.update("items", {"_id":id}, {$set:{"checked":status}}, false, false, () => {
+    client.update("todo", "items", {"_id":id}, {$set:{"checked":status}}, false, false, () => {
       this.loadList();
     }, {"rule": "checked"})
   },
@@ -39,13 +41,13 @@ var TodoList = React.createClass({
     if(event.keyCode != 13 ){
       return
     }
-    client.insert("items", [{text:event.target.value, "user": {"$oid": client.authedId()}}], () => {
+    client.insert("todo","items", [{text:event.target.value, "user": {"$oid": baasClient.authedId()}}], () => {
       this.loadList();
     })
   },
 
   clear: function(){
-    client.remove("items", {checked:true}, false, () => {
+    client.remove("todo","items", {checked:true}, false, () => {
       this.loadList();
     })
   },
@@ -74,31 +76,31 @@ var TodoList = React.createClass({
 let list = <TodoList items={[]}/>
 
 $(document).ready(() => {
-  if (client.auth() == null) {
+  if (baasClient.auth() == null) {
     $("#login_oauth2_google").prop('disabled', false);
     $("#login_oauth2_google").click(function(e) {
-      client.authWithOAuth("google");
+      baasClient.authWithOAuth("google");
     });
     $("#login_oauth2_fb").prop('disabled', false);
     $("#login_oauth2_fb").click(function(e) {
-      client.authWithOAuth("facebook");
+      baasClient.authWithOAuth("facebook");
     });
     return;
   }
 
-  $("#uid").text(`Logged in as ${client.authedId()} via ${client.auth()['provider'].split("/")[1]}`);
+  $("#uid").text(`Logged in as ${baasClient.authedId()} via ${baasClient.auth()['provider'].split("/")[1]}`);
 
   $("#logout").prop('disabled', false);
   $("#logout").click(function(e) {
-    client.logout();
+    baasClient.logout();
   });
   $("#link_oauth2_google").prop('disabled', false);
   $("#link_oauth2_google").click(function(e) {
-    client.linkWithOAuth("google");
+    baasClient.linkWithOAuth("google");
   });
   $("#link_oauth2_fb").prop('disabled', false);
   $("#link_oauth2_fb").click(function(e) {
-    client.linkWithOAuth("facebook");
+    baasClient.linkWithOAuth("facebook");
   });
   ReactDOM.render(list, document.getElementById('app'));
 })

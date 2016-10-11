@@ -18,5 +18,8 @@
 	},
 	"db": {
 		"mongoDBURI": "mongodb://localhost:27017"
+	},
+	"triggers": {
+		"store": "mongodb"
 	}
 }

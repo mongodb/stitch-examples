@@ -16,7 +16,7 @@
 					"actions": ["find", "update", "insert", "delete", "aggregate"],
 					"namespace": "todo.items",
 					"fields": {
-						"mutable": ["text", "user"]
+						"mutable": ["text", "user", "checked"]
 					},
 					"filter": {
 						"user": "$var.$auth.id"
