@@ -4,6 +4,8 @@ import {BaasClient, MongoClient} from 'baas';
 
 //let client = new MongoClient("todo", "http://localhost:8080/v1/app/todo-app")
 let baasClient = new BaasClient("http://localhost:8080/v1/app/todo-app")
+let db = new MongoClient(baasClient, "mdb1").getDb("todo")
+let items = db.getCollection("items")
 let client = new MongoClient(baasClient, "mdb1")
 
 function TodoItem({item=null, checkHandler=null}){
@@ -24,7 +26,7 @@ var TodoList = React.createClass({
   setItems: function(items){ this.setState({items:items}) },
   loadList: function(){
     let obj = this;
-    client.find("todo", "items", null, null, function(data){
+    items.find(null, null, function(data){
       obj.setState({items:data.result})
     })
   },
@@ -32,7 +34,7 @@ var TodoList = React.createClass({
   getInitialState: () => {return {items:[]}},
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
-    client.update("todo", "items", {"_id":id}, {$set:{"checked":status}}, false, false, () => {
+    items.update({"_id":id}, {$set:{"checked":status}}, false, false, () => {
       this.loadList();
     }, {"rule": "checked"})
   },
@@ -41,13 +43,13 @@ var TodoList = React.createClass({
     if(event.keyCode != 13 ){
       return
     }
-    client.insert("todo","items", [{text:event.target.value, "user": {"$oid": baasClient.authedId()}}], () => {
+    items.insert([{text:event.target.value, "user": {"$oid": baasClient.authedId()}}], () => {
       this.loadList();
     })
   },
 
   clear: function(){
-    client.remove("todo","items", {checked:true}, false, () => {
+    items.remove({checked:true}, false, () => {
       this.loadList();
     })
   },
