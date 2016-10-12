@@ -2,11 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BaasClient, MongoClient} from 'baas';
 
-//let client = new MongoClient("todo", "http://localhost:8080/v1/app/todo-app")
 let baasClient = new BaasClient("http://localhost:8080/v1/app/todo-app")
 let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
-let client = new MongoClient(baasClient, "mdb1")
 
 function TodoItem({item=null, checkHandler=null}){
   let itemClass = item.checked ? "done" : "";
