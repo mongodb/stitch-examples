@@ -39,6 +39,20 @@
 					}
 				}
 			}
+		},
+		"tw1" : {
+			"type":"twilio",
+			"config": {
+				"sid": "TWILIO-SID",
+				"auth_token": "TWILIO-AUTHTOKEN"
+			},
+			"rules": {
+				"57e166d3dbfb7b11767bc849": {
+					"_id": ObjectId("57e166d3dbfb7b11767bc849"),
+					"priority":0,
+					"actions":["send"]
+				}
+			}
 		}
 	},
 	"authProviders" : {
