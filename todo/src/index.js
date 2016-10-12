@@ -20,6 +20,27 @@ function TodoItem({item=null, checkHandler=null}){
   )
 }
 
+var AuthControls = React.createClass({
+  render: function(){
+    let authed = this.props.client.auth() != null
+    let logout = () => this.props.client.logout()
+    return (
+      <div>
+        { authed ? <div>Logged in as {this.props.client.authedId()} via {baasClient.auth()['provider'].split("/")[1]} </div>: null }
+        <button disabled={authed} 
+          onClick={() => this.props.client.authWithOAuth("google")}>Login with Google</button>
+        <button disabled={authed}
+          onClick={() => this.props.client.authWithOAuth("facebook")}>Login with Facebook</button>
+        <button disabled={authed}
+          onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
+        <button disabled={authed}
+          onClick={() => this.props.client.linkWithOAuth("facebook")}>Link with Facebook</button>
+        <button disabled={!authed} onClick={() => this.props.client.logout()}>Logout</button>
+      </div>
+    )
+  },
+})
+
 var TodoList = React.createClass({
   setItems: function(items){ this.setState({items:items}) },
   loadList: function(){
@@ -73,34 +94,13 @@ var TodoList = React.createClass({
   }
 })
 
-let list = <TodoList items={[]}/>
+let list = (
+  <div>
+    {baasClient.auth() != null ? <TodoList items={[]}/> : null}
+    <AuthControls client={baasClient}/>
+  </div>
+)
 
 $(document).ready(() => {
-  if (baasClient.auth() == null) {
-    $("#login_oauth2_google").prop('disabled', false);
-    $("#login_oauth2_google").click(function(e) {
-      baasClient.authWithOAuth("google");
-    });
-    $("#login_oauth2_fb").prop('disabled', false);
-    $("#login_oauth2_fb").click(function(e) {
-      baasClient.authWithOAuth("facebook");
-    });
-    return;
-  }
-
-  $("#uid").text(`Logged in as ${baasClient.authedId()} via ${baasClient.auth()['provider'].split("/")[1]}`);
-
-  $("#logout").prop('disabled', false);
-  $("#logout").click(function(e) {
-    baasClient.logout();
-  });
-  $("#link_oauth2_google").prop('disabled', false);
-  $("#link_oauth2_google").click(function(e) {
-    baasClient.linkWithOAuth("google");
-  });
-  $("#link_oauth2_fb").prop('disabled', false);
-  $("#link_oauth2_fb").click(function(e) {
-    baasClient.linkWithOAuth("facebook");
-  });
   ReactDOM.render(list, document.getElementById('app'));
 })
