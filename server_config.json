@@ -16,6 +16,18 @@
 			"store": "mongodb"
 		}
 	},
+	"ui": {
+		"staticDir":"ui/static",
+		"session":{
+			"cookieSecret":"secret"
+		},
+		"authProviders":{
+			"oauth2/google" : {
+				"clientId" : "CLIENT-ID",
+				"clientSecret" : "CLIENT-SECRET"
+			}
+		}
+	},
 	"db": {
 		"mongoDBURI": "mongodb://localhost:27017"
 	},
