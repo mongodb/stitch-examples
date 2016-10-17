@@ -1,0 +1,23 @@
+{
+	"_id" : ObjectId("57fd5910c0c9edf769b4ed26"),
+	"appName" : "planner-app",
+	"svcName" : "tw1",
+	"pipeline" : [
+		{
+			"action" : "literal",
+			"args" : '{ "items" : [ { "message" : "$trigger" } ] }'
+		},
+		{
+			"service" : "mdb1",
+			"action" : "insert",
+			"args" : '{ "database" : "planner-app", "collection" : "messages" }'
+		}
+	],
+	"variables" : {
+
+	},
+	"options" : {
+
+	},
+	"respondResult" : false
+}
