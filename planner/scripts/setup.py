@@ -74,55 +74,56 @@ class TestMethods(unittest.TestCase):
 					
 					new_rule.build().save()
 
-				for var in svc_desc['variables']:
-					svc.save_variable(Variable.from_JSON(var))
+				if 'variables' in svc_desc:
+					for var in svc_desc['variables']:
+						svc.save_variable(Variable.from_JSON(var))
 
 		self._cl = APIClient(Connection(creds), app=app_name)
 
 	def tearDown(self):
 		self._app.delete()
 
-	# def test_boards(self):
-	# 	mdb = mongodb.Service(self._cl.service('db'))
+	def test_boards(self):
+		mdb = mongodb.Service(self._cl.service('db'))
 
-	# 	# Create board
-	# 	boards = mdb.database('planner').collection('boards')
-	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+		# Create board
+		boards = mdb.database('planner').collection('boards')
+		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 
-	# 	# # Create board twice should fail
-	# 	# with self.assertRaisesRegexp(Error, 'Failed validation'):
-	# 	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+		# # Create board twice should fail
+		# with self.assertRaisesRegexp(Error, 'Failed validation'):
+		# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 
-	# 	# Create board without name should fail
-	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
-	# 		boards.insert({'owner_id': self._cl.user()['_id']})
+		# Create board without name should fail
+		with self.assertRaisesRegexp(Error, 'Failed validation'):
+			boards.insert({'owner_id': self._cl.user()['_id']})
 
-	# 	# Create board without valid name should fail
-	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
-	# 		boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
+		# Create board without valid name should fail
+		with self.assertRaisesRegexp(Error, 'Failed validation'):
+			boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
 
-	# 	# Create board without valid owner_id should fail
-	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
-	# 		boards.insert({'name': '', 'owner_id': 'myid'})
+		# Create board without valid owner_id should fail
+		with self.assertRaisesRegexp(Error, 'Failed validation'):
+			boards.insert({'name': '', 'owner_id': 'myid'})
 
-	# 	# Create some other board
-	# 	self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId()})
+		# Create some other board
+		self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId()})
 
-	# 	# Finding own board should work
-	# 	personal = boards.find({'name': 'Personal'})
-	# 	self.assertTrue(len(personal) == 1)
-	# 	personal = personal[0]
-	# 	self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
+		# Finding own board should work
+		personal = boards.find({'name': 'Personal'})
+		self.assertTrue(len(personal) == 1)
+		personal = personal[0]
+		self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
 
-	# 	# Deleting own board should work
-	# 	boards.remove({'_id': personal['_id']})
-	# 	self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
+		# Deleting own board should work
+		boards.remove({'_id': personal['_id']})
+		self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
 
-	# 	# Other board should still exist
-	# 	other = self._m_client.boards.boards.find_one({'name': 'Personal'})
-	# 	self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
+		# Other board should still exist
+		other = self._m_client.boards.boards.find_one({'name': 'Personal'})
+		self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
 
-	# 	# TODO(erd): CRUD members
+		# TODO(erd): CRUD members
 
 	def test_lists(self):
 		mdb = mongodb.Service(self._cl.service('db'))
