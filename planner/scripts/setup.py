@@ -137,6 +137,11 @@ class TestMethods(unittest.TestCase):
 		lists = mdb.database('planner').collection('lists')
 		lists.insert({'name': 'todo', 'board_id': personal_board['_id']})
 
+		# Adding a new list into a different board should fail
+		# TODO(erd): Requires function owns_board(board_id)
+		# with self.assertRaisesRegexp(Error, 'Failed validation'):
+		# 	lists.insert({'name': 'todo', 'board_id': ObjectId()})
+
 
 if __name__ == '__main__':
 	unittest.main()
