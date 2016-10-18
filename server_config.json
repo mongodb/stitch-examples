@@ -14,6 +14,12 @@
 		},
 		"user": {
 			"store": "mongodb"
+		},
+		"local": {
+			"userpass": {
+				"filePath": "./test_data/userpass.json",
+				"salt": "DQOWene1723baqD!_@#"
+			}
 		}
 	},
 	"ui": {
@@ -25,7 +31,8 @@
 			"oauth2/google" : {
 				"clientId" : "CLIENT-ID",
 				"clientSecret" : "CLIENT-SECRET"
-			}
+			},
+			"local/userpass":{}
 		}
 	},
 	"db": {

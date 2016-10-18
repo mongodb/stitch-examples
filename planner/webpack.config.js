@@ -3,11 +3,17 @@ module.exports = {
     './src/index.js'
   ],
   module: {
-    loaders: [{
-      test: /\.jsx?$/,
-      exclude: /node_modules/,
-      loader: 'babel'
-    }]
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loader: 'babel'
+      }, 
+      {
+        test: /\.scss$/,
+        loaders: ['style', 'css', 'sass']
+      },
+    ]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
