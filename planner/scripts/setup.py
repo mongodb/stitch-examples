@@ -134,13 +134,18 @@ class TestMethods(unittest.TestCase):
 		personal_board = boards.find({'name': 'Personal'})[0]
 
 		# Adding a new list should work
-		lists = mdb.database('planner').collection('lists')
-		lists.insert({'name': 'todo', 'board_id': personal_board['_id']})
+		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.todo': {}}})
 
-		# Adding a new list into a different board should fail
-		# TODO(erd): Requires function owns_board(board_id)
-		# with self.assertRaisesRegexp(Error, 'Failed validation'):
-		# 	lists.insert({'name': 'todo', 'board_id': ObjectId()})
+		# Adding a new list with a bad name should fail
+		# TODO(erd): Needs a rule that can describe this
+
+		# Removing a list should work
+		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.other': {}}})
+		boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.todo': True}})
+
+		updated = boards.find({'name': 'Personal'})[0]
+		self.assertTrue('other' in updated['lists'])
+		self.assertFalse('todo' in updated['lists'])
 
 
 if __name__ == '__main__':

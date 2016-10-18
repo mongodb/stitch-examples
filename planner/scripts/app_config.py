@@ -14,7 +14,7 @@ services={
 			{
 				"priority": 0,
 				"actions": [
-					"insert", "find", "delete"
+					"insert", "find", "delete", "update"
 				],
 				"namespace": "planner.boards",
 				"filter": {
@@ -29,31 +29,8 @@ services={
 				"fields": {
 					"mutable": [
 						"name",
-						"owner_id"
-					],
-					"allMutable": False
-				}
-			},
-
-			{
-				"priority": 1,
-				"actions": [
-					"insert",
-				],
-				"namespace": "planner.lists",
-				# "filter": {
-				# 	"board_id": {"$in": "$var.own_boards._id"},
-				# },
-				# "validate": {
-				# 	"name": {
-				# 		"$ne": ""
-				# 	},
-				# 	"board_id": {"$in": "$var.own_boards._id"},
-				# },
-				"fields": {
-					"mutable": [
-						"name",
-						"board_id"
+						"owner_id",
+						"lists"
 					],
 					"allMutable": False
 				}
