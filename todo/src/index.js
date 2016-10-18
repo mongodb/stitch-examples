@@ -50,7 +50,7 @@ var TodoList = React.createClass({
       return
     }
     let obj = this;
-    items.find(null, null, function(data){
+    items.find(null, null).then(function(data){
       obj.setState({items:data.result})
     })
   },
@@ -58,7 +58,7 @@ var TodoList = React.createClass({
   getInitialState: () => {return {items:[]}},
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
-    users.update({"_id":id}, {$set:{"checked":status}}, false, false, () => {
+    items.update({"_id":id}, {$set:{"checked":status}}, false, false).then(() => {
       this.loadList();
     }, {"rule": "checked"})
   },
@@ -67,13 +67,15 @@ var TodoList = React.createClass({
     if(event.keyCode != 13 ){
       return
     }
-    items.insert([{text:event.target.value, "user": {"$oid": baasClient.authedId()}}], () => {
-      this.loadList();
-    })
+    items.insert([{text:event.target.value, "user": {"$oid": baasClient.authedId()}}]).then(
+      () => {
+        this.loadList();
+      }
+    )
   },
 
   clear: function(){
-    items.remove({checked:true}, false, () => {
+    items.remove({checked:true}, false).then(() => {
       this.loadList();
     })
   },
@@ -116,8 +118,7 @@ function initUserInfo(id){
   users.update(
     {}, // filter from the rule will automatically populate user ID here.
     {$setOnInsert:{"phone_number":"", "number_status":"unverified"}},
-    true, false,
-    function(){});
+    true, false).then(function(){});
 }
 
 var AwaitVerifyCode = React.createClass({
@@ -126,10 +127,9 @@ var AwaitVerifyCode = React.createClass({
     if(e.keyCode == 13){
       users.update(
         {_id:{"$oid":baasClient.authedId()}, verify_code:this._code.value},
-        {"$set":{"number_status":"verified"}},false,false,
-        (data)=>{
-          obj.props.onSubmit()
-      })
+        {"$set":{"number_status":"verified"}},false,false).then(
+          (data)=>{ obj.props.onSubmit() }
+        )
     }
   },
   render: function(){
@@ -178,8 +178,9 @@ var NumberConfirm = React.createClass({
                 "phone_number":"+1" + this._number.value,
                 "number_status":"pending",
                 "verify_code":code}
-              }, false, false, () => { this.props.onSubmit() }
-            )
+              }, false, false).then(
+                () => { this.props.onSubmit() }
+              )
           }
         )
       }
@@ -200,7 +201,7 @@ var Settings = React.createClass({
     return {user:null}
   },
   loadUser: function(){
-    users.find({}, null, (data)=>{
+    users.find({}, null).then((data)=>{
       if(data.result.length>0){
         this.setState({user:data.result[0]})
       }
