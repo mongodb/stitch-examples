@@ -83,69 +83,106 @@ class TestMethods(unittest.TestCase):
 	def tearDown(self):
 		self._app.delete()
 
-	def test_boards(self):
+	# def test_boards(self):
+	# 	mdb = mongodb.Service(self._cl.service('db'))
+
+	# 	# Create board
+	# 	boards = mdb.database('planner').collection('boards')
+	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+
+	# 	# # Create board twice should fail
+	# 	# with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+
+	# 	# Create board without name should fail
+	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 		boards.insert({'owner_id': self._cl.user()['_id']})
+
+	# 	# Create board without valid name should fail
+	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 		boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
+
+	# 	# Create board without valid owner_id should fail
+	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 		boards.insert({'name': '', 'owner_id': 'myid'})
+
+	# 	# Create some other board
+	# 	self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId()})
+
+	# 	# Finding own board should work
+	# 	personal = boards.find({'name': 'Personal'})
+	# 	self.assertTrue(len(personal) == 1)
+	# 	personal = personal[0]
+	# 	self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
+
+	# 	# Deleting own board should work
+	# 	boards.remove({'_id': personal['_id']})
+	# 	self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
+
+	# 	# Other board should still exist
+	# 	other = self._m_client.boards.boards.find_one({'name': 'Personal'})
+	# 	self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
+
+	# 	# TODO(erd): CRUD members
+
+	# def test_lists(self):
+	# 	mdb = mongodb.Service(self._cl.service('db'))
+
+	# 	# With a board
+	# 	boards = mdb.database('planner').collection('boards')
+	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+	# 	personal_board = boards.find({'name': 'Personal'})[0]
+
+	# 	# Adding a new list should work
+	# 	boards.update({'_id': personal_board['_id']}, {'$set': {'lists.todo': {}}})
+
+	# 	# Adding a new list with a bad name should fail
+	# 	# TODO(erd): Needs a rule that can describe this
+
+	# 	# Removing a list should work
+	# 	boards.update({'_id': personal_board['_id']}, {'$set': {'lists.other': {}}})
+	# 	boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.todo': True}})
+
+	# 	updated = boards.find({'name': 'Personal'})[0]
+	# 	self.assertTrue('other' in updated['lists'])
+	# 	self.assertFalse('todo' in updated['lists'])
+
+	def test_cards(self):
 		mdb = mongodb.Service(self._cl.service('db'))
 
-		# Create board
-		boards = mdb.database('planner').collection('boards')
-		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
-
-		# # Create board twice should fail
-		# with self.assertRaisesRegexp(Error, 'Failed validation'):
-		# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
-
-		# Create board without name should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'owner_id': self._cl.user()['_id']})
-
-		# Create board without valid name should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
-
-		# Create board without valid owner_id should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'name': '', 'owner_id': 'myid'})
-
-		# Create some other board
-		self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId()})
-
-		# Finding own board should work
-		personal = boards.find({'name': 'Personal'})
-		self.assertTrue(len(personal) == 1)
-		personal = personal[0]
-		self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
-
-		# Deleting own board should work
-		boards.remove({'_id': personal['_id']})
-		self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
-
-		# Other board should still exist
-		other = self._m_client.boards.boards.find_one({'name': 'Personal'})
-		self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
-
-		# TODO(erd): CRUD members
-
-	def test_lists(self):
-		mdb = mongodb.Service(self._cl.service('db'))
-
-		# With a board
+		# With a board and list
 		boards = mdb.database('planner').collection('boards')
 		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 		personal_board = boards.find({'name': 'Personal'})[0]
 
-		# Adding a new list should work
-		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.todo': {}}})
+		# TODO(erd): This should have a rule to enforce count is >= 0
+		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.todo': {'count': 0}}})
+		personal_board = boards.find({'name': 'Personal'})[0]
 
-		# Adding a new list with a bad name should fail
-		# TODO(erd): Needs a rule that can describe this
+		num_cards = personal_board['lists']['todo']['count']
 
-		# Removing a list should work
-		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.other': {}}})
-		boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.todo': True}})
+		# Adding a new card should work
+		card_id = ObjectId()
+		idx_1 = num_cards
+		boards.update({
+			'_id': personal_board['_id']},
+			{'$set': {'lists.todo.cards.'+str(card_id): {"_id": card_id, "text": "hello", "idx": idx_1}},
+			'$inc': {'lists.todo.count': 1}})
 
-		updated = boards.find({'name': 'Personal'})[0]
-		self.assertTrue('other' in updated['lists'])
-		self.assertFalse('todo' in updated['lists'])
+		personal_board = boards.find({'name': 'Personal'})[0]
+		num_cards = personal_board['lists']['todo']['count']
+
+		other_card_id = ObjectId()
+		idx_2 = num_cards
+		boards.update({
+			'_id': personal_board['_id']},
+			{'$set': {'lists.todo.cards.'+str(other_card_id): {"_id": other_card_id, "text": "it's me", "idx": idx_2}},
+			'$inc': {'lists.todo.count': 1}})
+
+		# Swapping two cards should work
+		boards.update({
+			'_id': personal_board['_id']},
+			{'$set': {'lists.todo.cards.'+str(card_id)+'.idx': idx_2, 'lists.todo.cards.'+str(other_card_id)+'.idx': idx_1}})
 
 
 if __name__ == '__main__':
