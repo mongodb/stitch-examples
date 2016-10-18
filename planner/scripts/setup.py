@@ -5,6 +5,7 @@ from pybaas import AdminClient, APIClient, Connection
 from pybaas.auth import UserPass
 import pybaas.svcs.mongodb as mongodb
 from pybaas.auth_provider import AuthProvider
+from pybaas.variable import Variable
 
 from bson.objectid import ObjectId
 
@@ -18,7 +19,7 @@ class TestMethods(unittest.TestCase):
 
 		# Clear data
 		client = MongoClient()
-		client.drop_database('boards')
+		client.drop_database('planner')
 		self._m_client = client
 
 		creds = UserPass('unique_user@domain.com', 'password')
@@ -73,50 +74,68 @@ class TestMethods(unittest.TestCase):
 					
 					new_rule.build().save()
 
+				for var in svc_desc['variables']:
+					svc.save_variable(Variable.from_JSON(var))
+
 		self._cl = APIClient(Connection(creds), app=app_name)
 
 	def tearDown(self):
 		self._app.delete()
 
-	def test_boards(self):
+	# def test_boards(self):
+	# 	mdb = mongodb.Service(self._cl.service('db'))
+
+	# 	# Create board
+	# 	boards = mdb.database('planner').collection('boards')
+	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+
+	# 	# # Create board twice should fail
+	# 	# with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 	# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+
+	# 	# Create board without name should fail
+	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 		boards.insert({'owner_id': self._cl.user()['_id']})
+
+	# 	# Create board without valid name should fail
+	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 		boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
+
+	# 	# Create board without valid owner_id should fail
+	# 	with self.assertRaisesRegexp(Error, 'Failed validation'):
+	# 		boards.insert({'name': '', 'owner_id': 'myid'})
+
+	# 	# Create some other board
+	# 	self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId()})
+
+	# 	# Finding own board should work
+	# 	personal = boards.find({'name': 'Personal'})
+	# 	self.assertTrue(len(personal) == 1)
+	# 	personal = personal[0]
+	# 	self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
+
+	# 	# Deleting own board should work
+	# 	boards.remove({'_id': personal['_id']})
+	# 	self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
+
+	# 	# Other board should still exist
+	# 	other = self._m_client.boards.boards.find_one({'name': 'Personal'})
+	# 	self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
+
+	# 	# TODO(erd): CRUD members
+
+	def test_lists(self):
 		mdb = mongodb.Service(self._cl.service('db'))
 
-		# Create board
-		boards = mdb.database('boards').collection('boards')
+		# With a board
+		boards = mdb.database('planner').collection('boards')
 		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+		personal_board = boards.find({'name': 'Personal'})[0]
 
-		# # Create board twice should fail
-		# with self.assertRaisesRegexp(Error, 'Failed validation'):
-		# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
+		# Adding a new list should work
+		lists = mdb.database('planner').collection('lists')
+		lists.insert({'name': 'todo', 'board_id': personal_board['_id']})
 
-		# Create board without name should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'owner_id': self._cl.user()['_id']})
-
-		# Create board without valid name should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
-
-		# Create board without valid owner_id should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'name': '', 'owner_id': 'myid'})
-
-		# Create some other board
-		self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId()})
-
-		# Finding own board should work
-		personal = boards.find({'name': 'Personal'})
-		self.assertTrue(len(personal) == 1)
-		personal = personal[0]
-		self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
-
-		# Deleting own board should work
-		boards.remove({'_id': personal['_id']})
-		self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
-
-		# Other board should still exist
-		other = self._m_client.boards.boards.find_one({'name': 'Personal'})
-		self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
 
 if __name__ == '__main__':
 	unittest.main()

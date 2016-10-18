@@ -16,7 +16,7 @@ services={
 				"actions": [
 					"insert", "find", "delete"
 				],
-				"namespace": "boards.boards",
+				"namespace": "planner.boards",
 				"filter": {
 					"owner_id": "$var.$auth.id",
 				},
@@ -34,6 +34,55 @@ services={
 					"allMutable": False
 				}
 			},
+
+			{
+				"priority": 1,
+				"actions": [
+					"insert",
+				],
+				"namespace": "planner.lists",
+				"filter": {
+					"board_id": {"$in": "$var.own_boards._id"},
+				},
+				"validate": {
+					"name": {
+						"$ne": ""
+					},
+					"board_id": {"$in": "$var.own_boards._id"},
+				},
+				"fields": {
+					"mutable": [
+						"name",
+						"board_id"
+					],
+					"allMutable": False
+				}
+			},
+		],
+		'variables': [
+			{
+				"name": "own_boards",
+				"type": "pipeline",
+				"source": {
+					"pipeline": [
+						{
+							"service": "db",
+							"action": "find",
+							"args": {
+								"database": "planner",
+								"collection": "boards",
+								"query": {
+									"owner_id": "$var.$auth.id"
+								},
+								"projection": {
+									"_id": 1
+								}
+							}
+						}
+					],
+					"output": "array"
+				}
+			}
 		]
 	}
 }
