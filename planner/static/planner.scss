@@ -173,20 +173,48 @@ body > br {
   &-header {
     font-size: 16px;
     margin-bottom: 10px;
+
+    &-delete-button {
+      display: block;
+      border: none;
+      background: none;
+      float: right;
+      font-size: 24px;
+      border-radius: 4px;
+      color: $gray4;
+      margin-top: -5px;
+      cursor: pointer;
+
+      &:hover {
+        color: $gray1;
+      }
+    }
   }
   &-card {
     background: $pw;
-    font-size: 16px;
+    font-size: 14px;
     border-radius: 4px;
     padding: 8px 10px;
+    margin-bottom: 5px;
     box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    cursor: pointer;
+
+    &:hover {
+      background: $gray8;
+    }
   }
   &-add-card {
-    margin-top: 10px;
+    margin-top: 5px;
+    padding: 8px 10px;
     border: none;
+    border-radius: 4px;
     background: none;
     cursor: pointer;
     font-size: 14px;
     color: $gray2;
+
+    &:hover {
+      background: rgba(0,0,0,0.05);
+    }
   }
 }

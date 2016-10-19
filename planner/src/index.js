@@ -262,8 +262,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 					onMouseOut={this.hoverOut}
 					onClick={this.openEdit}>
 					<span className="summary">({this.props.data.idx}): {this.props.data.summary}</span>
-					<span className="edit">edit</span>
-          <FontAwesome name='rocket' />
+          <FontAwesome name='pencil' />
 				</div>
 			))
 		}
@@ -389,7 +388,7 @@ let List = DragDropContext(HTML5Backend)(
     render:function(){
       return (
         <div className="task-list">
-          <h4 className="task-list-header">{this.props.data.name}<button onClick={this.delete}>X</button></h4>
+          <h4 className="task-list-header">{this.props.data.name}<button className="task-list-header-delete-button" onClick={this.delete}>&times;</button></h4>
           <div>
             { 
               this.state.cards.map((c) => {
