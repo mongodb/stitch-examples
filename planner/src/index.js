@@ -130,7 +130,7 @@ let Board = React.createClass({
           <Link className="navbar-brand-link" to="/">BaaS Board</Link>
         </nav>
         <div className="board">
-          <h3>{this.state.board.name}</h3>
+          <h3 className="board-header">{this.state.board.name}</h3>
           <div className="lists">
             { listKeys.map((x)=> {
                 let v = this.state.board.lists[x];
@@ -138,11 +138,11 @@ let Board = React.createClass({
                })
             }
             { this.state.newList ?
-              <div className="list">
+              <div className="task-list">
                 <input type="textbox" ref={(n)=>{this._newlistname=n}} onKeyDown={this.newListKeyDown}></input>
               </div>
               :
-              <div className="new-list">
+              <div className="create-new-list">
                 <button onClick={this.newList}>+ New List</button>
               </div>
             }
@@ -169,7 +169,7 @@ let Card = React.createClass({
   render:function(){
     return (
       <div
-        className={"card-in-list" + (this.state.hovered ? " hovered" : "")}
+        className={"task-list-card" + (this.state.hovered ? " hovered" : "")}
         onMouseOver={this.hoverIn} 
         onMouseOut={this.hoverOut}
         onClick={this.openEdit}>
@@ -235,8 +235,8 @@ let List = React.createClass({
   },
   render:function(){
     return (
-      <div className="list">
-        <h4>{this.props.data.name}<button onClick={this.delete}>X</button></h4>
+      <div className="task-list">
+        <h4 className="task-list-header">{this.props.data.name}<button onClick={this.delete}>X</button></h4>
         <div>
           { 
             Object.keys(this.props.data.cards).map((x) => {
@@ -254,7 +254,7 @@ let List = React.createClass({
         <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
           <CardEditor db={this.props.db} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
         </Modal>
-        <button onClick={this.quickAddCard}>Add card...</button>
+        <button className="task-list-add-card" onClick={this.quickAddCard}>Add card...</button>
       </div>
     )
   }
