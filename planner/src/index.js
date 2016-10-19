@@ -262,7 +262,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 					onMouseOut={this.hoverOut}
 					onClick={this.openEdit}>
 					<span className="summary">({this.props.data.idx}): {this.props.data.summary}</span>
-          <FontAwesome name='pencil' />
+          <div className="task-list-card-edit-icon"><FontAwesome name='pencil' /></div>
 				</div>
 			))
 		}

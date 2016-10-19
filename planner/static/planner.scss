@@ -191,16 +191,30 @@ body > br {
     }
   }
   &-card {
+    position: relative;
     background: $pw;
     font-size: 14px;
     border-radius: 4px;
-    padding: 8px 10px;
+    padding: 8px 20px 8px 10px;
     margin-bottom: 5px;
     box-shadow: 0 1px 0 rgba(0,0,0,0.15);
     cursor: pointer;
 
     &:hover {
       background: $gray8;
+
+      .task-list-card-edit-icon {
+        display: block;
+      }
+    }
+
+    &-edit-icon {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      display: none;
+      color: $gray4;
+      font-size: 12px;
     }
   }
   &-add-card {
