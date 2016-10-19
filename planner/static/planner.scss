@@ -1,4 +1,92 @@
+// Variables
+$pw: #fff;
+
+$green1: #56B145;
+$green2: #6ECB5D;
+
+// Fonts
+//Reg
+@font-face {
+  font-family: 'Akzidenz';
+  src: url('/static/font/akzidgrostdreg.eot');
+  src: url('/static/font/akzidgrostdreg.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdreg.woff') format('woff'),
+  url('/static/font/akzidgrostdreg.ttf')  format('truetype');
+  font-style: normal;
+  font-weight: normal;
+}
+//Reg Italic
+@font-face {
+  font-family: 'Akzidenz';
+  src: url('/static/font/akzidgrostdita.eot');
+  src: url('/static/font/akzidgrostdita.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdita.woff') format('woff'),
+  url('/static/font/akzidgrostdita.ttf')  format('truetype');
+  font-style: italic;
+  font-weight: normal;
+}
+//Bold
+@font-face {
+  font-family: 'Akzidenz';
+  src: url('/static/font/akzidgrostdmed.eot');
+  src: url('/static/font/akzidgrostdmed.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdmed.woff') format('woff'),
+  url('/static/font/akzidgrostdmed.ttf')  format('truetype');
+  font-style: normal;
+  font-weight: bold;
+}
+//Bold Italic
+@font-face {
+  font-family: 'Akzidenz';
+  src: url('/static/font/akzidgrostdmedita.eot');
+  src: url('/static/font/akzidgrostdmedita.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdmedita.woff') format('woff'),
+  url('/static/font/akzidgrostdmedita.ttf')  format('truetype');
+  font-style: italic;
+  font-weight: bold;
+}
+//Light
+@font-face {
+  font-family: 'Akzidenz';
+  src: url('/static/font/akzidgrostdlig.eot');
+  src: url('/static/font/akzidgrostdlig.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdlig.woff') format('woff'),
+  url('/static/font/akzidgrostdlig.ttf')  format('truetype');
+  font-style: normal;
+  font-weight: 200;
+}
+//Light Italic
+@font-face {
+  font-family: 'Akzidenz';
+  src: url('/static/font/akzidgrostdligita.eot');
+  src: url('/static/font/akzidgrostdligita.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdligita.woff') format('woff'),
+  url('/static/font/akzidgrostdligita.ttf')  format('truetype');
+  font-style: italic;
+  font-weight: 200;
+}
+//Condensed weights and styles
+@font-face {
+  font-family: 'Akzidenz Cnd';
+  src: url('/static/font/akzidgrostdligcnd.eot');
+  src: url('/static/font/akzidgrostdligcnd.eot#iefix') format('embedded-opentype'),
+  url('/static/font/akzidgrostdligcnd.woff') format('woff'),
+  url('/static/font/akzidgrostdligcnd.ttf')  format('truetype');
+  font-style: normal;
+  font-weight: 200;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
 body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .lists {
@@ -28,4 +116,20 @@ body {
   border: 1px solid #ccc;
   display: flex;
   flex-direction: column;
+}
+
+////////////////////
+// BEM Components //
+////////////////////
+
+// Navbar
+
+.navbar {
+  background: $green1;
+  height: 40px;
+
+  &-brand-link {
+    color: $pw;
+    text-decoration: none;
+  }
 }
