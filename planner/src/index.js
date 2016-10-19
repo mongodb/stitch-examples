@@ -1,5 +1,5 @@
 import React from 'react';
-import {render} from 'react-dom';
+import {render, findDOMNode} from 'react-dom';
 import {BaasClient, MongoClient} from 'baas';
 import {browserHistory, Router, Route, Link} from 'react-router'
 import AuthControls from "./auth.js"
@@ -8,6 +8,9 @@ import Modal from "react-modal"
 import ObjectID from "bson-objectid";
 import { DragSource, DropTarget } from 'react-dnd';
 import { DragDropContext } from 'react-dnd';
+
+var update = require('react-addons-update');
+
 
 import HTML5Backend from 'react-dnd-html5-backend';
 
@@ -139,7 +142,7 @@ let Board = React.createClass({
           <div className="lists">
             { listKeys.map((x)=> {
                 let v = this.state.board.lists[x];
-                return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
+                return <List moveCard={()=>{console.log("movecard list!")}} onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
                })
             }
             { this.state.newList ?
@@ -162,15 +165,14 @@ const ItemTypes = { CARD: "card", }
 
 const cardSource = {
   beginDrag(props) {
-    return { serverIndex: props.data.idx, clientIndex: props.index };
+    return { serverIndex: props.data.idx, clientIndex: props.data.clientIndex };
   }
 };
 
 const cardTarget = {
   hover(props, monitor, component) {
-		console.log("hover!", monitor.getItem(), props)
-    const dragIndex = monitor.getItem().index;
-    const hoverIndex = props.data.idx;
+    const dragIndex = monitor.getItem().clientIndex;
+    const hoverIndex = props.data.clientIndex
 
     // Don't replace items with themselves
     if (dragIndex === hoverIndex) {
@@ -204,22 +206,15 @@ const cardTarget = {
     }
 
     // Time to actually perform the action
+    console.log("moving card", dragIndex, "to", hoverIndex)
     props.moveCard(dragIndex, hoverIndex);
 
     // Note: we're mutating the monitor item here!
     // Generally it's better to avoid mutations,
     // but it's good here for the sake of performance
     // to avoid expensive index searches.
-    monitor.getItem().index = hoverIndex;
-
-		console.log("hover!", props, monitor, component)
+    monitor.getItem().clientIndex = hoverIndex;
   },
-	canDrop(){
-		return true
-	},
-	drop(props, monitor, component){
-		console.log("drop!", props, monitor, component)
-	}
 };
 
 
@@ -232,7 +227,6 @@ function collect(connect, monitor) {
 
 
 function collect2(connect, monitor) {
-	console.log("calling colelct2")
   return {
   	connectDropTarget: connect.dropTarget(),
   };
@@ -283,6 +277,63 @@ let List = DragDropContext(HTML5Backend)(
         this._newcard.focus()
       }
     },
+    moveCard: function(dragIndex, hoverIndex) {
+      let fromCard = this.state.cards[dragIndex]
+      let toCard = this.state.cards[hoverIndex]
+
+      const db = this.props.db
+      const boardId = this.props.boardId
+      const listOid = this.props.data._id.$oid
+      const oid = ObjectID().toHexString()
+
+      const query = {"_id": {$oid: boardId}}
+      let modifier = {}
+      modifier[`lists.${listOid}.cards.${fromCard._id.$oid}.idx`] = toCard.idx
+      modifier[`lists.${listOid}.cards.${toCard._id.$oid}.idx`] = fromCard.idx
+      console.log("doing move card update!", query, modifier)
+
+      console.log("update is!", update)
+      this.setState(update(this.state, {
+        cards: {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, fromCard]
+          ]
+        }
+      }));
+      return
+      db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
+			//{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id)+'.idx': idx_2, 'lists.'+str(todo_id)+'.cards.'+str(other_card_id)+'.idx': idx_1}})
+
+
+
+      /*
+      db.boards.update({'_id': personal_board['_id']}, 
+			{'$set': {'lists.'+str(other_id): {'_id': other_id, 'name': 'other', 'idx': num_lists}},
+			'$inc': {'lcount': 1}})
+      */
+      //console.log("moving card!", arguments)
+      //console.log("from", this.state.cards[dragIndex], "to", this.state.cards[hoverIndex])
+      /*
+      return
+      const { cards } = this.state;
+      const dragCard = cards[dragIndex];
+
+      */
+    },
+
+    componentWillMount: function(){
+			const cardsListSorted = Object.keys(this.props.data.cards).map(
+				(k)=> this.props.data.cards[k]
+			).sort((a,b)=>a.idx-b.idx)
+      .map((x, i) => {
+        let out = x;
+        out.clientIndex = i;
+        return out;
+      })
+      this.setState({cards:cardsListSorted})
+    },
+
     createNewCard : function(summary){
       let db = this.props.db
       let boardId = this.props.boardId
@@ -327,17 +378,25 @@ let List = DragDropContext(HTML5Backend)(
       this.setState({modalOpen:false})
     },
     render:function(){
+    /*
 			let cardsListSorted = Object.keys(this.props.data.cards).map(
-				(k)=>this.props.data.cards[k]
-			).sort((a,b)=>a.idx-b.idx)
+				(k)=> this.props.data.cards[k]
+			)
+      .sort((a,b)=>a.idx-b.idx)
+      .map((x, i) => {
+        let out = x;
+        out.clientIndex = i;
+        return out;
+      })
+      */
       return (
         <div className="list">
           <h4>{this.props.data.name}<button onClick={this.delete}>X</button></h4>
           <div>
             { 
-              cardsListSorted.map((c) => {
+              this.state.cards.map((c) => {
                 let cid = c._id
-                return <Card data={c} key={c._id.$oid}
+                return <Card data={c} key={c._id.$oid} moveCard={this.moveCard}
                   openEdit={()=>{this.openEditor(cid)}}/>
               })
             }
