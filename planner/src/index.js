@@ -96,6 +96,7 @@ let Board = React.createClass({
     return {board:{name:"", lists:{}}}
   },
   load: function(){
+    console.log("calling board load!")
     this.props.route.db.boards.find({_id:{$oid:this.props.routeParams.id}}, null).then(
       (data)=>{this.setState({board:data.result[0], newList:false})}
     )
@@ -142,7 +143,7 @@ let Board = React.createClass({
           <div className="lists">
             { listKeys.map((x)=> {
                 let v = this.state.board.lists[x];
-                return <List moveCard={()=>{console.log("movecard list!")}} onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
+                return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
                })
             }
             { this.state.newList ?
@@ -321,11 +322,16 @@ let List = DragDropContext(HTML5Backend)(
 
       */
     },
-
-    componentWillMount: function(){
-			const cardsListSorted = Object.keys(this.props.data.cards).map(
-				(k)=> this.props.data.cards[k]
-			).sort((a,b)=>a.idx-b.idx)
+    componentWillReceiveProps: function(newprops){
+      this.resetCards(newprops.data)
+    },
+    componentWillMount: function(newprops){
+      this.resetCards(this.props.data)
+    },
+    resetCards: function(data){
+      const cardsListSorted = Object.keys(data.cards).map(
+        (k)=> data.cards[k]
+      ).sort((a,b)=>a.idx-b.idx)
       .map((x, i) => {
         let out = x;
         out.clientIndex = i;
@@ -339,10 +345,10 @@ let List = DragDropContext(HTML5Backend)(
       let boardId = this.props.boardId
       let listOid = this.props.data._id.$oid
       let oid = ObjectID().toHexString()
+
       return db.cards.insert([{_id:{$oid:oid}, summary:summary}]).then(()=>{
         let setObj = {}
-        console.log("updating list id", listOid)
-        setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary}
+        setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.state.cards||[]).length+1}
         db.boards.update(
           {_id:{$oid:boardId}},
           {$set:setObj}, false, false)
@@ -354,7 +360,7 @@ let List = DragDropContext(HTML5Backend)(
       if(e.keyCode == 13){
         let summary = this._newcard.value;
         if(summary.length > 0){
-          this.createNewCard(summary).then(this.props.onUpdate)
+          this.createNewCard(summary).then(()=>{console.log("calling update");this.props.onUpdate()})
         }
       } else if(e.keyCode == 27) {
         this.setState({newList:false})
@@ -378,17 +384,6 @@ let List = DragDropContext(HTML5Backend)(
       this.setState({modalOpen:false})
     },
     render:function(){
-    /*
-			let cardsListSorted = Object.keys(this.props.data.cards).map(
-				(k)=> this.props.data.cards[k]
-			)
-      .sort((a,b)=>a.idx-b.idx)
-      .map((x, i) => {
-        let out = x;
-        out.clientIndex = i;
-        return out;
-      })
-      */
       return (
         <div className="task-list">
           <h4 className="task-list-header">{this.props.data.name}<button onClick={this.delete}>X</button></h4>
