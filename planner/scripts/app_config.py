@@ -52,7 +52,7 @@ services={
 					"author": "$var.$auth.id",
 				},
 				"validate": {
-					"text": {
+					"summary": {
 						"$ne": ""
 					},
 					"author": "$var.$auth.id"
@@ -61,8 +61,9 @@ services={
 					"mutable": [
 						"_id",
 						"author",
-						"text",
+						"summary",
 						"comments",
+						"description",
 					],
 					"allMutable": False
 				}
