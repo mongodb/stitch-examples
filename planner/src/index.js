@@ -76,6 +76,7 @@ let modalStyle = {
 let baasClient = new BaasClient("http://localhost:8080/v1/app/planner")
 let rootDb = new MongoClient(baasClient, "mdb1").getDb("planner")
 let db = {
+  _client: baasClient,
   boards: rootDb.getCollection("boards"),
   cards : rootDb.getCollection("cards"),
   members : rootDb.getCollection("members"),
@@ -346,7 +347,7 @@ let List = DragDropContext(HTML5Backend)(
       let listOid = this.props.data._id.$oid
       let oid = ObjectID().toHexString()
 
-      return db.cards.insert([{_id:{$oid:oid}, summary:summary}]).then(()=>{
+      return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": {"$oid": this.props.db._client.authedId()}}]).then(()=>{
         let setObj = {}
         setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.state.cards||[]).length+1}
         db.boards.update(

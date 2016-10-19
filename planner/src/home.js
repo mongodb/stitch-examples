@@ -29,7 +29,7 @@ let BoardAdder = React.createClass({
     if(this._name.value.length == 0 ){
       return
     }
-    this.props.db.boards.insert([{"name":this._name.value}]).then(
+    this.props.db.boards.insert([{"name":this._name.value, "owner_id": {"$oid": this.props.db._client.authedId()}, "lcount": 0}]).then(
       ()=>{
         this._name.value = ""
         this.setState({adding:false})

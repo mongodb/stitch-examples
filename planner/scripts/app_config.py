@@ -10,7 +10,7 @@ auth_providers={
 }
 
 services={
-	'db': {
+	'mdb1': {
 		'type': mongodb.Service.Type,
 		'config': {
 			'uri': 'mongodb://localhost:27017'
