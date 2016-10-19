@@ -50,31 +50,6 @@ let modalStyle = {
   }
 }
 
-/*
-{
-  "_id": ObjectId("58069770ad7dd59e8710d069"),
-  "name": "Personal",
-  "owner_id": ObjectId("58069770772e2e772a073c99"),
-  "lists": {
-    "todo": {
-      "count": 2,
-      "cards": {
-        "58069770772e2e8921c99645": {
-          "_id": ObjectId("58069770772e2e8921c99645"),
-          "idx": 1,
-          "text": "hello"
-        },
-        "58069770772e2e8921c99646": {
-          "text": "it's me",
-          "_id": ObjectId("58069770772e2e8921c99646"),
-          "idx": 0
-        }
-      }
-    }
-  }
-}
-*/
-
 let baasClient = new BaasClient("http://localhost:8080/v1/app/planner")
 let rootDb = new MongoClient(baasClient, "mdb1").getDb("planner")
 let db = {
@@ -174,6 +149,18 @@ const cardSource = {
 }
 
 const cardTarget = {
+  drop(props, monitor, component){
+    const dragIndex = monitor.getItem().clientIndex;
+    const hoverIndex = props.data.clientIndex
+
+    // Don't replace items with themselves
+    if (dragIndex === hoverIndex) {
+      return;
+    }
+    console.log("drop happned", arguments)
+    // Time to actually perform the action
+    props.moveCardSave(dragIndex, hoverIndex);
+  },
   hover(props, monitor, component) {
     const dragIndex = monitor.getItem().clientIndex;
     const hoverIndex = props.data.clientIndex
@@ -235,33 +222,23 @@ function collect2(connect, monitor) {
   };
 }
 
-//let Card = DropTarget(ItemTypes.CARD, cardTarget, collect2)(DragSource(ItemTypes.CARD,  cardSource, collect)(
 let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.CARD,  cardTarget, collect2)(
 	React.createClass({
 		getInitialState: function(){
 			return {hovered:false}
 		},
-/*
-		hoverIn:function(){
-			this.setState({hovered:true})
-		},
-		hoverOut:function(){
-			this.setState({hovered:false})
-		},
-*/
 		openEdit:function(){
 			this.props.openEdit(this.props.data._id)
 		},
 		render:function(){
 			const { text, isDragging, connectDragSource, connectDropTarget} = this.props;
-			console.log("called card render")
 			return connectDropTarget(connectDragSource(
 				<div
 					className={"task-list-card" + (this.state.hovered ? " hovered" : "")}
 					onMouseOver={this.hoverIn} 
 					onMouseOut={this.hoverOut}
 					onClick={this.openEdit}>
-					<span className="summary">({this.props.data.idx}): {this.props.data.summary}</span>
+					<span className="summary">{this.props.data.summary}</span>
           <div className="task-list-card-edit-icon"><FontAwesome name='pencil' /></div>
 				</div>
 			))
@@ -280,10 +257,11 @@ let List = DragDropContext(HTML5Backend)(
         this._newcard.focus()
       }
     },
-    moveCard: function(dragIndex, hoverIndex) {
+
+    moveCardSave: function(dragIndex, hoverIndex) {
+      console.log("move card save!", dragIndex, hoverIndex);
       let fromCard = this.state.cards[dragIndex]
       let toCard = this.state.cards[hoverIndex]
-
       const db = this.props.db
       const boardId = this.props.boardId
       const listOid = this.props.data._id.$oid
@@ -293,9 +271,12 @@ let List = DragDropContext(HTML5Backend)(
       let modifier = {}
       modifier[`lists.${listOid}.cards.${fromCard._id.$oid}.idx`] = toCard.idx
       modifier[`lists.${listOid}.cards.${toCard._id.$oid}.idx`] = fromCard.idx
-      console.log("doing move card update!", query, modifier)
-
-      console.log("update is!", update)
+      console.log("modifier is", modifier)
+      db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
+    },
+    moveCard: function(dragIndex, hoverIndex) {
+      let fromCard = this.state.cards[dragIndex]
+      let toCard = this.state.cards[hoverIndex]
       this.setState(update(this.state, {
         cards: {
           $splice: [
@@ -304,8 +285,6 @@ let List = DragDropContext(HTML5Backend)(
           ]
         }
       }));
-      return
-      db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
 			//{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id)+'.idx': idx_2, 'lists.'+str(todo_id)+'.cards.'+str(other_card_id)+'.idx': idx_1}})
 
 
@@ -393,7 +372,7 @@ let List = DragDropContext(HTML5Backend)(
             { 
               this.state.cards.map((c) => {
                 let cid = c._id
-                return <Card data={c} key={c._id.$oid} moveCard={this.moveCard}
+                return <Card data={c} key={c._id.$oid} moveCard={this.moveCard} moveCardSave={this.moveCardSave}
                   openEdit={()=>{this.openEditor(cid)}}/>
               })
             }
