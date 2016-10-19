@@ -9,6 +9,8 @@ import ObjectID from "bson-objectid";
 import { DragSource, DropTarget } from 'react-dnd';
 import { DragDropContext } from 'react-dnd';
 
+var FontAwesome = require('react-fontawesome');
+
 var update = require('react-addons-update');
 
 
@@ -208,7 +210,6 @@ const cardTarget = {
     }
 
     // Time to actually perform the action
-    console.log("moving card", dragIndex, "to", hoverIndex)
     props.moveCard(dragIndex, hoverIndex);
 
     // Note: we're mutating the monitor item here!
@@ -262,6 +263,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 					onClick={this.openEdit}>
 					<span className="summary">({this.props.data.idx}): {this.props.data.summary}</span>
 					<span className="edit">edit</span>
+          <FontAwesome name='rocket' />
 				</div>
 			))
 		}

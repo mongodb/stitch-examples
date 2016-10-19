@@ -45,6 +45,7 @@
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^15.2.1",
+    "react-fontawesome": "^1.2.0",
     "react-modal": "^1.5.2",
     "sass-loader": "^4.0.2",
     "showdown": "^1.4.3",
