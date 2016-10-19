@@ -3,6 +3,19 @@ $pw: #fff;
 
 $green1: #56B145;
 $green2: #6ECB5D;
+$green3: #DBF6D6;
+
+$gray0: #313030;
+$gray1: #494747;
+$gray2: #615f5f;
+$gray3: #807f7f;
+$gray4: #a09f9e;
+$gray5: #bfbfbe;
+
+/* UI Grays */
+$gray6: #dee0e3;
+$gray7: #ebebed;
+$gray8: #f5f6f7;
 
 // Fonts
 //Reg
@@ -87,6 +100,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
   font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: $green2;
+  color: $gray1;
+}
+
+body > br {
+  display: none;
 }
 
 .lists {
@@ -94,35 +113,33 @@ body {
   flex-direction: row;
 }
 
-.card-in-list {
-  margin: 5px 5px 5px 5px;
-  border: 1px solid #888;
-  cursor:pointer;
-  min-width: 200px;
-  &.hovered{
-    color:red;
-    .edit {
-      display:inline;
-      float:right;
-    }
-  } 
-  .edit {
-    display:none;
-  }
-}
+// .card-in-list {
+//   margin: 5px 5px 5px 5px;
+//   border: 1px solid #888;
+//   cursor:pointer;
+//   min-width: 200px;
+//   &.hovered{
+//     color:red;
+//     .edit {
+//       display:inline;
+//       float:right;
+//     }
+//   } 
+//   .edit {
+//     display:none;
+//   }
+// }
 
-.list {
-  margin-left:15px;
-  border: 1px solid #ccc;
-  display: flex;
-  flex-direction: column;
-}
+// .list {
+//   margin-left:15px;
+//   border: 1px solid #ccc;
+//   display: flex;
+//   flex-direction: column;
+// }
 
 ////////////////////
 // BEM Components //
 ////////////////////
-
-// Navbar
 
 .navbar {
   background: $green1;
@@ -131,5 +148,45 @@ body {
   &-brand-link {
     color: $pw;
     text-decoration: none;
+  }
+}
+
+.board {
+  padding: 20px;
+
+  &-header {
+    margin: 15px 0;
+    font-size: 18px;
+    color: $pw;
+  }
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  background: $green3;
+  border-radius: 8px;
+  padding: 12px;
+  width: 200px;
+  margin-right: 10px;
+
+  &-header {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  &-card {
+    background: $pw;
+    font-size: 16px;
+    border-radius: 4px;
+    padding: 8px 10px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+  }
+  &-add-card {
+    margin-top: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: $gray2;
   }
 }
