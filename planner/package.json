@@ -41,6 +41,7 @@
     "css-loader": "^0.25.0",
     "node-sass": "^3.10.1",
     "react": "^15.2.1",
+    "react-addons-update": "^15.3.2",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^15.2.1",
