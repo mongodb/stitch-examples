@@ -182,10 +182,10 @@ class TestMethods(unittest.TestCase):
 
 		# TODO(erd): This should have a rule to enforce count is >= 0
 		todo_id = ObjectId()
-		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.'+str(todo_id): {'count': 0}}})
+		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.'+str(todo_id): {'ccount': 0}}})
 		personal_board = boards.find({'name': 'Personal'})[0]
 
-		num_cards = personal_board['lists'][str(todo_id)]['count']
+		num_cards = personal_board['lists'][str(todo_id)]['ccount']
 
 		# Adding a new card should work
 		card_id = ObjectId()
@@ -193,17 +193,17 @@ class TestMethods(unittest.TestCase):
 		boards.update({
 			'_id': personal_board['_id']},
 			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id): {"_id": card_id, "text": "hello", "idx": idx_1}},
-			'$inc': {'lists.'+str(todo_id)+'.count': 1}})
+			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
 
 		personal_board = boards.find({'name': 'Personal'})[0]
-		num_cards = personal_board['lists'][str(todo_id)]['count']
+		num_cards = personal_board['lists'][str(todo_id)]['ccount']
 
 		other_card_id = ObjectId()
 		idx_2 = num_cards
 		boards.update({
 			'_id': personal_board['_id']},
 			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(other_card_id): {"_id": other_card_id, "text": "it's me", "idx": idx_2}},
-			'$inc': {'lists.'+str(todo_id)+'.count': 1}})
+			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
 
 		# Swapping two cards should work
 		boards.update({
@@ -215,12 +215,12 @@ class TestMethods(unittest.TestCase):
 		self.assertTrue(personal_board['lists'][str(todo_id)]['cards'][str(other_card_id)]['idx'] == idx_1)
 
 		# Removing a card should work
-		boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.'+str(todo_id)+'.cards.'+str(card_id): True}, '$inc': {'lists.'+str(todo_id)+'.count': -1}})
+		boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.'+str(todo_id)+'.cards.'+str(card_id): True}, '$inc': {'lists.'+str(todo_id)+'.ccount': -1}})
 
 		updated = boards.find({'name': 'Personal'})[0]['lists'][str(todo_id)]
 		self.assertTrue(str(other_card_id) in updated['cards'])
 		self.assertFalse(str(card_id) in updated['cards'])
-		self.assertTrue(updated['count'] == 1)
+		self.assertTrue(updated['ccount'] == 1)
 
 
 if __name__ == '__main__':
