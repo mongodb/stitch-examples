@@ -108,7 +108,8 @@ let Board = React.createClass({
       let name = this._newlistname.value
       if(name.length > 0){
         let setObj = {}
-        setObj["lists." + name] =  {"name":name, "cards":{}}
+        let oid = ObjectID().toHexString()
+        setObj["lists." + oid] =  {_id: {$oid:oid}, "name":name, "cards":{}}
         this.props.route.db.boards.update(
           {_id:{$oid:this.props.routeParams.id}},
           {$set:setObj}, false, false)
@@ -130,7 +131,7 @@ let Board = React.createClass({
         <div className="lists">
           { listKeys.map((x)=> {
               let v = this.state.board.lists[x];
-              return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} name={x} data={v}/>
+              return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
              })
           }
           { this.state.newList ?
@@ -188,11 +189,12 @@ let List = React.createClass({
   createNewCard : function(summary){
     let db = this.props.db
     let boardId = this.props.boardId
-    let listName = this.props.name
+    let listOid = this.props.data._id.$oid
     let oid = ObjectID().toHexString()
     return db.cards.insert([{_id:{$oid:oid}, summary:summary}]).then(()=>{
       let setObj = {}
-      setObj["lists."+listName+".cards."+oid] = {_id:{$oid:oid}, summary:summary}
+      console.log("updating list id", listOid)
+      setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary}
       db.boards.update(
         {_id:{$oid:boardId}},
         {$set:setObj}, false, false)
@@ -215,7 +217,7 @@ let List = React.createClass({
 	},
   delete:function(){
     let unsetObj = {}
-    unsetObj["lists." + this.props.name] = 1;
+    unsetObj["lists." + this.props.data._id.$oid] = 1;
     this.props.db.boards.update(
       {_id:{$oid:this.props.boardId}},
       {$unset:unsetObj}, false, false)
@@ -230,11 +232,12 @@ let List = React.createClass({
   render:function(){
     return (
       <div className="list">
-        <h4>{this.props.name}<button onClick={this.delete}>X</button></h4>
+        <h4>{this.props.data.name}<button onClick={this.delete}>X</button></h4>
         <div>
           { 
             Object.keys(this.props.data.cards).map((x) => {
               let c = this.props.data.cards[x]
+              console.log(c)
               let cid = c._id
               return <Card data={c} key={c._id.$oid}
                 openEdit={()=>{this.openEditor(cid)}}/>
@@ -245,7 +248,7 @@ let List = React.createClass({
            : null}
         </div>
         <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
-          <CardEditor db={this.props.db} listName={this.props.name} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
+          <CardEditor db={this.props.db} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
         </Modal>
         <button onClick={this.quickAddCard}>Add card...</button>
       </div>
@@ -261,7 +264,7 @@ let CardEditor = React.createClass({
       false, false)
     .then(()=>{
       let setObj = {}
-      setObj[`lists.${this.props.listName}.cards.${this.props.editingId.$oid}.summary`] = newSummary;
+      setObj[`lists.${this.props.listId.$oid}.cards.${this.props.editingId.$oid}.summary`] = newSummary;
       return this.props.db.boards.update({_id:{$oid:this.props.boardId}}, {$set:setObj}, false, false)
     })
     .then(this.props.onUpdate)
@@ -279,9 +282,6 @@ let CardEditor = React.createClass({
     )
   },
   componentDidMount:function(){
-    //if(this.state.data
-    //this._summary.value = this.state.data.summary;
-    //this._desc.value = this.state.data.description;
   },
   render:function(){
     return (
