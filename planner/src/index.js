@@ -130,24 +130,28 @@ let Board = React.createClass({
   render:function(){
     let listKeys = Object.keys(this.state.board.lists || {})
     return (
-      <div className="board">
-        <h3>{this.state.board.name}</h3>
-
-        <div className="lists">
-          { listKeys.map((x)=> {
-              let v = this.state.board.lists[x];
-              return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
-             })
-          }
-          { this.state.newList ?
-            <div className="list">
-              <input type="textbox" ref={(n)=>{this._newlistname=n}} onKeyDown={this.newListKeyDown}></input>
-            </div>
-            :
-            <div className="new-list">
-              <button onClick={this.newList}>+ New List</button>
-            </div>
-          }
+      <div className="container">
+        <nav className="navbar">
+          <Link className="navbar-brand-link" to="/">BaaS Board</Link>
+        </nav>
+        <div className="board">
+          <h3>{this.state.board.name}</h3>
+          <div className="lists">
+            { listKeys.map((x)=> {
+                let v = this.state.board.lists[x];
+                return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
+               })
+            }
+            { this.state.newList ?
+              <div className="list">
+                <input type="textbox" ref={(n)=>{this._newlistname=n}} onKeyDown={this.newListKeyDown}></input>
+              </div>
+              :
+              <div className="new-list">
+                <button onClick={this.newList}>+ New List</button>
+              </div>
+            }
+          </div>
         </div>
       </div>
     )

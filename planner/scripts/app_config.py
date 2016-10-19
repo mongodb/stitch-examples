@@ -37,6 +37,38 @@ services={
 					"allMutable": False
 				}
 			},
+			{
+				"priority": 1,
+				"actions": [
+					"insert", "delete", "update"
+				],
+				"namespace": "planner.cards",
+				"filter": {
+					"author": "$var.$auth.id",
+				},
+				"validate": {
+					"text": {
+						"$ne": ""
+					},
+					"author": "$var.$auth.id"
+				},
+				"fields": {
+					"mutable": [
+						"_id",
+						"author",
+						"text",
+						"comments",
+					],
+					"allMutable": False
+				}
+			},
+			{
+				"priority": 2,
+				"actions": [
+					"find"
+				],
+				"namespace": "planner.cards",
+			},
 		]
 	}
 }

@@ -182,28 +182,32 @@ class TestMethods(unittest.TestCase):
 
 		# TODO(erd): This should have a rule to enforce count is >= 0
 		todo_id = ObjectId()
-		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.'+str(todo_id): {'count': 0}}})
+		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.'+str(todo_id): {'ccount': 0}}})
 		personal_board = boards.find({'name': 'Personal'})[0]
 
-		num_cards = personal_board['lists'][str(todo_id)]['count']
+		num_cards = personal_board['lists'][str(todo_id)]['ccount']
 
 		# Adding a new card should work
+		cards = mdb.database('planner').collection('cards')
+
 		card_id = ObjectId()
 		idx_1 = num_cards
 		boards.update({
 			'_id': personal_board['_id']},
 			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id): {"_id": card_id, "text": "hello", "idx": idx_1}},
-			'$inc': {'lists.'+str(todo_id)+'.count': 1}})
+			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
+		cards.insert({'_id': card_id, 'author': self._cl.user()['_id'], 'text': 'hello'})
 
 		personal_board = boards.find({'name': 'Personal'})[0]
-		num_cards = personal_board['lists'][str(todo_id)]['count']
+		num_cards = personal_board['lists'][str(todo_id)]['ccount']
 
 		other_card_id = ObjectId()
 		idx_2 = num_cards
 		boards.update({
 			'_id': personal_board['_id']},
 			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(other_card_id): {"_id": other_card_id, "text": "it's me", "idx": idx_2}},
-			'$inc': {'lists.'+str(todo_id)+'.count': 1}})
+			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
+		cards.insert({'_id': other_card_id, 'author': self._cl.user()['_id'], 'text': "it's me"})
 
 		# Swapping two cards should work
 		boards.update({
@@ -215,12 +219,56 @@ class TestMethods(unittest.TestCase):
 		self.assertTrue(personal_board['lists'][str(todo_id)]['cards'][str(other_card_id)]['idx'] == idx_1)
 
 		# Removing a card should work
-		boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.'+str(todo_id)+'.cards.'+str(card_id): True}, '$inc': {'lists.'+str(todo_id)+'.count': -1}})
+		boards.update({'_id': personal_board['_id']}, {'$unset': {'lists.'+str(todo_id)+'.cards.'+str(card_id): True}, '$inc': {'lists.'+str(todo_id)+'.ccount': -1}})
+		cards.remove({'_id': card_id})
+
+		self.assertTrue(len(cards.find({'_id': card_id})) == 0)
 
 		updated = boards.find({'name': 'Personal'})[0]['lists'][str(todo_id)]
 		self.assertTrue(str(other_card_id) in updated['cards'])
 		self.assertFalse(str(card_id) in updated['cards'])
-		self.assertTrue(updated['count'] == 1)
+		self.assertTrue(updated['ccount'] == 1)
+
+	def test_comments(self):
+		mdb = mongodb.Service(self._cl.service('db'))
+
+		# With a board, list, and card
+		boards = mdb.database('planner').collection('boards')
+		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		personal_board = boards.find({'name': 'Personal'})[0]
+
+		todo_id = ObjectId()
+		boards.update({'_id': personal_board['_id']}, {'$set': {'lists.'+str(todo_id): {'ccount': 0}}})
+
+		card_id = ObjectId()
+		boards.update({
+			'_id': personal_board['_id']},
+			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id): {"_id": card_id, "text": "get groceries", "idx": 0}},
+			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
+
+		cards = mdb.database('planner').collection('cards')
+		cards.insert({'_id': card_id, 'author': self._cl.user()['_id'], 'text': 'get groceries'})
+
+		# Adding a comment should work
+		comment_id = ObjectId()
+		cards.update({
+			'_id': card_id},
+			{'$addToSet': {
+				'comments': {
+					'_id': comment_id, 'text': 'sgtm', 'author_id': self._cl.user()['_id']}}})
+
+		comment_id_2 = ObjectId()
+		cards.update({
+			'_id': card_id},
+			{'$addToSet': {
+				'comments': {
+					'_id': comment_id_2, 'text': 'yeah?', 'author_id': self._cl.user()['_id']}}})
+
+		# Removing a comment should work
+		cards.update({'_id': card_id}, {'$pull': {'comments': {'_id': comment_id}}})
+		card = cards.find({'_id': card_id})[0]
+		self.assertTrue(len(card['comments']) == 1)
+		self.assertTrue(card['comments'][0]['_id'] == comment_id_2)
 
 
 if __name__ == '__main__':
