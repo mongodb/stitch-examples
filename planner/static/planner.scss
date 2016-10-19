@@ -1,3 +1,31 @@
 body {
-  background-color: blue;
+}
+
+.lists {
+  display: flex;
+  flex-direction: row;
+}
+
+.card-in-list {
+  margin: 5px 5px 5px 5px;
+  border: 1px solid #888;
+  cursor:pointer;
+  min-width: 200px;
+  &.hovered{
+    color:red;
+    .edit {
+      display:inline;
+      float:right;
+    }
+  } 
+  .edit {
+    display:none;
+  }
+}
+
+.list {
+  margin-left:15px;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
 }
