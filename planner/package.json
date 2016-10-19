@@ -37,9 +37,11 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "bson-objectid": "^1.1.4",
     "css-loader": "^0.25.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
+    "react-modal": "^1.5.2",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1"
   }
