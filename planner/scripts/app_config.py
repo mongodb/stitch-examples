@@ -24,13 +24,15 @@ services={
 					"name": {
 						"$ne": ""
 					},
-					"owner_id": "$var.$auth.id"
+					"owner_id": "$var.$auth.id",
+					"lcount": {"$gte": 0}
 				},
 				"fields": {
 					"mutable": [
 						"name",
 						"owner_id",
-						"lists"
+						"lists",
+						"lcount"
 					],
 					"allMutable": False
 				}
