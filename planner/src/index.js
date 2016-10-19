@@ -6,6 +6,11 @@ import AuthControls from "./auth.js"
 import {Home} from "./home.js"
 import Modal from "react-modal"
 import ObjectID from "bson-objectid";
+import { DragSource, DropTarget } from 'react-dnd';
+import { DragDropContext } from 'react-dnd';
+
+import HTML5Backend from 'react-dnd-html5-backend';
+
 
 require("../static/planner.scss")
 
@@ -149,112 +154,202 @@ let Board = React.createClass({
   }
 })
 
-let Card = React.createClass({
-  getInitialState: function(){
-    return {hovered:false}
-  },
-  hoverIn:function(){
-    this.setState({hovered:true})
-  },
-  hoverOut:function(){
-    this.setState({hovered:false})
-  },
-  openEdit:function(){
-    this.props.openEdit(this.props.data._id)
-  },
-  render:function(){
-    return (
-      <div
-        className={"card-in-list" + (this.state.hovered ? " hovered" : "")}
-        onMouseOver={this.hoverIn} 
-        onMouseOut={this.hoverOut}
-        onClick={this.openEdit}>
-        <span className="summary">{this.props.data.summary}</span>
-        <span className="edit">edit</span>
-      </div>
-    )
+const ItemTypes = { CARD: "card", }
+
+const cardSource = {
+  beginDrag(props) {
+    return { serverIndex: props.data.idx, clientIndex: props.index };
   }
-})
+};
 
+const cardTarget = {
+  hover(props, monitor, component) {
+		console.log("hover!", monitor.getItem(), props)
+    const dragIndex = monitor.getItem().index;
+    const hoverIndex = props.data.idx;
 
-let List = React.createClass({
-  getInitialState:function(){
-    return {showNewCardBox:false}
-  },
-  componentDidUpdate: function(){
-    if(this._newcard){
-      this._newcard.focus()
+    // Don't replace items with themselves
+    if (dragIndex === hoverIndex) {
+      return;
     }
-  },
-  createNewCard : function(summary){
-    let db = this.props.db
-    let boardId = this.props.boardId
-    let listOid = this.props.data._id.$oid
-    let oid = ObjectID().toHexString()
-    return db.cards.insert([{_id:{$oid:oid}, summary:summary}]).then(()=>{
-      let setObj = {}
-      console.log("updating list id", listOid)
-      setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary}
-      db.boards.update(
-        {_id:{$oid:boardId}},
-        {$set:setObj}, false, false)
-    }).then(
-      this.setState({showNewCardBox:false})
-    )
-  },
-  newCardKeyDown: function(e){
-    if(e.keyCode == 13){
-      let summary = this._newcard.value;
-      if(summary.length > 0){
-        this.createNewCard(summary).then(this.props.onUpdate)
-      }
-    } else if(e.keyCode == 27) {
-      this.setState({newList:false})
+
+    // Determine rectangle on screen
+    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+
+    // Get vertical middle
+    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+    // Determine mouse position
+    const clientOffset = monitor.getClientOffset();
+
+    // Get pixels to the top
+    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+    // Only perform the move when the mouse has crossed half of the items height
+    // When dragging downwards, only move when the cursor is below 50%
+    // When dragging upwards, only move when the cursor is above 50%
+
+    // Dragging downwards
+    if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+      return;
     }
+
+    // Dragging upwards
+    if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      return;
+    }
+
+    // Time to actually perform the action
+    props.moveCard(dragIndex, hoverIndex);
+
+    // Note: we're mutating the monitor item here!
+    // Generally it's better to avoid mutations,
+    // but it's good here for the sake of performance
+    // to avoid expensive index searches.
+    monitor.getItem().index = hoverIndex;
+
+		console.log("hover!", props, monitor, component)
   },
-	quickAddCard: function(){
-		this.setState({showNewCardBox:true})
+	canDrop(){
+		return true
 	},
-  delete:function(){
-    let unsetObj = {}
-    unsetObj["lists." + this.props.data._id.$oid] = 1;
-    this.props.db.boards.update(
-      {_id:{$oid:this.props.boardId}},
-      {$unset:unsetObj}, false, false)
-    .then(this.props.onUpdate)
-  },
-  openEditor:function(cid){
-    this.setState({modalOpen:true, editingId: cid})
-  },
-  onCloseReq:function(){
-    this.setState({modalOpen:false})
-  },
-  render:function(){
-    return (
-      <div className="list">
-        <h4>{this.props.data.name}<button onClick={this.delete}>X</button></h4>
-        <div>
-          { 
-            Object.keys(this.props.data.cards).map((x) => {
-              let c = this.props.data.cards[x]
-              console.log(c)
-              let cid = c._id
-              return <Card data={c} key={c._id.$oid}
-                openEdit={()=>{this.openEditor(cid)}}/>
-            })
-          }
-          { this.state.showNewCardBox ? 
-            <input type="textbox" placeholder="summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
-           : null}
+	drop(props, monitor, component){
+		console.log("drop!", props, monitor, component)
+	}
+};
+
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  };
+}
+
+
+function collect2(connect, monitor) {
+	console.log("calling colelct2")
+  return {
+  	connectDropTarget: connect.dropTarget(),
+  };
+}
+
+//let Card = DropTarget(ItemTypes.CARD, cardTarget, collect2)(DragSource(ItemTypes.CARD,  cardSource, collect)(
+let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.CARD,  cardTarget, collect2)(
+	React.createClass({
+		getInitialState: function(){
+			return {hovered:false}
+		},
+/*
+		hoverIn:function(){
+			this.setState({hovered:true})
+		},
+		hoverOut:function(){
+			this.setState({hovered:false})
+		},
+*/
+		openEdit:function(){
+			this.props.openEdit(this.props.data._id)
+		},
+		render:function(){
+			const { text, isDragging, connectDragSource, connectDropTarget} = this.props;
+			console.log("called card render")
+			return connectDropTarget(connectDragSource(
+				<div
+					className={"card-in-list" + (this.state.hovered ? " hovered" : "")}
+					onMouseOver={this.hoverIn} 
+					onMouseOut={this.hoverOut}
+					onClick={this.openEdit}>
+					<span className="summary">({this.props.data.idx}): {this.props.data.summary}</span>
+					<span className="edit">edit</span>
+				</div>
+			))
+		}
+	})
+)
+)
+
+let List = DragDropContext(HTML5Backend)(
+  React.createClass({
+    getInitialState:function(){
+      return {showNewCardBox:false}
+    },
+    componentDidUpdate: function(){
+      if(this._newcard){
+        this._newcard.focus()
+      }
+    },
+    createNewCard : function(summary){
+      let db = this.props.db
+      let boardId = this.props.boardId
+      let listOid = this.props.data._id.$oid
+      let oid = ObjectID().toHexString()
+      return db.cards.insert([{_id:{$oid:oid}, summary:summary}]).then(()=>{
+        let setObj = {}
+        console.log("updating list id", listOid)
+        setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary}
+        db.boards.update(
+          {_id:{$oid:boardId}},
+          {$set:setObj}, false, false)
+      }).then(
+        this.setState({showNewCardBox:false})
+      )
+    },
+    newCardKeyDown: function(e){
+      if(e.keyCode == 13){
+        let summary = this._newcard.value;
+        if(summary.length > 0){
+          this.createNewCard(summary).then(this.props.onUpdate)
+        }
+      } else if(e.keyCode == 27) {
+        this.setState({newList:false})
+      }
+    },
+    quickAddCard: function(){
+      this.setState({showNewCardBox:true})
+    },
+    delete:function(){
+      let unsetObj = {}
+      unsetObj["lists." + this.props.data._id.$oid] = 1;
+      this.props.db.boards.update(
+        {_id:{$oid:this.props.boardId}},
+        {$unset:unsetObj}, false, false)
+      .then(this.props.onUpdate)
+    },
+    openEditor:function(cid){
+      this.setState({modalOpen:true, editingId: cid})
+    },
+    onCloseReq:function(){
+      this.setState({modalOpen:false})
+    },
+    render:function(){
+			let cardsListSorted = Object.keys(this.props.data.cards).map(
+				(k)=>this.props.data.cards[k]
+			).sort((a,b)=>a.idx-b.idx)
+      return (
+        <div className="list">
+          <h4>{this.props.data.name}<button onClick={this.delete}>X</button></h4>
+          <div>
+            { 
+              cardsListSorted.map((c) => {
+                let cid = c._id
+                return <Card data={c} key={c._id.$oid}
+                  openEdit={()=>{this.openEditor(cid)}}/>
+              })
+            }
+            { this.state.showNewCardBox ? 
+              <input type="textbox" placeholder="summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
+             : null}
+          </div>
+          <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
+            <CardEditor db={this.props.db} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
+          </Modal>
+          <button onClick={this.quickAddCard}>Add card...</button>
         </div>
-        <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
-          <CardEditor db={this.props.db} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
-        </Modal>
-        <button onClick={this.quickAddCard}>Add card...</button>
-      </div>
-    )
-  }
-})
+      )
+    }
+  })
+)
 
 let CardEditor = React.createClass({
   save: function(){
