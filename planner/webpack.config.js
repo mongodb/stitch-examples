@@ -26,7 +26,7 @@ module.exports = {
   devServer: {
     contentBase: './dist',
     historyApiFallback: {
-      index: 'index.html'
+      index: '/index.html'
     }
   }
 };
