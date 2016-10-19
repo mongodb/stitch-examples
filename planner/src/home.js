@@ -26,9 +26,10 @@ let BoardAdder = React.createClass({
     this.setState({adding:false})
   },
   save: function(){
-    if(this._name.value.length == 0 )
+    if(this._name.value.length == 0 ){
       return
-    boards.insert([{"name":this._name.value}]).then(
+    }
+    this.props.db.boards.insert([{"name":this._name.value}]).then(
       ()=>{
         this._name.value = ""
         this.setState({adding:false})
@@ -79,7 +80,7 @@ let BoardListing = React.createClass({
             )
           }
         </ul>
-        <BoardAdder onUpdate={this.loadBoards}/>
+        <BoardAdder db={this.props.db} onUpdate={this.loadBoards}/>
       </div>
     )
   }

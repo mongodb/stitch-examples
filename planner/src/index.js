@@ -89,7 +89,7 @@ let Board = React.createClass({
   },
   load: function(){
     this.props.route.db.boards.find({_id:{$oid:this.props.routeParams.id}}, null).then(
-      (data)=>{this.setState({board:data.result[0]})}
+      (data)=>{this.setState({board:data.result[0], newList:false})}
     )
   },
   componentWillMount: function(){
@@ -122,7 +122,7 @@ let Board = React.createClass({
     }
   },
   render:function(){
-    let listKeys = Object.keys(this.state.board.lists)
+    let listKeys = Object.keys(this.state.board.lists || {})
     return (
       <div className="board">
         <h3>{this.state.board.name}</h3>
