@@ -8,19 +8,13 @@ import Modal from "react-modal"
 import ObjectID from "bson-objectid";
 import { DragSource, DropTarget } from 'react-dnd';
 import { DragDropContext } from 'react-dnd';
-
-var FontAwesome = require('react-fontawesome');
-
-var update = require('react-addons-update');
-
-
 import HTML5Backend from 'react-dnd-html5-backend';
-
-
-require("../static/planner.scss")
-
 import {Converter} from 'showdown';
 
+var md5 = require("blueimp-md5");
+var FontAwesome = require('react-fontawesome');
+var update = require('react-addons-update');
+require("../static/planner.scss")
 
 let modalStyle = {
   overlay : {
@@ -74,7 +68,6 @@ let Board = React.createClass({
     return {board:{name:"", lists:{}}}
   },
   load: function(){
-    console.log("calling board load!")
     this.props.route.db.boards.find({_id:{$oid:this.props.routeParams.id}}, null).then(
       (data)=>{this.setState({board:data.result[0], newList:false})}
     )
@@ -447,14 +440,17 @@ let CardComments = React.createClass({
 
 let PostCommentForm = React.createClass({
   postComment:function(){
+    let emailHash = md5(this.props.db._client.auth().user.data.email)
     this.props.db.cards.update(
       {_id:this.props.cardId},
-      {$push:{"comments":{"author":"me", "comment":this._comment.value }}}
+      {$push:{"comments":{"gravatar":emailHash, "author":"me", "comment":this._comment.value }}}
     ).then(this.props.onUpdate)
   },
   render:function(){
+    let emailHash = md5(this.props.db._client.auth().user.data.email)
     return (
       <div>
+        <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + emailHash}/>
         <textarea placeholder="description" ref={(n)=>{this._comment=n}}/>
         <button onClick={this.postComment}>Save</button>
       </div>
