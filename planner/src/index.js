@@ -231,6 +231,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 					onClick={this.openEdit}>
 					<span className="summary">{this.props.data.summary}</span>
           <div className="task-list-card-edit-icon"><FontAwesome name='pencil' /></div>
+          {(this.props.data.numComments || 0) > 0 ? <div><FontAwesome name="comment-o"/>{this.props.data.numComments}</div> : null}
 				</div>
 			))
 		}
@@ -370,7 +371,7 @@ let List = DragDropContext(HTML5Backend)(
              : null}
           </div>
           <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
-            <CardEditor db={this.props.db} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
+            <CardEditor db={this.props.db} boardId={this.props.boardId} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
           </Modal>
           <button className="task-list-add-card" onClick={this.quickAddCard}>Add card&hellip;</button>
         </div>
@@ -417,7 +418,7 @@ let CardEditor = React.createClass({
           <textarea placeholder="description" ref={(n)=>{this._desc=n}}/>
         </div>
         <button onClick={this.save}>Save</button>
-        <CardComments db={this.props.db} cardId={this.props.editingId} comments={this.state.data.comments || []} onUpdate={this.loadCard}/>
+        <CardComments db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} comments={this.state.data.comments || []} onUpdate={this.loadCard}/>
       </div>
     )
   }
@@ -432,7 +433,7 @@ let CardComments = React.createClass({
               return <Comment key={i} comment={k}/>
           })
         }
-        <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} cardId={this.props.cardId}/>
+        <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} listId={this.props.listId} cardId={this.props.cardId} numComments={this.props.comments.length}/>
       </div>
     );
   },
@@ -445,7 +446,19 @@ let PostCommentForm = React.createClass({
     this.props.db.cards.update(
       {_id:this.props.cardId},
       {$push:{"comments":{"gravatar":emailHash, "author":name, "comment":this._comment.value }}}
-    ).then(this.props.onUpdate)
+    ).then(()=>{
+      let newNumComments = this.props.numComments+1
+      // TODO this is only a guess at the correct # of comments.
+      // Consistency issue if another client adds a comment concurrently.
+      let modifier = {}
+      modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
+      console.log("modifier", modifier)
+      return this.props.db.boards.update(
+        {_id:this.props.boardId},
+        {$set:modifier},
+        false,false)
+    })
+    .then(this.props.onUpdate)
   },
   render:function(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
