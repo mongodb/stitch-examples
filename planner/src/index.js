@@ -441,9 +441,10 @@ let CardComments = React.createClass({
 let PostCommentForm = React.createClass({
   postComment:function(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
+    let name = this.props.db._client.auth().user.data.name;
     this.props.db.cards.update(
       {_id:this.props.cardId},
-      {$push:{"comments":{"gravatar":emailHash, "author":"me", "comment":this._comment.value }}}
+      {$push:{"comments":{"gravatar":emailHash, "author":name, "comment":this._comment.value }}}
     ).then(this.props.onUpdate)
   },
   render:function(){
@@ -461,6 +462,7 @@ let PostCommentForm = React.createClass({
 let Comment = function(props){
   return (
     <div className="comment">
+      <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + props.comment.gravatar}/>
       <span className="author">{props.comment.author}</span>
       <div className="comment-text">{props.comment.comment}</div>
     </div>
