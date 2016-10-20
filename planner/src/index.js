@@ -402,7 +402,7 @@ let CardEditor = React.createClass({
   getInitialState:function(){
     return {data:{summary:"", description:""}}
   },
-  componentWillMount:function(){
+  loadCard: function(){
     this.props.db.cards.find({_id:this.props.editingId}).then(
       (data)=>{
         this.setState({data:data.result[0]});
@@ -410,6 +410,9 @@ let CardEditor = React.createClass({
         this._desc.value = data.result[0].description || "";
       }
     )
+  },
+  componentWillMount:function(){
+    this.loadCard();
   },
   componentDidMount:function(){
   },
@@ -421,10 +424,52 @@ let CardEditor = React.createClass({
           <textarea placeholder="description" ref={(n)=>{this._desc=n}}/>
         </div>
         <button onClick={this.save}>Save</button>
+        <CardComments db={this.props.db} cardId={this.props.editingId} comments={this.state.data.comments || []} onUpdate={this.loadCard}/>
       </div>
     )
   }
 })
+
+let CardComments = React.createClass({
+  render:function(){
+    return (
+      <div className="comments">
+        {
+          this.props.comments.map((k, i)=>{
+              return <Comment key={i} comment={k}/>
+          })
+        }
+        <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} cardId={this.props.cardId}/>
+      </div>
+    );
+  },
+})
+
+let PostCommentForm = React.createClass({
+  postComment:function(){
+    this.props.db.cards.update(
+      {_id:this.props.cardId},
+      {$push:{"comments":{"author":"me", "comment":this._comment.value }}}
+    ).then(this.props.onUpdate)
+  },
+  render:function(){
+    return (
+      <div>
+        <textarea placeholder="description" ref={(n)=>{this._comment=n}}/>
+        <button onClick={this.postComment}>Save</button>
+      </div>
+    )
+  }
+})
+
+let Comment = function(props){
+  return (
+    <div className="comment">
+      <span className="author">{props.comment.author}</span>
+      <div className="comment-text">{props.comment.comment}</div>
+    </div>
+  )
+}
 
 render((
   <div>
