@@ -425,12 +425,18 @@ let CardEditor = React.createClass({
 })
 
 let CardComments = React.createClass({
+  deleteComment:function(id){
+    this.props.db.cards.update(
+      {_id:this.props.cardId},
+      {$pull:{"comments":{_id:id}}}
+    ).then(this.props.onUpdate)
+  },
   render:function(){
     return (
       <div className="comments">
         {
           this.props.comments.map((k, i)=>{
-              return <Comment key={i} comment={k}/>
+              return <Comment key={i} comment={k} deleteComment={this.deleteComment}/>
           })
         }
         <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} listId={this.props.listId} cardId={this.props.cardId} numComments={this.props.comments.length}/>
@@ -443,9 +449,10 @@ let PostCommentForm = React.createClass({
   postComment:function(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
     let name = this.props.db._client.auth().user.data.name;
+    let newCommentId = ObjectID().toHexString()
     this.props.db.cards.update(
       {_id:this.props.cardId},
-      {$push:{"comments":{"gravatar":emailHash, "author":name, "comment":this._comment.value }}}
+      {$push:{"comments":{_id: {$oid:newCommentId}, "gravatar":emailHash, "author":name, "comment":this._comment.value }}}
     ).then(()=>{
       let newNumComments = this.props.numComments+1
       // TODO this is only a guess at the correct # of comments.
@@ -472,15 +479,18 @@ let PostCommentForm = React.createClass({
   }
 })
 
-let Comment = function(props){
-  return (
-    <div className="comment">
-      <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + props.comment.gravatar}/>
-      <span className="author">{props.comment.author}</span>
-      <div className="comment-text">{props.comment.comment}</div>
-    </div>
-  )
-}
+let Comment = React.createClass({
+  render:function(){
+    return (
+      <div className="comment">
+        <button onClick={()=>{this.props.deleteComment(this.props.comment._id)}}>&times;</button>
+        <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + this.props.comment.gravatar}/>
+        <span className="author">{this.props.comment.author}</span>
+        <div className="comment-text">{this.props.comment.comment}</div>
+      </div>
+    )
+  }
+})
 
 render((
   <div>
