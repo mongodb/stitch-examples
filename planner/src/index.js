@@ -367,7 +367,7 @@ let List = DragDropContext(HTML5Backend)(
               })
             }
             { this.state.showNewCardBox ? 
-              <input type="textbox" placeholder="summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
+              <input className="text-input" type="text" placeholder="Summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
              : null}
           </div>
           <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
