@@ -1,9 +1,16 @@
 from pybaas.svcs import mongodb
 
 auth_providers={
-	'local/userpass': {},
+	'local/userpass': {
+		"metadataFields": ["name", "email"],
+	},
 	'oauth2/facebook': {
-		"metadataFields": ["email"],
+		"metadataFields": ["email", "name"],
+		"clientId": "APP-ID",
+		"clientSecret": "APP-SECRET"
+	},
+	'oauth2/google': {
+		"metadataFields": ["email", "name"],
 		"clientId": "APP-ID",
 		"clientSecret": "APP-SECRET"
 	},
