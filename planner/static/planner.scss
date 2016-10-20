@@ -250,3 +250,10 @@ body > br {
   width:25px;
   height:25px;
 }
+
+.comment {
+  border:1px solid #ccc;
+  .author{
+    font-size:12px;
+  }
+}
