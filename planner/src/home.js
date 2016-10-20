@@ -4,16 +4,79 @@ import AuthControls from './auth.js'
 
 var Home = React.createClass({
   getInitialState: function(){
-    return {authed:this.props.route.client.auth() != null}
+    return {authed:this.props.route.client.auth() != null, username:null}
+  },
+  componentWillMount: function() {
+    let authInfo = this.props.route.client.auth()
+    if(authInfo==null){
+      return
+    }
+    this.props.route.db.users.find({authId:{$oid:authInfo.user._id}}, null)
+    .then(
+      (data)=>{
+        if(data.result.length == 0){
+          return;
+        }
+        this.setState({username:data.result[0]._id})
+      }
+    )
   },
   render:function(){
+    if(!this.state.authed){
+      return (<AuthControls client={this.props.route.client}/>)
+    }
+    if(!this.state.username){
+      return (
+        <UsernameSetupForm
+          auth={this.props.route.client.auth()} 
+          db={this.props.route.db}
+        />
+      )
+    }
     return (
       <div>
+        <div>username: {this.state.username}</div>
         {this.state.authed ? (<BoardListing db={this.props.route.db}/>) : <AuthControls client={this.props.route.client}/> }
       </div>
     )
   }
 })
+
+let UsernameSetupForm = React.createClass({
+  getInitialState:function(){
+    return {usernameTaken:false}
+  },
+  save:function(){
+    this.props.db.users.insert(
+      [{_id:this._username.value, authId:{$oid:this.props.auth.user._id}, email:this.props.auth.user.data.email}]
+    ).then(()=>{console.log("inserted successfully!")})
+    .catch(
+      ()=>{
+        this.setState({usernameTaken:true})
+      }
+    )
+  },
+  onKeyDown:function(e){
+    this.setState({usernameTaken:false})
+    if(e.keyCode == 13 && this._username.value.length>0){
+      this.save()
+    }
+  },
+  render(){
+    return (
+      <div>
+        <h5>Welcome, {this.props.auth.user.data.name}! Pick a username to get started</h5>
+        <input type="textbox" ref={(n)=>{this._username=n}} onKeyDown={this.onKeyDown}/>
+        {
+          this.state.usernameTaken ? 
+            (<div className="taken-name-error">Username is taken</div>)
+            : null
+        }
+      </div>
+    )
+  }
+})
+
 
 let BoardAdder = React.createClass({
   getInitialState:function(){

@@ -32,20 +32,49 @@ let baasClient = new BaasClient("http://localhost:8080/v1/app/planner")
 let rootDb = new MongoClient(baasClient, "mdb1").getDb("planner")
 let db = {
   _client: baasClient,
+  users: rootDb.getCollection("users"),
   boards: rootDb.getCollection("boards"),
   cards : rootDb.getCollection("cards"),
   members : rootDb.getCollection("members"),
 }
 
-let Boards = function(props){
-  return (
-    <div>
+let Boards = React.createClass({
+  getInitialState(){
+    return {authInfo: this.props.route.db._client.auth(), username:null}
+  },
+  componentWillMount(){
+    if(!this.state.authInfo){
+      browserHistory.push('/')
+      return
+    }
+    this.props.route.db.users.find({authId:{$oid:this.state.authInfo.user._id}}, null)
+    .then(
+      (data)=>{
+        if(data.result.length == 0){
+          return;
+        }
+        this.setState({username:data.result[0]._id})
+      }
+    )
+  },
+  render(){
+    return (
       <div>
-        {props.children}
+        <div>
+          {
+            (this.state.authInfo!=null) ?
+              React.Children.map(this.props.children,
+               (child) => React.cloneElement(child, {
+                  username: this.state.username
+                })
+              )
+              : null
+          }
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
+})
 
 let Board = React.createClass({
   getInitialState:function(){
