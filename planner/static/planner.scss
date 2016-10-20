@@ -93,15 +93,15 @@ $gray8: #f5f6f7;
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  box-sizing: border-box;
   font-family: "Akzidenz", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: $green2;
   color: $gray1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body > br {
@@ -148,6 +148,8 @@ body > br {
   &-brand-link {
     color: $pw;
     text-decoration: none;
+    display: inline-block;
+    padding: 10px;
   }
 }
 
@@ -167,7 +169,7 @@ body > br {
   background: $green3;
   border-radius: 8px;
   padding: 12px;
-  width: 200px;
+  width: 250px;
   margin-right: 10px;
 
   &-header {
@@ -231,4 +233,15 @@ body > br {
       background: rgba(0,0,0,0.05);
     }
   }
+}
+
+.create-new-list {
+  background: $green1;
+  border: none;
+  color: $pw;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px;
 }

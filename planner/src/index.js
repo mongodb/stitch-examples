@@ -129,8 +129,8 @@ let Board = React.createClass({
                 <input type="textbox" ref={(n)=>{this._newlistname=n}} onKeyDown={this.newListKeyDown}></input>
               </div>
               :
-              <div className="create-new-list">
-                <button onClick={this.newList}>+ New List</button>
+              <div>
+                <button className="create-new-list" onClick={this.newList}>Add a list&hellip;</button>
               </div>
             }
           </div>
@@ -379,7 +379,7 @@ let List = DragDropContext(HTML5Backend)(
           <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
             <CardEditor db={this.props.db} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
           </Modal>
-          <button className="task-list-add-card" onClick={this.quickAddCard}>Add card...</button>
+          <button className="task-list-add-card" onClick={this.quickAddCard}>Add card&hellip;</button>
         </div>
       )
     }
