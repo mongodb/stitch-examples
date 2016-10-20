@@ -82,6 +82,29 @@ services={
 				],
 				"namespace": "planner.cards",
 			},
+			{
+				"priority": 3,
+				"actions": [
+					"insert", "update", "remove"
+				],
+				"namespace": "planner.users",
+				"fields": {
+					"mutable": ["authId", "email"], # TODO: Really should only be mutable the first time
+				},
+				"filter": {
+					"authId": "$var.$auth.id",
+				},
+				"validate": {
+					"authId": "$var.$auth.id",
+				},
+			},
+			{
+				"priority": 4,
+				"actions": [
+					"find", "aggregate"
+				],
+				"namespace": "planner.users",
+			},
 		]
 	}
 }
