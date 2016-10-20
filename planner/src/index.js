@@ -24,7 +24,8 @@ let modalStyle = {
     right             : 0,
     bottom            : 0,
     backgroundColor   : 'rgba(0, 0, 0, 0.75)'
-  }
+  },
+  content:{},
 }
 
 let baasClient = new BaasClient("http://localhost:8080/v1/app/planner")
@@ -51,7 +52,8 @@ let Board = React.createClass({
     return {board:{name:"", lists:{}}}
   },
   load: function(){
-    this.props.route.db.boards.find({_id:{$oid:this.props.routeParams.id}}, null).then(
+    this.props.route.db.boards.find(
+      {_id:{$oid:this.props.routeParams.id}}, null).then(
       (data)=>{this.setState({board:data.result[0], newList:false})}
     )
   },
@@ -214,7 +216,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 					onClick={this.openEdit}>
 					<span className="summary">{this.props.data.summary}</span>
           <div className="task-list-card-edit-icon"><FontAwesome name='pencil' /></div>
-          {(this.props.data.numComments || 0) > 0 ? <div><FontAwesome name="comment-o"/>{this.props.data.numComments}</div> : null}
+          {(this.props.data.numComments || 0) > 0 ? <div><FontAwesome name="comment-o" size="lg"/>{this.props.data.numComments}</div> : null}
 				</div>
 			))
 		}
@@ -303,7 +305,7 @@ let List = DragDropContext(HTML5Backend)(
       if(e.keyCode == 13){
         let summary = this._newcard.value;
         if(summary.length > 0){
-          this.createNewCard(summary).then(()=>{console.log("calling update");this.props.onUpdate()})
+          this.createNewCard(summary).then(()=>{this.props.onUpdate()})
         }
       } else if(e.keyCode == 27) {
         this.setState({newList:false})
@@ -329,15 +331,6 @@ let List = DragDropContext(HTML5Backend)(
     render:function(){
 
       let cardsListSorted = this.state.cards
-    /*
-      let cardsListSorted = this.state.cardsList.slice(0)
-      .sort((a,b)=>a.idx-b.idx)
-      .map((x, i) => {
-        let out = x;
-        out.clientIndex = i;
-        return out;
-      })
-      */
       return (
         <div className="task-list">
           <h4 className="task-list-header">{this.props.data.name}<button className="task-list-header-delete-button" onClick={this.delete}>&times;</button></h4>
@@ -345,15 +338,23 @@ let List = DragDropContext(HTML5Backend)(
             { 
               cardsListSorted.map((c, i) => {
                 let cid = c._id
-                return <Card data={c} key={c._id.$oid} index={i} moveCard={this.moveCard} moveCardSave={this.moveCardSave}
-                  openEdit={()=>{this.openEditor(cid)}}/>
+                return (
+                  <Card
+                    data={c} 
+                    key={c._id.$oid} 
+                    index={i} 
+                    moveCard={this.moveCard} 
+                    moveCardSave={this.moveCardSave}
+                    openEdit={()=>{this.openEditor(cid)}}
+                  />
+                )
               })
             }
             { this.state.showNewCardBox ? 
               <input className="text-input" type="text" placeholder="Summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
              : null}
           </div>
-          <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
+          <Modal isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
             <CardEditor db={this.props.db} boardId={this.props.boardId} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
           </Modal>
           <button className="task-list-add-card" onClick={this.quickAddCard}>Add card&hellip;</button>
@@ -380,13 +381,14 @@ let CardEditor = React.createClass({
     return {data:{summary:"", description:""}}
   },
   loadCard: function(){
-    this.props.db.cards.find({_id:this.props.editingId}).then(
+    return this.props.db.cards.find({_id:this.props.editingId}).then(
       (data)=>{
         this.setState({data:data.result[0]});
         this._summary.value = data.result[0].summary || "";
         this._desc.value = data.result[0].description || "";
       }
     )
+    .then(this.props.update)
   },
   componentWillMount:function(){
     this.loadCard();
@@ -401,7 +403,7 @@ let CardEditor = React.createClass({
           <textarea placeholder="description" ref={(n)=>{this._desc=n}}/>
         </div>
         <button onClick={this.save}>Save</button>
-        <CardComments db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} comments={this.state.data.comments || []} onUpdate={this.loadCard}/>
+        <CardComments db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} boardId={this.props.boardId} comments={this.state.data.comments || []} onUpdate={this.loadCard} boardUpdate={this.props.onUpdate}/>
       </div>
     )
   }
@@ -409,10 +411,22 @@ let CardEditor = React.createClass({
 
 let CardComments = React.createClass({
   deleteComment:function(id){
+
     this.props.db.cards.update(
       {_id:this.props.cardId},
       {$pull:{"comments":{_id:id}}}
-    ).then(this.props.onUpdate)
+    )
+    .then( ()=>{
+      let newNumComments = this.props.comments.length-1
+      let modifier = {}
+      modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
+      return this.props.db.boards.update(
+        {_id:{$oid:this.props.boardId}},
+        {$set:modifier},
+        false,false)
+      })
+    .then(this.props.onUpdate)
+    .then(this.props.boardUpdate)
   },
   render:function(){
     return (
@@ -422,7 +436,7 @@ let CardComments = React.createClass({
               return <Comment key={i} comment={k} deleteComment={this.deleteComment}/>
           })
         }
-        <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} listId={this.props.listId} cardId={this.props.cardId} numComments={this.props.comments.length}/>
+        <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} listId={this.props.listId} cardId={this.props.cardId} numComments={this.props.comments.length} boardUpdate={this.props.boardUpdate}/>
       </div>
     );
   },
@@ -435,20 +449,30 @@ let PostCommentForm = React.createClass({
     let newCommentId = ObjectID().toHexString()
     this.props.db.cards.update(
       {_id:this.props.cardId},
-      {$push:{"comments":{_id: {$oid:newCommentId}, "gravatar":emailHash, "author":name, "comment":this._comment.value }}}
+      {$push:
+        {"comments":
+          {
+            _id: {$oid:newCommentId},
+            gravatar: emailHash,
+            author: name,
+            comment: this._comment.value
+          }
+        }
+      }
     ).then(()=>{
+      this._comment.value = "";
       let newNumComments = this.props.numComments+1
       // TODO this is only a guess at the correct # of comments.
       // Consistency issue if another client adds a comment concurrently.
       let modifier = {}
       modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
-      console.log("modifier", modifier)
       return this.props.db.boards.update(
         {_id:this.props.boardId},
         {$set:modifier},
         false,false)
     })
     .then(this.props.onUpdate)
+    .then(this.props.boardUpdate)
   },
   render:function(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
@@ -456,7 +480,7 @@ let PostCommentForm = React.createClass({
       <div>
         <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + emailHash}/>
         <textarea placeholder="description" ref={(n)=>{this._comment=n}}/>
-        <button onClick={this.postComment}>Save</button>
+        <button onClick={this.postComment}>Publish</button>
       </div>
     )
   }
