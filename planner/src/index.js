@@ -143,27 +143,24 @@ let Board = React.createClass({
 const ItemTypes = { CARD: "card", }
 
 const cardSource = {
-  beginDrag(props) {
-    return { serverIndex: props.data.idx, clientIndex: props.data.clientIndex };
+  beginDrag(props, monitor, component) {
+    return {
+      serverIndex: props.data.idx,
+      summary:props.data.summary,
+      index: props.index
+    };
   }
 }
 
 const cardTarget = {
   drop(props, monitor, component){
-    const dragIndex = monitor.getItem().clientIndex;
-    const hoverIndex = props.data.clientIndex
-
-    // Don't replace items with themselves
-    if (dragIndex === hoverIndex) {
-      return;
-    }
-    console.log("drop happned", arguments)
-    // Time to actually perform the action
+    const dragIndex = monitor.getItem().index;
+    const hoverIndex = props.index;
     props.moveCardSave(dragIndex, hoverIndex);
   },
   hover(props, monitor, component) {
-    const dragIndex = monitor.getItem().clientIndex;
-    const hoverIndex = props.data.clientIndex
+    const dragIndex = monitor.getItem().index;
+    const hoverIndex = props.index;
 
     // Don't replace items with themselves
     if (dragIndex === hoverIndex) {
@@ -203,7 +200,7 @@ const cardTarget = {
     // Generally it's better to avoid mutations,
     // but it's good here for the sake of performance
     // to avoid expensive index searches.
-    monitor.getItem().clientIndex = hoverIndex;
+    monitor.getItem().index = hoverIndex;
   },
 };
 
@@ -234,6 +231,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 			const { text, isDragging, connectDragSource, connectDropTarget} = this.props;
 			return connectDropTarget(connectDragSource(
 				<div
+          style={ {"opacity": (isDragging ? 0 : 1 )} }
 					className={"task-list-card" + (this.state.hovered ? " hovered" : "")}
 					onMouseOver={this.hoverIn} 
 					onMouseOut={this.hoverOut}
@@ -250,7 +248,7 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 let List = DragDropContext(HTML5Backend)(
   React.createClass({
     getInitialState:function(){
-      return {showNewCardBox:false}
+      return {cards:[], showNewCardBox:false}
     },
     componentDidUpdate: function(){
       if(this._newcard){
@@ -259,9 +257,11 @@ let List = DragDropContext(HTML5Backend)(
     },
 
     moveCardSave: function(dragIndex, hoverIndex) {
-      console.log("move card save!", dragIndex, hoverIndex);
-      let fromCard = this.state.cards[dragIndex]
-      let toCard = this.state.cards[hoverIndex]
+      let from= this.state.dragFromCard
+      let to= this.state.dragToCard
+      if(from.idx == to.idx){
+        return
+      }
       const db = this.props.db
       const boardId = this.props.boardId
       const listOid = this.props.data._id.$oid
@@ -269,15 +269,20 @@ let List = DragDropContext(HTML5Backend)(
 
       const query = {"_id": {$oid: boardId}}
       let modifier = {}
-      modifier[`lists.${listOid}.cards.${fromCard._id.$oid}.idx`] = toCard.idx
-      modifier[`lists.${listOid}.cards.${toCard._id.$oid}.idx`] = fromCard.idx
-      console.log("modifier is", modifier)
+      modifier[`lists.${listOid}.cards.${from._id.$oid}.idx`] = to.idx
+      modifier[`lists.${listOid}.cards.${to._id.$oid}.idx`] = from.idx
       db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
     },
     moveCard: function(dragIndex, hoverIndex) {
       let fromCard = this.state.cards[dragIndex]
       let toCard = this.state.cards[hoverIndex]
       this.setState(update(this.state, {
+        dragFromCard:{
+          $set:fromCard,
+        },
+        dragToCard:{
+          $set:toCard,
+        },
         cards: {
           $splice: [
             [dragIndex, 1],
@@ -285,40 +290,20 @@ let List = DragDropContext(HTML5Backend)(
           ]
         }
       }));
-			//{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id)+'.idx': idx_2, 'lists.'+str(todo_id)+'.cards.'+str(other_card_id)+'.idx': idx_1}})
-
-
-
-      /*
-      db.boards.update({'_id': personal_board['_id']}, 
-			{'$set': {'lists.'+str(other_id): {'_id': other_id, 'name': 'other', 'idx': num_lists}},
-			'$inc': {'lcount': 1}})
-      */
-      //console.log("moving card!", arguments)
-      //console.log("from", this.state.cards[dragIndex], "to", this.state.cards[hoverIndex])
-      /*
-      return
-      const { cards } = this.state;
-      const dragCard = cards[dragIndex];
-
-      */
-    },
-    componentWillReceiveProps: function(newprops){
-      this.resetCards(newprops.data)
     },
     componentWillMount: function(newprops){
       this.resetCards(this.props.data)
     },
+    componentWillReceiveProps: function(newprops){
+      this.resetCards(newprops.data)
+    },
     resetCards: function(data){
-      const cardsListSorted = Object.keys(data.cards).map(
-        (k)=> data.cards[k]
-      ).sort((a,b)=>a.idx-b.idx)
-      .map((x, i) => {
-        let out = x;
-        out.clientIndex = i;
-        return out;
-      })
-      this.setState({cards:cardsListSorted})
+      const cardsList = Object.keys(data.cards)
+      .map(
+        (k, i)=> {return data.cards[k]}
+      )
+      .sort((a,b)=>{return a.idx - b.idx})
+      this.setState({cards:cardsList})
     },
 
     createNewCard : function(summary){
@@ -365,14 +350,25 @@ let List = DragDropContext(HTML5Backend)(
       this.setState({modalOpen:false})
     },
     render:function(){
+
+      let cardsListSorted = this.state.cards
+    /*
+      let cardsListSorted = this.state.cardsList.slice(0)
+      .sort((a,b)=>a.idx-b.idx)
+      .map((x, i) => {
+        let out = x;
+        out.clientIndex = i;
+        return out;
+      })
+      */
       return (
         <div className="task-list">
           <h4 className="task-list-header">{this.props.data.name}<button className="task-list-header-delete-button" onClick={this.delete}>&times;</button></h4>
           <div>
             { 
-              this.state.cards.map((c) => {
+              cardsListSorted.map((c, i) => {
                 let cid = c._id
-                return <Card data={c} key={c._id.$oid} moveCard={this.moveCard} moveCardSave={this.moveCardSave}
+                return <Card data={c} key={c._id.$oid} index={i} moveCard={this.moveCard} moveCardSave={this.moveCardSave}
                   openEdit={()=>{this.openEditor(cid)}}/>
               })
             }
