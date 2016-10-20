@@ -24,23 +24,6 @@ let modalStyle = {
     right             : 0,
     bottom            : 0,
     backgroundColor   : 'rgba(0, 0, 0, 0.75)'
-  },
-  content : {
-    position                   : 'absolute',
-    top                        : '40px',
-    maxWidth                   : '60%',
-    marginLeft                 : "auto",
-    marginRight                : "auto",
-    left                       : '40px',
-    right                      : '40px',
-    bottom                     : '40px',
-    border                     : '1px solid #ccc',
-    background                 : '#fff',
-    overflow                   : 'auto',
-    WebkitOverflowScrolling    : 'touch',
-    borderRadius               : '4px',
-    outline                    : 'none',
-    padding                    : '20px'
   }
 }
 

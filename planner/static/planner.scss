@@ -254,3 +254,22 @@ body > br {
     font-size:12px;
   }
 }
+
+.ReactModal__Content {
+  position: absolute;
+  max-width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  padding: 20px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  background: $pw;
+  overflow: auto;
+  outline: none;
+  -webkit-overflow-scrolling: touch;
+}
