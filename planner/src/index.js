@@ -10,6 +10,7 @@ import { DragSource, DropTarget } from 'react-dnd';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {Converter} from 'showdown';
+import { MentionsInput, Mention } from 'react-mentions'
 
 var md5 = require("blueimp-md5");
 var FontAwesome = require('react-fontawesome');
@@ -431,7 +432,7 @@ let CardEditor = React.createClass({
         <div>
           <textarea placeholder="description" ref={(n)=>{this._desc=n}}/>
         </div>
-        <button onClick={this.save}>Save</button>
+        <button onClick={this.save} className="description-save-button">Save</button>
         <CardComments db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} boardId={this.props.boardId} comments={this.state.data.comments || []} onUpdate={this.loadCard} boardUpdate={this.props.onUpdate}/>
       </div>
     )
@@ -460,19 +461,41 @@ let CardComments = React.createClass({
   render:function(){
     return (
       <div className="comments">
-        {
-          this.props.comments.map((k, i)=>{
-              return <Comment key={i} comment={k} deleteComment={this.deleteComment}/>
-          })
-        }
+        <div className="comments-header">Comments</div>
+        <div className="comments-list">
+          {
+            this.props.comments.map((k, i)=>{
+                return <Comment key={i} comment={k} deleteComment={this.deleteComment}/>
+            })
+          }
+        </div>
         <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} listId={this.props.listId} cardId={this.props.cardId} numComments={this.props.comments.length} boardUpdate={this.props.boardUpdate}/>
       </div>
     );
   },
 })
 
+let getMentions = function(text){
+  const mentionRegex = /@\[(\w+)\]/g
+  let match = mentionRegex.exec(text);
+  let mentions = new Set()
+  while(match != null){
+    mentions.add(match[1])
+    match = mentionRegex.exec(text);
+  }
+  return Array.from(mentions)
+}
+
 let PostCommentForm = React.createClass({
+	getInitialState(){
+		return {commentValue:""}
+	},
   postComment:function(){
+    if(this.state.commentValue.length==0){
+      return
+    }
+    let comment = this.state.commentValue
+    let mentioned = getMentions(this.state.commentValue)
     let emailHash = md5(this.props.db._client.auth().user.data.email)
     let name = this.props.db._client.auth().user.data.name;
     let newCommentId = ObjectID().toHexString()
@@ -484,12 +507,12 @@ let PostCommentForm = React.createClass({
             _id: {$oid:newCommentId},
             gravatar: emailHash,
             author: name,
-            comment: this._comment.value
+            comment: this.state.commentValue
           }
         }
       }
     ).then(()=>{
-      this._comment.value = "";
+			this.setState({commentValue:""})
       let newNumComments = this.props.numComments+1
       // TODO this is only a guess at the correct # of comments.
       // Consistency issue if another client adds a comment concurrently.
@@ -502,26 +525,79 @@ let PostCommentForm = React.createClass({
     })
     .then(this.props.onUpdate)
     .then(this.props.boardUpdate)
+    .then(()=>{
+      if(mentioned.length == 0) {
+        return;
+      }
+      return this.props.db._client.executePipeline([
+        {
+          service:"mdb1",
+          action:"find",
+          args:{
+            database:"planner",
+            collection:"users",
+            query:{_id:{$in:mentioned}},
+          }
+        },
+        {
+          service:"ses1",
+          action:"send",
+          args:{
+            fromAddress:"mike@mongodb.com",
+            toAddress:"$item.email",
+            subject: name + " mentioned you in a comment.",
+            body: comment,
+          }
+        }
+      ])
+    })
   },
   render:function(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
     return (
       <div>
         <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + emailHash}/>
-        <textarea placeholder="description" ref={(n)=>{this._comment=n}}/>
-        <button onClick={this.postComment}>Publish</button>
+        <div className="comment-box-container">
+          <MentionsInput markup={"@[__id__]"} value={this.state.commentValue} placeholder="Write a comment..." onChange={this.handleChange}>
+              <Mention trigger="@" data={this.lookupUser} renderSuggestion={this.renderUserSuggestion}/>
+          </MentionsInput>
+        </div>
+        <button onClick={this.postComment} className="commentform-publish-button">Publish</button>
       </div>
     )
-  }
+  },
+	handleChange:function(ev, value){
+		this.setState({commentValue:value})
+	},
+	renderUserSuggestion:function (entry, search, highlightedDisplay, index){
+		return (
+      <div className="mention-suggestion">{highlightedDisplay}</div>
+    )
+	},
+	lookupUser:function(search, callback){
+    if(search.length==0){
+      callback([])
+      return
+    }
+    this.props.db.users.find(
+      {_id: {"$regex":"^"+search,"$options":""}}
+    ).then((data)=>{
+      callback(
+        data.result.map( (u)=>{return {id:u._id, display:(u.name || u._id)}})
+      )
+    })
+  },
 })
 
 let Comment = React.createClass({
   render:function(){
     return (
       <div className="comment">
-        <button onClick={()=>{this.props.deleteComment(this.props.comment._id)}}>&times;</button>
-        <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + this.props.comment.gravatar}/>
+        <button className="comment-delete-button" onClick={()=>{this.props.deleteComment(this.props.comment._id)}}>&times;</button>
+        <img className="comment-gravatar" src={"https://www.gravatar.com/avatar/" + this.props.comment.gravatar}/>
         <span className="author">{this.props.comment.author}</span>
+        <span className="comment-timestamp-prefix">at</span>
+        <span className="comment-timestamp">4:20PM 20 October, 2016</span>
         <div className="comment-text">{this.props.comment.comment}</div>
       </div>
     )

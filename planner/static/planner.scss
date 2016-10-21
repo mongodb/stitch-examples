@@ -224,8 +224,11 @@ body > br {
 }
 
 .gravatar-small{
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
+  float:left;
+  margin-right:5px;
+
 }
 
 .text-input {
@@ -248,13 +251,6 @@ body > br {
   }
 }
 
-.comment {
-  border:1px solid #ccc;
-  .author{
-    font-size:12px;
-  }
-}
-
 .ReactModal__Content {
   position: absolute;
   max-width: 60%;
@@ -274,7 +270,86 @@ body > br {
   -webkit-overflow-scrolling: touch;
 }
 
+.comments{
+  margin-top:10px;
+  &-header{
+    font-size: 10px;
+    margin-bottom:5px;
+  }
+  &-list{
+  }
+}
+
+.comment {
+  border:1px solid #ccc;
+  position: relative;
+  background: $pw;
+  font-size: 14px;
+  border-radius: 4px;
+  padding: 5px;
+  margin-bottom: 5px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+  &-gravatar{
+    width:15px;
+    height:15px;
+    margin-right:5px;
+    vertical-align:middle;
+  }
+  &-text{
+    margin:5px;
+    font-size:10px;
+  }
+  &-timestamp{
+    font-size:8px;
+    color: $gray2;
+  }
+  &-timestamp-prefix{
+    font-size:8px;
+    margin-left:3px;
+    margin-right:3px;
+    color: $gray3;
+  }
+  .author{
+    font-size:12px;
+  }
+  &-delete-button {
+    display: block;
+    border: none;
+    background: none;
+    float: right;
+    font-size: 24px;
+    border-radius: 4px;
+    color: $gray4;
+    margin-top: -5px;
+    cursor: pointer;
+
+    &:hover {
+      color: $gray1;
+    }
+  }
+}
+
+.comment-box-container{
+  float:left;
+  width:95%;
+}
+
+.commentform-publish-button, .description-save-button{
+  border-radius: 4px;
+  border:none;
+  padding: 4px;
+  color: $gray2;
+  background: $gray6;
+  margin-top:3px;
+}
+
 .taken-name-error{
   color:red;
   font-size:14px;
 }
+
+.mention-suggestion{
+  font-size:.7em;
+  border:1px solid black;
+}
+
