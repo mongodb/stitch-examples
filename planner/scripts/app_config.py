@@ -106,5 +106,16 @@ services={
 				"namespace": "planner.users",
 			},
 		]
+	},
+  'ses1':{
+		'type': ses.Service.Type,
+		'config': {
+			'region':"us-east-1",
+			"access_key_id":"AWS_ACCESS_KEY_ID",
+			"secret_access_key":"AWS_SECRET_ACCESS_KEY"
+		},
+		'rules': [
+			{ "priority": 0, "actions": [ "send"], },
+		],
 	}
 }

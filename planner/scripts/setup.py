@@ -3,6 +3,7 @@ from pybaas.client import Error
 from pybaas import AdminClient, APIClient, Connection
 from pybaas.auth import UserPass
 import pybaas.svcs.mongodb as mongodb
+import pybaas.svcs.ses as ses
 from pybaas.auth_provider import AuthProvider
 from pybaas.variable import Variable
 
@@ -27,8 +28,21 @@ def setUp(app):
 	for svc in app_config.services:
 		svc_desc = app_config.services[svc]
 
+		if svc_desc['type'] == ses.Service.Type:
+			svc = ses.Service(app.new_service(svc, ses.Service.Type))
+			config = svc_desc['config']
+			svc.save_config(config['region'], config['access_key_id'], config['secret_access_key'])
+			for rule in svc_desc['rules']:
+				new_rule = svc.new_rule()
+				new_rule.priority(rule['priority'])
+				new_rule.actions(rule['actions'])
+				new_rule.build().save()
+			if 'variables' in svc_desc:
+				for var in svc_desc['variables']:
+					svc.save_variable(Variable.from_JSON(var))
+
 		# Create service
-		if svc_desc['type'] == mongodb.Service.Type:
+		elif svc_desc['type'] == mongodb.Service.Type:
 			svc = mongodb.Service(app.new_service(svc, mongodb.Service.Type))
 
 			svc.save_config(svc_desc['config']['uri'])
