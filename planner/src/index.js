@@ -26,7 +26,24 @@ let modalStyle = {
     bottom            : 0,
     backgroundColor   : 'rgba(0, 0, 0, 0.75)'
   },
-  content:{},
+  content : {
+    position                   : 'absolute',
+    top                        : '40px',
+    width                      : '600px',
+    marginLeft                 : "auto",
+    marginRight                : "auto",
+    left                       : '40px',
+    right                      : '40px',
+    bottom                     : 'auto',
+    border                     : 'none',
+    background                 : '#fff',
+    overflow                   : 'auto',
+    WebkitOverflowScrolling    : 'touch',
+    borderRadius               : '8px',
+    outline                    : 'none',
+    padding                    : '20px',
+    boxShadow                  : '0 10px 30px rgba(0,0,0,0.3)'
+  }
 }
 
 let baasClient = new BaasClient("http://localhost:8080/v1/app/planner")
@@ -384,7 +401,7 @@ let List = DragDropContext(HTML5Backend)(
               <input className="text-input" type="text" placeholder="Summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
              : null}
           </div>
-          <Modal isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
+          <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
             <CardEditor db={this.props.db} boardId={this.props.boardId} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
           </Modal>
           <button className="task-list-add-card" onClick={this.quickAddCard}>Add card&hellip;</button>
@@ -428,11 +445,11 @@ let CardEditor = React.createClass({
   render:function(){
     return (
       <div>
-        <input type="textbox" placeholder="summary" ref={(n)=>{this._summary=n}}/>
+        <input className="text-input ReactModal__Content-input" type="text" placeholder="summary" ref={(n)=>{this._summary=n}}/>
         <div>
-          <textarea placeholder="description" ref={(n)=>{this._desc=n}}/>
+          <textarea className="text-area ReactModal__Content-input" placeholder="description" ref={(n)=>{this._desc=n}}/>
         </div>
-        <button onClick={this.save} className="description-save-button">Save</button>
+        <button className="button button-is-primary ReactModal__Content-button" onClick={this.save}>Save</button>
         <CardComments db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} boardId={this.props.boardId} comments={this.state.data.comments || []} onUpdate={this.loadCard} boardUpdate={this.props.onUpdate}/>
       </div>
     )
@@ -460,15 +477,13 @@ let CardComments = React.createClass({
   },
   render:function(){
     return (
-      <div className="comments">
-        <div className="comments-header">Comments</div>
-        <div className="comments-list">
-          {
-            this.props.comments.map((k, i)=>{
-                return <Comment key={i} comment={k} deleteComment={this.deleteComment}/>
-            })
-          }
-        </div>
+      <div className="comments ReactModal__Content-comments">
+        <h4 className="comments-heading">Comments</h4>
+        {
+          this.props.comments.map((k, i)=>{
+              return <Comment key={i} comment={k} deleteComment={this.deleteComment}/>
+          })
+        }
         <PostCommentForm db={this.props.db} onUpdate={this.props.onUpdate} listId={this.props.listId} cardId={this.props.cardId} numComments={this.props.comments.length} boardUpdate={this.props.boardUpdate}/>
       </div>
     );
@@ -555,14 +570,14 @@ let PostCommentForm = React.createClass({
   render:function(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
     return (
-      <div>
-        <img className="gravatar-small" src={"https://www.gravatar.com/avatar/" + emailHash}/>
-        <div className="comment-box-container">
-          <MentionsInput markup={"@[__id__]"} value={this.state.commentValue} placeholder="Write a comment..." onChange={this.handleChange}>
+      <div className="add-comment">
+        <div className="add-comment-input-row">
+          <img className="add-comment-gravatar" src={"https://www.gravatar.com/avatar/" + emailHash}/>
+          <MentionsInput className="add-comment-text-area" markup={"@[__id__]"} value={this.state.commentValue} placeholder="Write a comment..." onChange={this.handleChange}>
               <Mention trigger="@" data={this.lookupUser} renderSuggestion={this.renderUserSuggestion}/>
           </MentionsInput>
         </div>
-        <button onClick={this.postComment} className="commentform-publish-button">Publish</button>
+        <button className="button button-is-small add-comment-button" onClick={this.postComment}>Comment</button>
       </div>
     )
   },
@@ -592,10 +607,10 @@ let PostCommentForm = React.createClass({
 let Comment = React.createClass({
   render:function(){
     return (
-      <div className="comment">
+      <div className="comment ReactModal__Content-comment">
         <button className="comment-delete-button" onClick={()=>{this.props.deleteComment(this.props.comment._id)}}>&times;</button>
         <img className="comment-gravatar" src={"https://www.gravatar.com/avatar/" + this.props.comment.gravatar}/>
-        <span className="author">{this.props.comment.author}</span>
+        <span className="comment-author">{this.props.comment.author}</span>
         <span className="comment-timestamp-prefix">at</span>
         <span className="comment-timestamp">4:20PM 20 October, 2016</span>
         <div className="comment-text">{this.props.comment.comment}</div>
