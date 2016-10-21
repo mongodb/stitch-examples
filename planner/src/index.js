@@ -153,8 +153,10 @@ const ItemTypes = { CARD: "card", }
 const cardSource = {
   beginDrag(props, monitor, component) {
     return {
+      listId: props.listId,
       serverIndex: props.data.idx,
       summary:props.data.summary,
+      _id:props.data._id,
       index: props.index
     };
   }
@@ -162,47 +164,59 @@ const cardSource = {
 
 const cardTarget = {
   drop(props, monitor, component){
+    console.log(monitor.getItem())
+    console.log("item being dragged has list id", monitor.getItem().listId)
+    console.log("dropping onto an item with list id", props.listId)
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
-    props.moveCardSave(dragIndex, hoverIndex);
+    console.log("dropping onto item with ", props, props.data._id)
+    props.moveCardSave(
+      {index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
+      {index:hoverIndex, listId:props.listId, _id:props.data._id}
+    );
   },
   hover(props, monitor, component) {
+      //{index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
+      //{index:hoverIndex, listId:props.listId, _id:props.data._id}
+
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
 
+    let sameList = (props.listId.$oid == monitor.getItem().listId.$oid)
     // Don't replace items with themselves
-    if (dragIndex === hoverIndex) {
+    if (sameList && dragIndex === hoverIndex) {
       return;
     }
 
-    // Determine rectangle on screen
-    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+    if(sameList){
+      // Determine rectangle on screen
+      const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+      // Get vertical middle
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+      // Get pixels to the top
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      // Only perform the move when the mouse has crossed half of the items height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+      // Dragging downwards
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
 
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
-
-    // Get pixels to the top
-    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-    // Only perform the move when the mouse has crossed half of the items height
-    // When dragging downwards, only move when the cursor is below 50%
-    // When dragging upwards, only move when the cursor is above 50%
-
-    // Dragging downwards
-    if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      return;
-    }
-
-    // Dragging upwards
-    if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      return;
+      // Dragging upwards
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
     }
 
     // Time to actually perform the action
-    props.moveCard(dragIndex, hoverIndex);
+    //props.moveCard(dragIndex, hoverIndex);
+    props.moveCard(
+      {index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
+      {index:hoverIndex, listId:props.listId, _id:props.data._id}
+    )
 
     // Note: we're mutating the monitor item here!
     // Generally it's better to avoid mutations,
@@ -265,40 +279,43 @@ let List = DragDropContext(HTML5Backend)(
       }
     },
 
-    moveCardSave: function(dragIndex, hoverIndex) {
-      let from= this.state.dragFromCard
-      let to= this.state.dragToCard
-      if(from.idx == to.idx){
+    moveCardSave: function(fromData, toData){
+      let from = this.state.dragFromCard
+      let to = this.state.dragToCard
+      if(from.listId.$oid == to.listId.$oid && from.idx == to.idx){
         return
       }
       const db = this.props.db
       const boardId = this.props.boardId
-      const listOid = this.props.data._id.$oid
-      const oid = ObjectID().toHexString()
-
-      const query = {"_id": {$oid: boardId}}
-      let modifier = {}
-      modifier[`lists.${listOid}.cards.${from._id.$oid}.idx`] = to.idx
-      modifier[`lists.${listOid}.cards.${to._id.$oid}.idx`] = from.idx
-      db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
+      if(from.listId.$oid == to.listId.$oid){
+        const query = {"_id": {$oid: boardId}}
+        let modifier = {}
+        modifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}.idx`] = to.idx
+        modifier[`lists.${from.listId.$oid}.cards.${to._id.$oid}.idx`] = from.idx
+        db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
+      }else{
+        console.log("not same list, not updating", fromData.listId, toData.listId)
+      }
     },
-    moveCard: function(dragIndex, hoverIndex) {
-      let fromCard = this.state.cards[dragIndex]
-      let toCard = this.state.cards[hoverIndex]
-      this.setState(update(this.state, {
-        dragFromCard:{
-          $set:fromCard,
-        },
-        dragToCard:{
-          $set:toCard,
-        },
-        cards: {
-          $splice: [
-            [dragIndex, 1],
-            [hoverIndex, 0, fromCard]
-          ]
-        }
-      }));
+    moveCard: function(fromData, toData) {
+      if(fromData.listId.$oid == toData.listId.$oid){
+        let fromCard = this.state.cards[fromData.index]
+        let toCard = this.state.cards[toData.index]
+        this.setState(update(this.state, {
+          dragFromCard:{
+            $set:fromCard,
+          },
+          dragToCard:{
+            $set:toCard,
+          },
+          cards: {
+            $splice: [
+              [fromData.index, 1],
+              [toData.index, 0, fromCard]
+            ]
+          }
+        }));
+      }
     },
     componentWillMount: function(newprops){
       this.resetCards(this.props.data)
@@ -309,7 +326,11 @@ let List = DragDropContext(HTML5Backend)(
     resetCards: function(data){
       const cardsList = Object.keys(data.cards)
       .map(
-        (k, i)=> {return data.cards[k]}
+        (k, i)=> {
+          let card = data.cards[k]
+          card.listId = this.props.data._id
+          return card
+        }
       )
       .sort((a,b)=>{return a.idx - b.idx})
       this.setState({cards:cardsList})
@@ -373,6 +394,7 @@ let List = DragDropContext(HTML5Backend)(
                     data={c} 
                     key={c._id.$oid} 
                     index={i} 
+                    listId={this.props.data._id}
                     moveCard={this.moveCard} 
                     moveCardSave={this.moveCardSave}
                     openEdit={()=>{this.openEditor(cid)}}
