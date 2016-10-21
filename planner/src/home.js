@@ -48,7 +48,7 @@ let UsernameSetupForm = React.createClass({
   },
   save:function(){
     this.props.db.users.insert(
-      [{_id:this._username.value, authId:{$oid:this.props.auth.user._id}, email:this.props.auth.user.data.email}]
+      [{_id:this._username.value, authId:{$oid:this.props.auth.user._id}, email:this.props.auth.user.data.email, name:this.props.auth.user.data.name}]
     ).then(()=>{console.log("inserted successfully!")})
     .catch(
       ()=>{
