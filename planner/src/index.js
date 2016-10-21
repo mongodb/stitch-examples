@@ -302,17 +302,32 @@ let List = DragDropContext(HTML5Backend)(
       if(from.listId.$oid == to.listId.$oid && from.idx == to.idx){
         return
       }
+      console.log("from", from, "to", to)
       const db = this.props.db
       const boardId = this.props.boardId
+      let updateSpec = {}
+      const query = {"_id": {$oid: boardId}}
       if(from.listId.$oid == to.listId.$oid){
-        const query = {"_id": {$oid: boardId}}
         let modifier = {}
         modifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}.idx`] = to.idx
         modifier[`lists.${from.listId.$oid}.cards.${to._id.$oid}.idx`] = from.idx
-        db.boards.update(query, {$set:modifier}).then(this.props.onUpdate)
+        updateSpec = {"$set":modifier}
       }else{
-        console.log("not same list, not updating", fromData.listId, toData.listId)
+        let unsetModifier = {}
+        unsetModifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}`] = 1
+        let setModifier = {}
+        setModifier[`lists.${to.listId.$oid}.cards.${to._id.$oid}`] = 
+          {
+            summary : to.summary,
+            idx : 0, // TODO
+            _id : {$oid:to._id.$oid}
+          }
+        updateSpec = {
+          "$unset": unsetModifier,
+          "$set": setModifier,
+        }
       }
+      db.boards.update(query, updateSpec).then(this.props.onUpdate)
     },
     moveCard: function(fromData, toData) {
       if(fromData.listId.$oid == toData.listId.$oid){
@@ -332,6 +347,8 @@ let List = DragDropContext(HTML5Backend)(
             ]
           }
         }));
+      }else{
+        console.log("different list!")
       }
     },
     componentWillMount: function(newprops){
