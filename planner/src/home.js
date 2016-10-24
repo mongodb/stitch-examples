@@ -6,7 +6,7 @@ var Home = React.createClass({
   getInitialState: function(){
     return {authed:this.props.route.client.auth() != null, username:null}
   },
-  componentWillMount: function() {
+  load:function(){
     let authInfo = this.props.route.client.auth()
     if(authInfo==null){
       return
@@ -21,6 +21,9 @@ var Home = React.createClass({
       }
     )
   },
+  componentWillMount: function() {
+    this.load()
+  },
   render:function(){
     if(!this.state.authed){
       return (<AuthControls client={this.props.route.client}/>)
@@ -30,6 +33,7 @@ var Home = React.createClass({
         <UsernameSetupForm
           auth={this.props.route.client.auth()} 
           db={this.props.route.db}
+          onUpdate={this.load}
         />
       )
     }
@@ -49,7 +53,7 @@ let UsernameSetupForm = React.createClass({
   save:function(){
     this.props.db.users.insert(
       [{_id:this._username.value, authId:{$oid:this.props.auth.user._id}, email:this.props.auth.user.data.email, name:this.props.auth.user.data.name}]
-    ).then(()=>{console.log("inserted successfully!")})
+    ).then(this.props.onUpdate)
     .catch(
       ()=>{
         this.setState({usernameTaken:true})
