@@ -50,6 +50,9 @@ class TestMethods(unittest.TestCase):
 					new_rule.actions(rule['actions'])
 					new_rule.namespace(rule['namespace'])
 
+					if 'name' in rule:
+						new_rule.name(rule['name'])
+
 					if 'validate' in rule:
 						new_rule.validate(rule['validate'])
 
@@ -108,23 +111,54 @@ class TestMethods(unittest.TestCase):
 			boards.insert({'name': '', 'owner_id': 'myid', 'lcount': 0})
 
 		# Create some other board
-		self._m_client.boards.boards.insert_one({'name': 'Personal', 'owner_id': ObjectId(), 'lcount': 0})
+		other_board = ObjectId()
+		self._m_client.planner.boards.insert_one({'_id': other_board, 'name': 'Personal', 'owner_id': ObjectId(), 'lcount': 0, 'members': [self._cl.user()['_id']]})
 
 		# Finding own board should work
-		personal = boards.find({'name': 'Personal'})
+		personal = boards.find({'owner_id': self._cl.user()['_id'], 'name': 'Personal'})
 		self.assertTrue(len(personal) == 1)
 		personal = personal[0]
 		self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
 
+		# Adding a member should fail if username isn't registered
+		# This won't fail. No way to express
+		boards.update(
+			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+			{'$addToSet': {'members': 'otheruser'}})
+
+		# Adding a member that is registered should work.
+		# This won't fail. No way to express
+		boards.update(
+			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+			{'$addToSet': {'members': 'gooduser'}})
+
+		# Adding the same member twice should not work.
+		# This won't fail. No way to express. Pretty much $addToSet should be enforced
+		boards.update(
+			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+			{'$push': {'members': 'gooduser'}})
+
+		# Removing a member should work (registered or not)
+		boards.update(
+			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+			{'$pull': {'members': 'gooduser'}})
+		boards.update(
+			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+			{'$pull': {'members': 'otheruser'}})
+
+		# Modifying members on a board that am member of should fail
+		with self.assertRaisesRegexp(Error, 'is not mutable'):
+			boards.update(
+				{'_id': other_board},
+				{'$addToSet': {'members': 'gooduser'}}, rule='updateAsMember')
+
 		# Deleting own board should work
 		boards.remove({'_id': personal['_id']})
-		self.assertTrue(len(boards.find({'name': 'Personal'})) == 0)
+		self.assertTrue(len(boards.find({'owner_id': self._cl.user()['_id'], 'name': 'Personal'})) == 0)
 
 		# Other board should still exist
-		other = self._m_client.boards.boards.find_one({'name': 'Personal'})
+		other = self._m_client.planner.boards.find_one({'name': 'Personal'})
 		self.assertTrue(other['owner_id'] != self._cl.user()['_id'])
-
-		# TODO(erd): CRUD members
 
 	def test_lists(self):
 		mdb = mongodb.Service(self._cl.service('mdb1'))
@@ -143,8 +177,30 @@ class TestMethods(unittest.TestCase):
 			{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': num_lists}},
 			'$inc': {'lcount': 1}})
 
+		# Adding a new list to someone else's board
+
+		# Create some other boards
+		other_board_1 = ObjectId()
+		other_board_2 = ObjectId()
+
+		self._m_client.planner.boards.insert_one({'_id': other_board_1, 'name': 'Shared', 'owner_id': ObjectId(), 'lcount': 0, 'members': [self._cl.user()['_id']]})
+		self._m_client.planner.boards.insert_one({'_id': other_board_2, 'name': 'Shared', 'owner_id': ObjectId(), 'lcount': 0})
+
+		# Should work when we are a member of the list
+		# Expressing this is hard as is since we don't have acceess to the board being used.
+		# We can however gather all of the boards that this user is a part of (agg) and verify?
+		boards.update({'_id': other_board_1}, 
+			{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': num_lists}},
+			'$inc': {'lcount': 1}}, rule='updateAsMember')
+
+		# Should fail when we are not a member of the list
+		with self.assertRaisesRegexp(Error, '(?i)no matching documents found'):
+			boards.update({'_id': other_board_2}, 
+				{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': num_lists}},
+				'$inc': {'lcount': 1}}, rule='updateAsMember')
+
 		# Adding a new list with a bad name should fail
-		# TODO(erd): Needs a rule that can describe this
+		# TODO(erd): Needs a rule that can describe this ($regex not supported)
 
 		personal_board = boards.find({'name': 'Personal'})[0]
 		num_lists = personal_board['lcount']

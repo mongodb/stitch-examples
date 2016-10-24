@@ -34,6 +34,10 @@ def setUp(app):
 			svc.save_config(config['region'], config['access_key_id'], config['secret_access_key'])
 			for rule in svc_desc['rules']:
 				new_rule = svc.new_rule()
+
+				if 'name' in rule:
+					new_rule.name(rule['name'])
+
 				new_rule.priority(rule['priority'])
 				new_rule.actions(rule['actions'])
 				new_rule.build().save()

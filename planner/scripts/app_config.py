@@ -44,7 +44,30 @@ services={
 						"name",
 						"owner_id",
 						"lists",
-						"lcount"
+						"lcount",
+						"members"
+					],
+					"allMutable": False
+				}
+			},
+			# Have to have a different rule here because a member cannot do as much as an owner
+			{
+				"priority": 10,
+				"name": "updateAsMember",
+				"actions": [
+					"update"
+				],
+				"namespace": "planner.boards",
+				"filter": {
+					"members": "$var.$auth.id",
+				},
+				"validate": {
+					"lcount": {"$gte": 0}
+				},
+				"fields": {
+					"mutable": [
+						"lists",
+						"lcount",
 					],
 					"allMutable": False
 				}
