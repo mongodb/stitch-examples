@@ -84,7 +84,7 @@ class TestMethods(unittest.TestCase):
 		self._app.delete()
 
 	def test_boards(self):
-		mdb = mongodb.Service(self._cl.service('db'))
+		mdb = mongodb.Service(self._cl.service('mdb1'))
 
 		# Create board
 		# TODO(erd): This should have a rule to enforce count is >= 0
@@ -127,7 +127,7 @@ class TestMethods(unittest.TestCase):
 		# TODO(erd): CRUD members
 
 	def test_lists(self):
-		mdb = mongodb.Service(self._cl.service('db'))
+		mdb = mongodb.Service(self._cl.service('mdb1'))
 
 		# With a board
 		boards = mdb.database('planner').collection('boards')
@@ -173,7 +173,7 @@ class TestMethods(unittest.TestCase):
 		self.assertTrue(updated['lcount'] == 1)
 
 	def test_cards(self):
-		mdb = mongodb.Service(self._cl.service('db'))
+		mdb = mongodb.Service(self._cl.service('mdb1'))
 
 		# With a board and list
 		boards = mdb.database('planner').collection('boards')
@@ -196,7 +196,7 @@ class TestMethods(unittest.TestCase):
 			'_id': personal_board['_id']},
 			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(card_id): {"_id": card_id, "text": "hello", "idx": idx_1}},
 			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
-		cards.insert({'_id': card_id, 'author': self._cl.user()['_id'], 'text': 'hello'})
+		cards.insert({'_id': card_id, 'author': self._cl.user()['_id'], 'summary': 'hello'})
 
 		personal_board = boards.find({'name': 'Personal'})[0]
 		num_cards = personal_board['lists'][str(todo_id)]['ccount']
@@ -207,7 +207,7 @@ class TestMethods(unittest.TestCase):
 			'_id': personal_board['_id']},
 			{'$set': {'lists.'+str(todo_id)+'.cards.'+str(other_card_id): {"_id": other_card_id, "text": "it's me", "idx": idx_2}},
 			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
-		cards.insert({'_id': other_card_id, 'author': self._cl.user()['_id'], 'text': "it's me"})
+		cards.insert({'_id': other_card_id, 'author': self._cl.user()['_id'], 'summary': "it's me"})
 
 		# Swapping two cards should work
 		boards.update({
@@ -230,7 +230,7 @@ class TestMethods(unittest.TestCase):
 		self.assertTrue(updated['ccount'] == 1)
 
 	def test_comments(self):
-		mdb = mongodb.Service(self._cl.service('db'))
+		mdb = mongodb.Service(self._cl.service('mdb1'))
 
 		# With a board, list, and card
 		boards = mdb.database('planner').collection('boards')
@@ -247,7 +247,7 @@ class TestMethods(unittest.TestCase):
 			'$inc': {'lists.'+str(todo_id)+'.ccount': 1}})
 
 		cards = mdb.database('planner').collection('cards')
-		cards.insert({'_id': card_id, 'author': self._cl.user()['_id'], 'text': 'get groceries'})
+		cards.insert({'_id': card_id, 'author': self._cl.user()['_id'], 'summary': 'get groceries'})
 
 		# Adding a comment should work
 		comment_id = ObjectId()
@@ -255,14 +255,14 @@ class TestMethods(unittest.TestCase):
 			'_id': card_id},
 			{'$addToSet': {
 				'comments': {
-					'_id': comment_id, 'text': 'sgtm', 'author_id': self._cl.user()['_id']}}})
+					'_id': comment_id, 'summary': 'sgtm', 'author_id': self._cl.user()['_id']}}})
 
 		comment_id_2 = ObjectId()
 		cards.update({
 			'_id': card_id},
 			{'$addToSet': {
 				'comments': {
-					'_id': comment_id_2, 'text': 'yeah?', 'author_id': self._cl.user()['_id']}}})
+					'_id': comment_id_2, 'summary': 'yeah?', 'author_id': self._cl.user()['_id']}}})
 
 		# Removing a comment should work
 		cards.update({'_id': card_id}, {'$pull': {'comments': {'_id': comment_id}}})

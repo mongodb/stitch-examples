@@ -1,4 +1,4 @@
-from pybaas.svcs import mongodb
+from pybaas.svcs import mongodb, ses
 
 auth_providers={
 	'local/userpass': {
