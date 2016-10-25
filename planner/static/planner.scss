@@ -147,15 +147,74 @@ body > br {
     text-decoration: none;
     display: inline-block;
     padding: 10px;
-    // text-indent: -9999px;
-    // background-image: url('/static/jello-logo.png');
-    // background-size: 75px 25px;
-    // width: 75px;
-    // height: 25px;
+    text-indent: -9999px;
+    background-image: url('/jello-logo.png');
+    background-size: 75px 25px;
+    width: 75px;
+    height: 25px;
   }
 }
 
+.boards {
+  padding: 20px;
+  display: inline-block;
+}
+
 .board {
+  position: relative;
+  background: $green1;
+  border-radius: 8px;
+  width: 224px;
+  height: 132px;
+  padding: 50px 10px 10px;
+
+  &-name {
+    display: block;
+    font-weight: normal;
+    text-align: center;
+    font-size: 22px;
+
+    &-link {
+      color: $pw;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  &-delete-button {
+    display: block;
+    border: none;
+    background: none;
+    position: absolute;
+    right: 8px;
+    top: 0;
+    font-size: 24px;
+    color: $green3;
+    cursor: pointer;
+
+    &:hover {
+      color: $pw;
+    }
+  }
+}
+
+.new-board-button {
+  position: relative;
+  background: $green2;
+  border: 2px dashed $green1;
+  border-radius: 8px;
+  width: 224px;
+  height: 132px;
+  padding: 0;
+  color: $green3;
+  font-size: 22px;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+}
+
+.board-view {
   padding: 20px;
 
   &-header {

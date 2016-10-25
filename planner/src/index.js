@@ -141,8 +141,8 @@ let Board = React.createClass({
         <nav className="navbar">
           <Link className="navbar-brand-link" to="/">BaaS Board</Link>
         </nav>
-        <div className="board">
-          <h3 className="board-header">{this.state.board.name}</h3>
+        <div className="board-view">
+          <h3 className="board-view-header">{this.state.board.name}</h3>
           <div className="lists">
             { listKeys.map((x)=> {
                 let v = this.state.board.lists[x];

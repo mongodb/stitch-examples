@@ -112,7 +112,7 @@ let BoardAdder = React.createClass({
   },
   render:function(){
     if(!this.state.adding){
-      return (<button className="newboard" onClick={this.setup}>+ New Board</button>)
+      return (<button className="new-board-button" onClick={this.setup}>+ New Board</button>)
     }else{
       return (
         <div>
@@ -162,10 +162,10 @@ let BoardItem = React.createClass({
   render:function(){
     return (
       <div className="board">
-        <span className="name">
-          <Link to={"/boards/" + this.props.data._id.$oid}>{this.props.data.name}</Link>
+        <span className="board-name">
+          <Link className="board-name-link" to={"/boards/" + this.props.data._id.$oid}>{this.props.data.name}</Link>
         </span>
-        <button className="delete" onClick={this.remove}>X</button>
+        <button className="board-delete-button" onClick={this.remove}>&times;</button>
       </div>
     )
   }
