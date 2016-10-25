@@ -115,10 +115,12 @@ let BoardAdder = React.createClass({
       return (<button className="new-board-button" onClick={this.setup}>+ New Board</button>)
     }else{
       return (
-        <div>
-          <input type="text" placeholder="name" ref={(n)=>{this._name=n}} onKeyDown={this.keydown}/>
-          <button onClick={this.cancel}>Cancel</button>
-          <button onClick={this.save} ref={(n)=>{this._save=n}}>Save</button>
+        <div className="new-board-form">
+          <input className="text-input" type="text" placeholder="name" ref={(n)=>{this._name=n}} onKeyDown={this.keydown}/>
+          <div className="new-board-form-buttons">
+            <button className="button button-is-small new-board-form-button" onClick={this.cancel}>Cancel</button>
+            <button className="button button-is-small button-is-primary new-board-form-button" onClick={this.save} ref={(n)=>{this._save=n}}>Save</button>
+          </div>
         </div>
       )
     }
@@ -146,8 +148,8 @@ let BoardListing = React.createClass({
               }
             )
           }
+          <BoardAdder db={this.props.db} onUpdate={this.loadBoards}/>
         </ul>
-        <BoardAdder db={this.props.db} onUpdate={this.loadBoards}/>
       </div>
     )
   }

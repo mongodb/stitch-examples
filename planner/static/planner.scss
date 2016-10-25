@@ -162,11 +162,19 @@ body > br {
 
 .board {
   position: relative;
+  display: block;
+  float: left;
   background: $green1;
   border-radius: 8px;
   width: 224px;
   height: 132px;
+  margin-right: 20px;
+  margin-bottom: 20px;
   padding: 50px 10px 10px;
+
+  &:last-child {
+    margin-right: 0;
+  }
 
   &-name {
     display: block;
@@ -212,6 +220,24 @@ body > br {
   font-size: 22px;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
+}
+
+.new-board-form {
+  display: block;
+  float: left;
+  width: 224px;
+  height: 132px;
+  padding: 20px;
+  background: $pw;
+  border-radius: 8px;
+
+  &-buttons {
+    text-align: right;
+    margin-top: 20px;
+  }
+  &-button {
+    margin-left: 10px;
+  }
 }
 
 .board-view {
