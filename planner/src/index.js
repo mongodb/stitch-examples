@@ -94,28 +94,110 @@ let Boards = React.createClass({
   }
 })
 
+let boardFromDBObj = function(board){
+  const lists = Object.keys(board.lists || {}).map(
+    (x, i)=>{
+      let list = board.lists[x]
+      list.index = i
+      let cards = Object.keys(list.cards || {}).map((c)=>{
+        return list.cards[c];
+      }).sort((a, b)=>{
+        return a.idx-b.idx
+      })
+      list.cards = cards
+      return list
+    }
+  )
+  board.lists = lists
+  return board
+}
+
+function randomFloat(lower,upper){
+  return Math.random() * (upper - lower) + lower
+}
+
 let Board = React.createClass({
-  getInitialState:function(){
-    return {board:{name:"", lists:{}}}
+  getInitialState(){
+    return {board:{name:"", lists:[]}}
   },
-  load: function(){
+  load(){
     this.props.route.db.boards.find(
       {_id:{$oid:this.props.routeParams.id}}, null).then(
-      (data)=>{this.setState({board:data.result[0], newList:false})}
-    )
+      (data)=>{
+        let board = data.result[0]
+        this.setState({board:boardFromDBObj(board)})
+      })
   },
-  componentWillMount: function(){
+  componentWillMount(){
     this.load()
   },
-  newList: function(){
+  moveCard(from, to){
+    let board = this.state.board;
+    let fromList = board.lists.find((x)=>(x._id.$oid==from.listId.$oid))
+    let fromCard = fromList.cards.find((x)=>(x._id.$oid == from._id.$oid))
+    let toList = board.lists.find((x)=>(x._id.$oid==to.listId.$oid))
+    if(fromList._id.$oid == toList._id.$oid){
+      fromList.cards.splice(from.index, 1)
+      fromList.cards.splice(to.index, 0, fromCard)
+      board.lists[fromList.index] = fromList
+      this.setState({board:board})
+    }else{
+      let removedCard = fromList.cards.splice(from.index, 1)
+      toList.cards.splice(to.index, 0, fromCard)
+      board.lists[fromList.index] = fromList
+      board.lists[toList.index] = toList
+      this.setState({board:board})
+    }
+  },
+  moveCardSave(from, to){
+    let board = this.state.board
+    let fromList = board.lists.find((x)=>(x._id.$oid==from.originalListId.$oid))
+    let toList = board.lists.find((x)=>(x._id.$oid==to.listId.$oid))
+    // the data for the "from" card is 
+    // actually in the "to" list because it's moved there temporarily,
+    // client-side, by the drag/drop UI code.
+    let fromCard = toList.cards.find((x)=>(x._id.$oid == from._id.$oid))
+    let lowerBound = -1 * Number.MAX_VALUE
+    let upperBound = Number.MAX_VALUE
+
+    let prevCard = null
+    let nextCard = null
+  
+    if(to.index > 0){
+      lowerBound  = toList.cards[to.index-1].idx
+    }
+    if(to.index < toList.cards.length-1){
+      upperBound = toList.cards[to.index+1].idx
+    }
+    let newIdx = randomFloat(lowerBound, upperBound)
+
+    let updateSpec = {}
+    if(fromList._id.$oid == toList._id.$oid){
+      let modifier = {}
+      modifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}.idx`] = newIdx
+      updateSpec = {"$set":modifier}
+    }else{
+      // Remove card from the "from" list
+      let unsetModifier = {}
+      unsetModifier[`lists.${fromList._id.$oid}.cards.${from._id.$oid}`] = 1
+
+      // Insert it in the "to" list
+      let setModifier = {}
+      fromCard.idx = newIdx
+      setModifier[`lists.${toList._id.$oid}.cards.${to.data._id.$oid}`] = fromCard
+      updateSpec = {"$set":setModifier, "$unset": unsetModifier}
+    }
+    this.props.route.db.boards.update({_id:{$oid:this.props.routeParams.id}}, updateSpec).then(this.load) 
+  },
+  newList(){
     this.setState({newList:true})
   },
-  componentDidUpdate: function(){
+  componentDidUpdate(){
     if(this._newlistname){
       this._newlistname.focus()
     }
   },
-  newListKeyDown: function(e){
+  newListKeyDown(e){
     if(e.keyCode == 13){
       let name = this._newlistname.value
       if(name.length > 0){
@@ -134,8 +216,8 @@ let Board = React.createClass({
       this.setState({newList:false})
     }
   },
-  render:function(){
-    let listKeys = Object.keys(this.state.board.lists || {})
+  render(){
+    //let listKeys = Object.keys(this.state.board.lists || {})
     return (
       <div className="container">
         <nav className="navbar">
@@ -144,14 +226,22 @@ let Board = React.createClass({
         <div className="board-view">
           <h3 className="board-view-header">{this.state.board.name}</h3>
           <div className="lists">
-            { listKeys.map((x)=> {
-                let v = this.state.board.lists[x];
-                return <List onUpdate={this.load} boardId={this.props.routeParams.id} db={this.props.route.db} key={x} data={v}/>
-               })
+            { this.state.board.lists.map(
+              (x)=>
+                <List 
+                  onUpdate={this.load} 
+                  boardId={this.state.board._id.$oid} 
+                  moveCard={this.moveCard} 
+                  moveCardSave={this.moveCardSave} 
+                  db={this.props.route.db} 
+                  key={x._id.$oid} 
+                  data={x}
+                />
+              )
             }
             { this.state.newList ?
               <div className="task-list">
-                <input type="textbox" ref={(n)=>{this._newlistname=n}} onKeyDown={this.newListKeyDown}></input>
+                <input type="textbox" ref={ (n)=>{this._newlistname=n} } onKeyDown={this.newListKeyDown}></input>
               </div>
               :
               <div>
@@ -172,6 +262,7 @@ const cardSource = {
     return {
       listId: props.listId,
       serverIndex: props.data.idx,
+      originalListId: props.listId,
       summary:props.data.summary,
       _id:props.data._id,
       index: props.index
@@ -181,21 +272,13 @@ const cardSource = {
 
 const cardTarget = {
   drop(props, monitor, component){
-    console.log(monitor.getItem())
-    console.log("item being dragged has list id", monitor.getItem().listId)
-    console.log("dropping onto an item with list id", props.listId)
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
-    console.log("dropping onto item with ", props, props.data._id)
-    props.moveCardSave(
-      {index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
-      {index:hoverIndex, listId:props.listId, _id:props.data._id}
-    );
+    let fromListId = monitor.getItem().listId
+    let toListId = props.listId
+    props.moveCardSave(monitor.getItem(), props)
   },
   hover(props, monitor, component) {
-      //{index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
-      //{index:hoverIndex, listId:props.listId, _id:props.data._id}
-
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
 
@@ -205,15 +288,15 @@ const cardTarget = {
       return;
     }
 
+    // Determine rectangle on screen
+    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+    // Get vertical middle
+    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+    // Determine mouse position
+    const clientOffset = monitor.getClientOffset();
+    // Get pixels to the top
+    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
     if(sameList){
-      // Determine rectangle on screen
-      const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
-      // Get vertical middle
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-      // Get pixels to the top
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
       // Only perform the move when the mouse has crossed half of the items height
       // When dragging downwards, only move when the cursor is below 50%
       // When dragging upwards, only move when the cursor is above 50%
@@ -226,20 +309,20 @@ const cardTarget = {
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
+      props.moveCard(
+        {index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
+        {index:hoverIndex, listId:props.listId, _id:props.data._id}
+      )
+      monitor.getItem().index = hoverIndex;
+    }else{
+      props.moveCard(
+        {index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
+        {index:hoverIndex, listId:props.listId, _id:props.data._id}
+      )
+      monitor.getItem().index = hoverIndex;
+      monitor.getItem().listId = props.listId
     }
 
-    // Time to actually perform the action
-    //props.moveCard(dragIndex, hoverIndex);
-    props.moveCard(
-      {index:dragIndex, listId:monitor.getItem().listId, _id:monitor.getItem()._id},
-      {index:hoverIndex, listId:props.listId, _id:props.data._id}
-    )
-
-    // Note: we're mutating the monitor item here!
-    // Generally it's better to avoid mutations,
-    // but it's good here for the sake of performance
-    // to avoid expensive index searches.
-    monitor.getItem().index = hoverIndex;
   },
 };
 
@@ -260,20 +343,18 @@ function collect2(connect, monitor) {
 
 let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.CARD,  cardTarget, collect2)(
 	React.createClass({
-		getInitialState: function(){
+		getInitialState(){
 			return {hovered:false}
 		},
-		openEdit:function(){
+		openEdit(){
 			this.props.openEdit(this.props.data._id)
 		},
-		render:function(){
+		render(){
 			const { text, isDragging, connectDragSource, connectDropTarget} = this.props;
 			return connectDropTarget(connectDragSource(
 				<div
           style={ {"opacity": (isDragging ? 0 : 1 )} }
 					className={"task-list-card" + (this.state.hovered ? " hovered" : "")}
-					onMouseOver={this.hoverIn} 
-					onMouseOut={this.hoverOut}
 					onClick={this.openEdit}>
 					<span className="summary">{this.props.data.summary}</span>
           <div className="task-list-card-edit-icon"><FontAwesome name='pencil' /></div>
@@ -287,90 +368,15 @@ let Card = DragSource(ItemTypes.CARD, cardSource, collect)(DropTarget(ItemTypes.
 
 let List = DragDropContext(HTML5Backend)(
   React.createClass({
-    getInitialState:function(){
-      return {cards:[], showNewCardBox:false}
+    getInitialState(){
+      return {showNewCardBox:false}
     },
-    componentDidUpdate: function(){
+    componentDidUpdate(){
       if(this._newcard){
         this._newcard.focus()
       }
     },
-
-    moveCardSave: function(fromData, toData){
-      let from = this.state.dragFromCard
-      let to = this.state.dragToCard
-      if(from.listId.$oid == to.listId.$oid && from.idx == to.idx){
-        return
-      }
-      console.log("from", from, "to", to)
-      const db = this.props.db
-      const boardId = this.props.boardId
-      let updateSpec = {}
-      const query = {"_id": {$oid: boardId}}
-      if(from.listId.$oid == to.listId.$oid){
-        let modifier = {}
-        modifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}.idx`] = to.idx
-        modifier[`lists.${from.listId.$oid}.cards.${to._id.$oid}.idx`] = from.idx
-        updateSpec = {"$set":modifier}
-      }else{
-        let unsetModifier = {}
-        unsetModifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}`] = 1
-        let setModifier = {}
-        setModifier[`lists.${to.listId.$oid}.cards.${to._id.$oid}`] = 
-          {
-            summary : to.summary,
-            idx : 0, // TODO
-            _id : {$oid:to._id.$oid}
-          }
-        updateSpec = {
-          "$unset": unsetModifier,
-          "$set": setModifier,
-        }
-      }
-      db.boards.update(query, updateSpec).then(this.props.onUpdate)
-    },
-    moveCard: function(fromData, toData) {
-      if(fromData.listId.$oid == toData.listId.$oid){
-        let fromCard = this.state.cards[fromData.index]
-        let toCard = this.state.cards[toData.index]
-        this.setState(update(this.state, {
-          dragFromCard:{
-            $set:fromCard,
-          },
-          dragToCard:{
-            $set:toCard,
-          },
-          cards: {
-            $splice: [
-              [fromData.index, 1],
-              [toData.index, 0, fromCard]
-            ]
-          }
-        }));
-      }else{
-        console.log("different list!")
-      }
-    },
-    componentWillMount: function(newprops){
-      this.resetCards(this.props.data)
-    },
-    componentWillReceiveProps: function(newprops){
-      this.resetCards(newprops.data)
-    },
-    resetCards: function(data){
-      const cardsList = Object.keys(data.cards)
-      .map(
-        (k, i)=> {
-          let card = data.cards[k]
-          card.listId = this.props.data._id
-          return card
-        }
-      )
-      .sort((a,b)=>{return a.idx - b.idx})
-      this.setState({cards:cardsList})
-    },
-
-    createNewCard : function(summary){
+    createNewCard(summary){
       let db = this.props.db
       let boardId = this.props.boardId
       let listOid = this.props.data._id.$oid
@@ -378,7 +384,7 @@ let List = DragDropContext(HTML5Backend)(
 
       return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": {"$oid": this.props.db._client.authedId()}}]).then(()=>{
         let setObj = {}
-        setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.state.cards||[]).length+1}
+        setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.props.data.cards||[]).length+1}
         db.boards.update(
           {_id:{$oid:boardId}},
           {$set:setObj}, false, false)
@@ -386,7 +392,7 @@ let List = DragDropContext(HTML5Backend)(
         this.setState({showNewCardBox:false})
       )
     },
-    newCardKeyDown: function(e){
+    newCardKeyDown(e){
       if(e.keyCode == 13){
         let summary = this._newcard.value;
         if(summary.length > 0){
@@ -396,10 +402,10 @@ let List = DragDropContext(HTML5Backend)(
         this.setState({newList:false})
       }
     },
-    quickAddCard: function(){
+    quickAddCard(){
       this.setState({showNewCardBox:true})
     },
-    delete:function(){
+    delete(){
       let unsetObj = {}
       unsetObj["lists." + this.props.data._id.$oid] = 1;
       this.props.db.boards.update(
@@ -407,15 +413,14 @@ let List = DragDropContext(HTML5Backend)(
         {$unset:unsetObj}, false, false)
       .then(this.props.onUpdate)
     },
-    openEditor:function(cid){
+    openEditor(cid){
       this.setState({modalOpen:true, editingId: cid})
     },
-    onCloseReq:function(){
+    onCloseReq(){
       this.setState({modalOpen:false})
     },
-    render:function(){
-
-      let cardsListSorted = this.state.cards
+    render(){
+      let cardsListSorted = this.props.data.cards
       return (
         <div className="task-list">
           <h4 className="task-list-header">{this.props.data.name}<button className="task-list-header-delete-button" onClick={this.delete}>&times;</button></h4>
@@ -429,16 +434,19 @@ let List = DragDropContext(HTML5Backend)(
                     key={c._id.$oid} 
                     index={i} 
                     listId={this.props.data._id}
-                    moveCard={this.moveCard} 
-                    moveCardSave={this.moveCardSave}
+                    originalListId={this.props.data._id}
+                    moveCard={this.props.moveCard} 
+                    moveCardSave={this.props.moveCardSave}
                     openEdit={()=>{this.openEditor(cid)}}
                   />
                 )
               })
             }
-            { this.state.showNewCardBox ? 
-              <input className="text-input" type="text" placeholder="Summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
-             : null}
+            {
+              this.state.showNewCardBox ? 
+                <input className="text-input" type="text" placeholder="Summary" ref={(n)=>{this._newcard=n}} onKeyDown={this.newCardKeyDown}/>
+                : null
+            }
           </div>
           <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
             <CardEditor db={this.props.db} boardId={this.props.boardId} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
@@ -451,7 +459,7 @@ let List = DragDropContext(HTML5Backend)(
 )
 
 let CardEditor = React.createClass({
-  save: function(){
+  save(){
     let newSummary = this._summary.value;
     this.props.db.cards.update({_id:this.props.editingId}, 
       {$set:{summary:newSummary, description:this._desc.value}},
@@ -463,10 +471,10 @@ let CardEditor = React.createClass({
     })
     .then(this.props.onUpdate)
   },
-  getInitialState:function(){
+  getInitialState(){
     return {data:{summary:"", description:""}}
   },
-  loadCard: function(){
+  loadCard(){
     return this.props.db.cards.find({_id:this.props.editingId}).then(
       (data)=>{
         this.setState({data:data.result[0]});
@@ -476,12 +484,11 @@ let CardEditor = React.createClass({
     )
     .then(this.props.update)
   },
-  componentWillMount:function(){
+  componentWillMount(){
     this.loadCard();
   },
-  componentDidMount:function(){
-  },
-  render:function(){
+  componentDidMount(){ },
+  render(){
     return (
       <div>
         <input className="text-input ReactModal__Content-input" type="text" placeholder="summary" ref={(n)=>{this._summary=n}}/>
@@ -496,8 +503,7 @@ let CardEditor = React.createClass({
 })
 
 let CardComments = React.createClass({
-  deleteComment:function(id){
-
+  deleteComment(id){
     this.props.db.cards.update(
       {_id:this.props.cardId},
       {$pull:{"comments":{_id:id}}}
@@ -514,7 +520,7 @@ let CardComments = React.createClass({
     .then(this.props.onUpdate)
     .then(this.props.boardUpdate)
   },
-  render:function(){
+  render(){
     return (
       <div className="comments ReactModal__Content-comments">
         <h4 className="comments-heading">Comments</h4>
@@ -544,7 +550,7 @@ let PostCommentForm = React.createClass({
 	getInitialState(){
 		return {commentValue:""}
 	},
-  postComment:function(){
+  postComment(){
     if(this.state.commentValue.length==0){
       return
     }
@@ -606,7 +612,7 @@ let PostCommentForm = React.createClass({
       ])
     })
   },
-  render:function(){
+  render(){
     let emailHash = md5(this.props.db._client.auth().user.data.email)
     return (
       <div className="add-comment">
@@ -620,15 +626,15 @@ let PostCommentForm = React.createClass({
       </div>
     )
   },
-	handleChange:function(ev, value){
+	handleChange(ev, value){
 		this.setState({commentValue:value})
 	},
-	renderUserSuggestion:function (entry, search, highlightedDisplay, index){
+	renderUserSuggestion(entry, search, highlightedDisplay, index){
 		return (
       <div className="mention-suggestion">{highlightedDisplay}</div>
     )
 	},
-	lookupUser:function(search, callback){
+	lookupUser(search, callback){
     if(search.length==0){
       callback([])
       return
@@ -644,7 +650,7 @@ let PostCommentForm = React.createClass({
 })
 
 let Comment = React.createClass({
-  render:function(){
+  render(){
     return (
       <div className="comment ReactModal__Content-comment">
         <button className="comment-delete-button" onClick={()=>{this.props.deleteComment(this.props.comment._id)}}>&times;</button>
