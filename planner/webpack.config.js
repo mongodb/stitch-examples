@@ -10,8 +10,12 @@ module.exports = {
         loader: 'babel'
       }, 
       {
+        test: /\.png$/,
+        loader:"url-loader?limit=10000&mimetype=image/png"
+      },
+      {
         test: /\.scss$/,
-        loaders: ['style', 'css', 'sass']
+        loaders: ['style', 'css', 'resolve-url', 'sass?sourceMap']
       },
     ]
   },

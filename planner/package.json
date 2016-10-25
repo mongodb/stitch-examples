@@ -50,8 +50,10 @@
     "react-fontawesome": "^1.2.0",
     "react-mentions": "^0.5.2",
     "react-modal": "^1.5.2",
+    "resolve-url": "^0.2.1",
     "sass-loader": "^4.0.2",
     "showdown": "^1.4.3",
-    "style-loader": "^0.13.1"
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7"
   }
 }
