@@ -144,7 +144,7 @@ let BoardListing = React.createClass({
           { 
             this.state.boards.map(
               (x)=>{
-                return <BoardItem data={x} key={x._id["$oid"]} onUpdate={this.loadBoards}/>
+                return <BoardItem db={this.props.db} data={x} key={x._id["$oid"]} onUpdate={this.loadBoards}/>
               }
             )
           }
@@ -158,7 +158,7 @@ let BoardListing = React.createClass({
 let BoardItem = React.createClass({
   remove: function(){
     if(confirm(`ey you sure you wanna delete '${this.props.data.name}'?`)){
-      boards.remove({_id:this.props.data._id}).then(this.props.onUpdate)
+      this.props.db.boards.remove({_id:this.props.data._id}).then(this.props.onUpdate)
     }
   },
   render:function(){
