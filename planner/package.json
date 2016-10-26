@@ -51,6 +51,7 @@
     "react-mentions": "^0.5.2",
     "react-modal": "^1.5.2",
     "resolve-url": "^0.2.1",
+    "resolve-url-loader": "^1.6.0",
     "sass-loader": "^4.0.2",
     "showdown": "^1.4.3",
     "style-loader": "^0.13.1",
