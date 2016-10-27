@@ -5,8 +5,8 @@ Configure the app_config.json and replace the OAuth credentials with your own.
 
 ```
 	mongoimport --host localhost:27017 --db app --collection apps app_config.json
-	go get github.com/erh/baas
-	cd ./baas/src/github.com/erh/baas
+	go get github.com/10gen/baas
+	cd ./baas/src/github.com/10gen/baas
 	go run ./api/main/main.go --configFile ./examples/server_config.json --authProviderConfigFile file.json
 ```
 
