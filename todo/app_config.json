@@ -25,9 +25,10 @@
 				{
 					"namespace": "todo.items",
 					"visible": {"$$root.user": "$$auth.id"},
-					"validate": {"$$newRoot.user": "$$auth.id"},
-					"change": {"$$newRoot.user": "$$auth.id"},
+					"validate": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": null}]},
+					"change": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": null}]},
 					"fields": {
+						"_id": {},
 						"text": {
 							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
 						},
