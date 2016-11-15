@@ -58,7 +58,7 @@ var TodoList = React.createClass({
   getInitialState: () => {return {items:[]}},
   componentWillMount: function(){this.loadList()},
   checkHandler: function(id, status){
-    items.update({"_id":id}, {$set:{"checked":status}}, false, false).then(() => {
+    items.updateOne({"_id":id}, {$set:{"checked":status}}).then(() => {
       this.loadList();
     }, {"rule": "checked"})
   },
@@ -75,7 +75,7 @@ var TodoList = React.createClass({
   },
 
   clear: function(){
-    items.remove({checked:true}, false).then(() => {
+    items.deleteMany({checked:true}).then(() => {
       this.loadList();
     })
   },
@@ -115,7 +115,7 @@ var Home = function(){
 }
 
 function initUserInfo(id){
-  users.update(
+  users.upsert(
     {}, // filter from the rule will automatically populate user ID here.
     {$setOnInsert:{"phone_number":"", "number_status":"unverified"}},
     true, false).then(function(){});
@@ -125,9 +125,9 @@ var AwaitVerifyCode = React.createClass({
   checkCode: function(e){
     let obj = this
     if(e.keyCode == 13){
-      users.update(
+      users.updateOne(
         {_id:{"$oid":baasClient.authedId()}, verify_code:this._code.value},
-        {"$set":{"number_status":"verified"}},false,false).then(
+        {"$set":{"number_status":"verified"}}).then(
           (data)=>{ obj.props.onSubmit() }
         )
     }
@@ -172,13 +172,13 @@ var NumberConfirm = React.createClass({
             }
           }],
           (data)=>{
-            users.update(
+            users.updateOne(
               {"number_status":"unverified"},
               {$set:{
                 "phone_number":"+1" + this._number.value,
                 "number_status":"pending",
                 "verify_code":code}
-              }, false, false).then(
+              }).then(
                 () => { this.props.onSubmit() }
               )
           }
