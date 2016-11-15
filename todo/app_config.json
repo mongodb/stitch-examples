@@ -24,9 +24,9 @@
 			"rules": [
 				{
 					"namespace": "todo.items",
-					"visible": {"$$doc.user": "$$auth.id"},
-					"validate": {"$$newDoc.user": "$$auth.id"},
-					"change": {"$$newDoc.user": "$$auth.id"},
+					"visible": {"$$root.user": "$$auth.id"},
+					"validate": {"$$newRoot.user": "$$auth.id"},
+					"change": {"$$newRoot.user": "$$auth.id"},
 					"fields": {
 						"text": {
 							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
@@ -39,7 +39,7 @@
 				},
 				{
 					"namespace": "todo.users",
-					"visible": {"$$doc._id": "$$auth.id"},
+					"visible": {"$$root._id": "$$auth.id"},
 					"validate": {"$$new.user": "$$auth.id"},
 					"change": {"$$new.user": "$$auth.id"},
 					"fields": {
