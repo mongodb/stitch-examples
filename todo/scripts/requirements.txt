@@ -1,0 +1,2 @@
+file:../../../clients/python
+pymongo

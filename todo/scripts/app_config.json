@@ -1,0 +1,97 @@
+{
+	"authProviders": {
+		"local/userpass": {
+			"metadataFields": ["name", "email"]
+		},
+		"oauth2/facebook": {
+			"metadataFields": ["email", "name"],
+			"clientId": "APP-ID",
+			"clientSecret": "APP-SECRET"
+		},
+		"oauth2/google": {
+			"metadataFields": ["email", "name"],
+			"clientId": "APP-ID",
+			"clientSecret": "APP-SECRET"
+		}
+	},
+
+	"services": {
+		"mdb1": {
+			"type": "mongodb",
+			"config": {
+				"uri": "mongodb://localhost:27017"
+			},
+			"rules": [
+				{
+					"namespace": "todo.items",
+					"visible": {"$$doc.user": "$$auth.id"},
+					"validate": {"$$newDoc.user": "$$auth.id"},
+					"change": {"$$newDoc.user": "$$auth.id"},
+					"fields": {
+						"text": {
+							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
+						},
+						"user": {},
+						"checked": {
+							"validate": {"$$new": {"$type": "bool"}}
+						}
+					}
+				},
+				{
+					"namespace": "todo.users",
+					"visible": {"$$doc._id": "$$auth.id"},
+					"validate": {"$$new.user": "$$auth.id"},
+					"change": {"$$new.user": "$$auth.id"},
+					"fields": {
+						"_id": {},
+						"phone_number": {
+							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
+						},
+						"number_status": {
+							"validate": { "$$new": {"$in": ["pending", "unverified", "verified"]}}
+						},
+						"verify_code": {
+							"validate": {"$$root.number_status": "pending"}
+						}
+					}
+				}
+			]
+		},
+
+		"tw1": {
+			"type": "twilio",
+			"config": {
+				"auth_token": "TWILIO-AUTHTOKEN",
+				"sid": "TWILIO-SID"
+			},
+			"rules": [
+				{
+					"priority": 0,
+					"actions": ["send"]
+				}
+			],
+			"triggers": [
+				{
+					"pipeline": [
+						{
+							"action": "literal",
+							"args": {"items": [{"message": "$$trigger"}]}
+						},
+						{
+							"service": "mdb1",
+							"action": "insert",
+							"args": {"database": "todo-app", "collection": "messages"}
+						}
+					]
+				}
+			]
+		}
+	},
+
+	"variables": {
+		"ourNumber": {
+			"type": "literal",
+			"source": "TWILIO-PHONENUMBER"
+		}
+	}
+}
