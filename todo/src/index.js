@@ -116,7 +116,7 @@ var Home = function(){
 
 function initUserInfo(id){
   users.upsert(
-    {}, // filter from the rule will automatically populate user ID here.
+    {'_id': {"$oid":baasClient.authedId()}},
     {$setOnInsert:{"phone_number":"", "number_status":"unverified"}},
     true, false).then(function(){});
 }
@@ -167,13 +167,13 @@ var NumberConfirm = React.createClass({
             service:"tw1", action:"send", 
             args: {
               "to":"+1" + this._number.value,
-              "from":"$var.ournumber",
+              "from":"$$var.ourNumber",
               "body": "Your confirmation code is "+ code
             }
-          }],
+          }]).then(
           (data)=>{
             users.updateOne(
-              {"number_status":"unverified"},
+              {"_id": {"$oid":baasClient.authedId()}, "number_status":"unverified"},
               {$set:{
                 "phone_number":"+1" + this._number.value,
                 "number_status":"pending",

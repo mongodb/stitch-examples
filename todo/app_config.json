@@ -28,7 +28,9 @@
 					"validate": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": null}]},
 					"change": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": null}]},
 					"fields": {
-						"_id": {},
+						"_id": {
+							"change": {"$$old": {"$exists": false}}
+						},
 						"text": {
 							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
 						},
@@ -41,18 +43,26 @@
 				{
 					"namespace": "todo.users",
 					"visible": {"$$root._id": "$$auth.id"},
-					"validate": {"$$new.user": "$$auth.id"},
-					"change": {"$$new.user": "$$auth.id"},
+					"validate": {"$$new._id": "$$auth.id"},
+					"change": {"$$new._id": "$$auth.id"},
 					"fields": {
-						"_id": {},
+						"_id": {
+							"change": {"$$old": {"$exists": false}}
+						},
 						"phone_number": {
-							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
+							"validate": {
+								"$$new": {"$type": "string"},
+								"$or": [
+									{"$$new": {"$eq": ""}, "$$newRoot.number_status": "unverified"},
+									{"$$new": {"$ne": ""}, "$$newRoot.number_status": {"$in": ["pending", "verified"]}}
+								]
+							}
 						},
 						"number_status": {
 							"validate": { "$$new": {"$in": ["pending", "unverified", "verified"]}}
 						},
 						"verify_code": {
-							"validate": {"$$root.number_status": "pending"}
+							"validate": {"$$newRoot.number_status": {"$in": ["pending", "verified"]}}
 						}
 					}
 				}
@@ -62,8 +72,8 @@
 		"tw1": {
 			"type": "twilio",
 			"config": {
-				"auth_token": "TWILIO-AUTHTOKEN",
-				"sid": "TWILIO-SID"
+				"auth_token": "AUTH_TOKEN",
+				"sid": "SID"
 			},
 			"rules": [
 				{
@@ -75,15 +85,40 @@
 				{
 					"pipeline": [
 						{
-							"action": "literal",
-							"args": {"items": [{"message": "$$trigger"}]}
+							"action": "expr",
+							"args": {
+								"expression": {
+									"user": "$$var.id_from_phone._id",
+									"text": "$$trigger.Body"
+								}
+							}
 						},
 						{
 							"service": "mdb1",
 							"action": "insert",
-							"args": {"database": "todo-app", "collection": "messages"}
+							"args": {"database": "todo", "collection": "items"}
 						}
-					]
+					],
+
+					"variables": {
+						"id_from_phone": {
+							"type": "pipeline",
+							"source": {
+								"pipeline": [
+									{
+										"service": "mdb1",
+										"action": "find",
+										"args": {
+											"database": "todo",
+											"collection": "users", 
+											"query": {"phone_number": "$$trigger.From"}
+										}
+									}
+								],
+								"output": "singleDoc"
+							}
+						}
+					}
 				}
 			]
 		}
@@ -92,7 +127,7 @@
 	"variables": {
 		"ourNumber": {
 			"type": "literal",
-			"source": "TWILIO-PHONENUMBER"
+			"source": "OUR_NUMBER"
 		}
 	}
 }
