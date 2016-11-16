@@ -187,7 +187,7 @@ let Board = React.createClass({
       setModifier[`lists.${toList._id.$oid}.cards.${to.data._id.$oid}`] = fromCard
       updateSpec = {"$set":setModifier, "$unset": unsetModifier}
     }
-    this.props.route.db.boards.update({_id:{$oid:this.props.routeParams.id}}, updateSpec).then(this.load) 
+    this.props.route.db.boards.updateOne({_id:{$oid:this.props.routeParams.id}}, updateSpec).then(this.load) 
   },
   newList(){
     this.setState({newList:true})
@@ -204,9 +204,9 @@ let Board = React.createClass({
         let setObj = {}
         let oid = ObjectID().toHexString()
         setObj["lists." + oid] =  {_id: {$oid:oid}, "name":name, "cards":{}}
-        this.props.route.db.boards.update(
+        this.props.route.db.boards.updateOne(
           {_id:{$oid:this.props.routeParams.id}},
-          {$set:setObj}, false, false)
+          {$set:setObj})
         .then(()=>{
           this._newlistname.value = ""
           this.load()
@@ -385,9 +385,9 @@ let List = DragDropContext(HTML5Backend)(
       return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": {"$oid": this.props.db._client.authedId()}}]).then(()=>{
         let setObj = {}
         setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.props.data.cards||[]).length+1}
-        db.boards.update(
+        db.boards.updateOne(
           {_id:{$oid:boardId}},
-          {$set:setObj}, false, false)
+          {$set:setObj})
       }).then(
         this.setState({showNewCardBox:false})
       )
@@ -408,9 +408,9 @@ let List = DragDropContext(HTML5Backend)(
     delete(){
       let unsetObj = {}
       unsetObj["lists." + this.props.data._id.$oid] = 1;
-      this.props.db.boards.update(
+      this.props.db.boards.updateOne(
         {_id:{$oid:this.props.boardId}},
-        {$unset:unsetObj}, false, false)
+        {$unset:unsetObj})
       .then(this.props.onUpdate)
     },
     openEditor(cid){
@@ -461,13 +461,12 @@ let List = DragDropContext(HTML5Backend)(
 let CardEditor = React.createClass({
   save(){
     let newSummary = this._summary.value;
-    this.props.db.cards.update({_id:this.props.editingId}, 
-      {$set:{summary:newSummary, description:this._desc.value}},
-      false, false)
+    this.props.db.cards.updateOne({_id:this.props.editingId}, 
+      {$set:{summary:newSummary, description:this._desc.value}})
     .then(()=>{
       let setObj = {}
       setObj[`lists.${this.props.listId.$oid}.cards.${this.props.editingId.$oid}.summary`] = newSummary;
-      return this.props.db.boards.update({_id:{$oid:this.props.boardId}}, {$set:setObj}, false, false)
+      return this.props.db.boards.updateOne({_id:{$oid:this.props.boardId}}, {$set:setObj})
     })
     .then(this.props.onUpdate)
   },
@@ -504,7 +503,7 @@ let CardEditor = React.createClass({
 
 let CardComments = React.createClass({
   deleteComment(id){
-    this.props.db.cards.update(
+    this.props.db.cards.updateOne(
       {_id:this.props.cardId},
       {$pull:{"comments":{_id:id}}}
     )
@@ -512,10 +511,9 @@ let CardComments = React.createClass({
       let newNumComments = this.props.comments.length-1
       let modifier = {}
       modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
-      return this.props.db.boards.update(
+      return this.props.db.boards.updateOne(
         {_id:{$oid:this.props.boardId}},
-        {$set:modifier},
-        false,false)
+        {$set:modifier})
       })
     .then(this.props.onUpdate)
     .then(this.props.boardUpdate)
@@ -559,7 +557,7 @@ let PostCommentForm = React.createClass({
     let emailHash = md5(this.props.db._client.auth().user.data.email)
     let name = this.props.db._client.auth().user.data.name;
     let newCommentId = ObjectID().toHexString()
-    this.props.db.cards.update(
+    this.props.db.cards.updateOne(
       {_id:this.props.cardId},
       {$push:
         {"comments":
@@ -578,10 +576,9 @@ let PostCommentForm = React.createClass({
       // Consistency issue if another client adds a comment concurrently.
       let modifier = {}
       modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
-      return this.props.db.boards.update(
+      return this.props.db.boards.updateOne(
         {_id:this.props.boardId},
-        {$set:modifier},
-        false,false)
+        {$set:modifier})
     })
     .then(this.props.onUpdate)
     .then(this.props.boardUpdate)
@@ -603,8 +600,8 @@ let PostCommentForm = React.createClass({
           service:"ses1",
           action:"send",
           args:{
-            fromAddress:"mike@mongodb.com",
-            toAddress:"$item.email",
+            fromAddress:"eric.daniels@mongodb.com",
+            toAddress:"$$item.email",
             subject: name + " mentioned you in a comment.",
             body: comment,
           }

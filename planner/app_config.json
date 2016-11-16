@@ -1,134 +1,106 @@
 {
-	"_id": {
-		"$oid": "57fe991d2cceb5e99764ce80"
-	},
-	"name": "planner",
-	"domainId": {
-		"$oid": "57fe991d5b199c7d4b8b07c2"
-	},
-	"ownerId": {
-		"$oid": "57fe99155b199c7d4b8b07ba"
-	},
 	"authProviders": {
+		"local/userpass": {
+			"metadataFields": ["name", "email"]
+		},
+		"oauth2/facebook": {
+			"metadataFields": ["email", "name"],
+			"clientId": "APP-ID",
+			"clientSecret": "APP-SECRET"
+		},
 		"oauth2/google": {
-			"clientId": "CLIENT-ID",
-			"clientSecret": "CLIENT-SECRET"
+			"metadataFields": ["email", "name"],
+			"clientId": "APP-ID",
+			"clientSecret": "APP-SECRET"
 		}
 	},
+
 	"services": {
 		"mdb1": {
 			"type": "mongodb",
 			"config": {
 				"uri": "mongodb://localhost:27017"
 			},
-			"rules": {
-				"57fe99855b199c7d4b8b07f2": {
-					"_id": {
-						"$oid": "57fe99855b199c7d4b8b07f2"
-					},
-					"priority": 0,
-					"actions": [
-						"find",
-						"update",
-						"insert",
-						"delete",
-						"aggregate"
-					],
-					"namespace": "planner.items",
-					"filter": {
-						"user": "$var.$auth.id"
-					},
-					"validate": {
-						"user": "$var.$auth.id"
-					},
+			"rules": [
+				{
+					"namespace": "planner.boards",
+					"visible": {"$or": [{"$$root.owner_id": "$$auth.id"}, {"$$root.members": "$$auth.id"}]},
 					"fields": {
-						"mutable": [
-							"text",
-							"user",
-							"checked"
-						],
-						"allMutable": false
+						"_id": {
+							"change": {"$$old": {"$exists": false}}
+						},
+						"name": {
+
+						},
+						"owner_id": {
+
+						},
+						"lists": {
+							"fields": {
+								"$$other": {
+								}
+							}
+						},
+						"lcount": {
+
+						},
+						"members": {
+
+						}
 					}
 				},
-				"57fe99b35b199c7d4b8b0805": {
-					"_id": {
-						"$oid": "57fe99b35b199c7d4b8b0805"
-					},
-					"name": "checked",
-					"priority": 1,
-					"actions": [
-						"update"
-					],
-					"namespace": "planner.items",
-					"filter": {
-						"user": "$var.$auth.id"
-					},
+				{
+					"namespace": "planner.cards",
 					"fields": {
-						"mutable": [
-							"checked"
-						],
-						"allMutable": false
+						"_id": {
+							"change": {"$$old": {"$exists": false}}
+						},
+						"author": {
+							"change": {"$$old": {"$exists": false}},
+							"validate": {"$$new": "$$auth.id"}
+						},
+						"summary": {
+							"validate": {"$$new": {"$ne": ""}, "$$new": {"$type": "string"}}
+						},
+						"comments": {
+							
+						},
+						"description": {
+
+						}
 					}
 				},
-				"57fead0a5b199c7d4b8b0838": {
-					"_id": {
-						"$oid": "57fead0a5b199c7d4b8b0838"
-					},
-					"priority": 2,
-					"actions": [
-						"find",
-						"update",
-						"insert"
-					],
+				{
 					"namespace": "planner.users",
-					"filter": {
-						"_id": "$var.$auth.id"
-					},
-					"validate": {
-						"_id": "$var.$auth.id"
-					},
+					"change": {"$$old": {"$exists": false}},
 					"fields": {
-						"mutable": [
-							"phone_number",
-							"number_status",
-							"verify_code"
-						],
-						"allMutable": false
+						"_id": {
+						},
+						"authId": {
+							"validate": {"$$new": "$$auth.id"}
+						},
+						"email": {
+						},
+						"name": {
+						}
 					}
 				}
-			},
-			"variables": {
-				"ournumber": {
-					"name": "ournumber",
-					"type": 0,
-					"source": "TWILIO-PHONENUMBER"
-				}
-			}
+			]
 		},
-		"tw1": {
-			"type": "twilio",
+
+		"ses1": {
+			"type": "aws-ses",
 			"config": {
-				"auth_token": "TWILIO-AUTHTOKEN",
-				"sid": "TWILIO-SID"
+				"region":"us-east-1",
+				"accessKeyId":"ACCESS-KEY-ID",
+				"secretAccessKey":"SECRET-ACCESS-KEY"
 			},
-			"rules": {
-				"57ffc9bf5b199c7d4b8b0880": {
-					"_id": {
-						"$oid": "57ffc9bf5b199c7d4b8b0880"
-					},
+			"rules": [
+				{
 					"priority": 0,
-					"actions": [
-						"send"
-					]
+					"actions": ["send"]
 				}
-			},
-			"variables": {
-				"ournumber": {
-					"name": "ournumber",
-					"type": 0,
-					"source": "TWILIO-PHONENUMBER"
-				}
-			}
+			]
 		}
 	}
 }
