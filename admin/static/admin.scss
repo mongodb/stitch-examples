@@ -125,6 +125,39 @@ body > br {
     padding:5px;
   }
 }
+.service-edit{
+  margin-top:20px;
+  .service-edit-menu{
+    float:left;
+    .service-edit-menu-item{
+      padding:5px;
+      border:1px solid $gray5;
+      &:nth-child(n+2) {
+        margin-top: -1px;
+      }
+    }
+  }
+  .service-edit-content{
+    padding-left:50px;
+    float:left;
+
+    .edit-config{
+      .edit-config-text{
+        width:200px;
+        min-height:100px;
+      }
+    }
+
+    .edit-rules {
+      .rule{
+      }
+    }
+  }
+}
+.error{
+  background: red;
+  color:white;
+}
 /*
 <div className="apphome">
 <h3>{this.state.app ? this.state.app.name : null}</h3>

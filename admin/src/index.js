@@ -114,6 +114,7 @@ let App = React.createClass({
   },
   load(){
     admin.apps().app(this.props.params.name).get().then((app)=>{
+      console.log("setting app state", app)
       this.setState({app:app})
       return admin.apps().app(this.props.params.name).services().list()
     }).then((svcs) => {
@@ -125,10 +126,22 @@ let App = React.createClass({
       <div className="apphome">
         <div className="title">{this.state.app ? this.state.app.name : null}</div>
         <div className="apptabs">
-          <span className="tab apptabs-services">Services</span>
-          <span className="tab apptabs-auth">Authentication</span>
+          <span className="tab apptabs-services">
+            <Link to={`/apps/${this.state.app.name}/services`}>Services</Link>
+          </span>
+          <span className="tab apptabs-auth">
+            <Link to={`/apps/${this.state.app.name}/auth`}>Authentication</Link>
+          </span>
+          <span className="tab apptabs-variables">
+            <Link to={`/apps/${this.state.app.name}/variables`}>Variables</Link>
+          </span>
         </div>
-        {this.props.children ? React.cloneElement(this.props.children, { app: this.state.app }) : null}
+        {
+          React.Children.map(
+            this.props.children,
+            (c)=>(React.cloneElement(c, { app: this.state.app }))
+          )
+        }
       </div>
     )
   }
@@ -205,9 +218,124 @@ let Services = React.createClass({
   }
 })
 
-let EditService = function(){
-  return 
-}
+let EditService = React.createClass({
+  componentWillMount(){
+    this.load()
+  },
+  load(){
+    admin.apps().app(this.props.params.name)
+      .services().service(this.props.params.svcname).get().then(
+        (d)=>{this.setState({service:d})}
+      )
+  },
+  render(){
+    let svcname = this.props.params.svcname
+    let appName = this.props.params.name
+    let app = this.props.app;
+    if(this.state.service){
+      return (
+        <div className="service-edit">
+          <div className="service-edit-menu">
+            <div className="service-edit-menu-item">
+              <Link to={"/apps/" + appName +"/services/" + svcname+"/config"}>Config</Link>
+            </div>
+            <div className="service-edit-menu-item">
+              <Link to={"/apps/" + appName +"/services/" + svcname+"/triggers"}>Triggers</Link>
+            </div>
+            <div className="service-edit-menu-item">
+              <Link to={"/apps/" + appName +"/services/" + svcname+"/rules"}>Rules</Link>
+            </div>
+          </div>
+          <div className="service-edit-content">
+            { 
+              React.Children.map(this.props.children, (c)=>{
+                return React.cloneElement(c, {svcname:svcname, app:app, service: this.state.service})
+              })
+            }
+          </div>
+        </div>
+      )
+    }
+
+  }
+})
+
+let EditConfig = React.createClass({
+  getInitialState(){
+    return {config:""}
+  },
+  componentWillMount(){
+    this.load();
+  },
+  save(){
+    let parsedConfig = {}
+    try{
+      parsedConfig = JSON.parse(this._config.value)
+    }catch(err){
+      this.setState({error : "Invalid json"})
+    }
+    admin.apps().app(this.props.params.name)
+      .services().service(this.props.params.svcname).setConfig(parsedConfig).then(
+        (d)=>{
+          this.setState({config:d.config});
+          this._config.value = JSON.stringify(d.config, null, 2);
+        }
+      )
+  },
+  load(){
+    this.setState({
+      //config: JSON.stringify(this.props.app.services[this.props.svcname].config, null, 2)
+    //})
+    /*admin.apps().app(this.props.params.name)
+      .services().service(this.props.params.svcname).get().then(
+        (d)=>{
+          this.setState({config:d.config});
+          this._config.value = JSON.stringify(d.config, null, 2);
+        }
+      )
+      */
+  },
+  render(){
+    return (
+      <div className="edit-config">
+        {this.state.error ? <Error error={this.state.error}/> : null}
+        <textarea ref={(n)=>{this._config=n}} className="edit-config-text"></textarea>
+        <div>
+          <button onClick={this.save}>Save</button>
+        </div>
+      </div>
+    )
+  }
+})
+
+let Error = React.createClass({
+  render(){
+    return (<div className="error">{this.props.error}</div>)
+  }
+})
+
+let EditRules = React.createClass({
+  render(){
+    return (
+      <div className="edit-rules">
+        <div className="rules-list">
+        </div>
+      </div>
+    )
+  }
+})
+
+let EditTriggers =React.createClass({
+  render(){
+    return (
+      <div className="edit-triggers">
+        edit triggers
+      </div>
+    )
+  }
+})
+
+
 
 render((
   <div>
@@ -217,8 +345,11 @@ render((
         <Route path="/apps">
           <Route path=":name" component={App}>
             <IndexRoute component={Services}/>
-            <Route path="services" component={Services}>
-              <Route path=":svcname" component={EditService}/>
+            <Route path="services" component={Services}/>
+            <Route path="services/:svcname" component={EditService}>
+              <Route path="config" component={EditConfig}/>
+              <Route path="rules" component={EditRules}/>
+              <Route path="triggers" component={EditTriggers}/>
             </Route>
           </Route>
         </Route>
