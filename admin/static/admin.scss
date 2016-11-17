@@ -1,0 +1,33 @@
+// Variables
+
+$pw: #fff;
+$green1: #56B145;
+$green2: #6ECB5D;
+$green3: #DBF6D6;
+$gray0: #313030;
+$gray1: #494747;
+$gray2: #615f5f;
+$gray3: #807f7f;
+$gray4: #a09f9e;
+$gray5: #bfbfbe;
+$gray6: #dee0e3;
+$gray7: #ebebed;
+$gray8: #f5f6f7;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  color: $gray1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body > br {
+  display: none;
+}
+
