@@ -18,15 +18,6 @@ require("../static/admin.scss")
 
 let admin = new Admin("http://localhost:8080")
 window.admin = admin
-//a.auth("unique_user@domain.com", "password").then(function(x){
-  /*a.listApps().then((y)=>{
-    return a.listVars(y[0].name)
-  }).then((y)=>{
-    console.log(y)
-  })*/
-//});
-//
-//
 
 let AppListItem = React.createClass({
   remove(){
@@ -36,7 +27,7 @@ let AppListItem = React.createClass({
           console.log(this.props, this.props.onChange)
           this.props.onChange()
         }
-      )
+      ).catch(console.error)
     }
   },
   render(){
@@ -59,7 +50,7 @@ let ServiceListItem = React.createClass({
       ()=>{
         this.props.onChange()
       }
-    ).catch(console.log)
+    ).catch(console.error)
   },
   render(){
     return (
@@ -84,7 +75,7 @@ let Home = React.createClass({
   getInitialState(){
     return {apps:[]}
   },
-  componentWillMount(){
+  componentDidMount(){
     this.load()
   },
   load(){
@@ -109,7 +100,7 @@ let App = React.createClass({
   getInitialState(){
     return {app:{}, services:[]}
   },
-  componentWillMount(){
+  componentDidMount(){
     this.load()
   },
   load(){
@@ -175,7 +166,7 @@ let Services = React.createClass({
   getInitialState(){
     return {services:[], showNewForm:false}
   },
-  componentWillMount(){
+  componentDidMount(){
     this.load()
   },
   load(){
@@ -219,13 +210,18 @@ let Services = React.createClass({
 })
 
 let EditService = React.createClass({
-  componentWillMount(){
+  getInitialState(){
+    return {service:null}
+  },
+  componentDidMount(){
     this.load()
   },
   load(){
     admin.apps().app(this.props.params.name)
       .services().service(this.props.params.svcname).get().then(
-        (d)=>{this.setState({service:d})}
+        (d)=>{
+          this.setState({service:d})
+        }
       )
   },
   render(){
@@ -249,13 +245,14 @@ let EditService = React.createClass({
           <div className="service-edit-content">
             { 
               React.Children.map(this.props.children, (c)=>{
-                return React.cloneElement(c, {svcname:svcname, app:app, service: this.state.service})
+                return React.cloneElement(c, {svcname:svcname, app:app, service: this.state.service, onUpdate:this.load})
               })
             }
           </div>
         </div>
       )
     }
+    return (<div></div>)
 
   }
 })
@@ -264,8 +261,10 @@ let EditConfig = React.createClass({
   getInitialState(){
     return {config:""}
   },
-  componentWillMount(){
-    this.load();
+  componentDidMount(){
+    if(this.props.service){
+      this._config.value = JSON.stringify(this.props.service.config, null, 2);
+    }
   },
   save(){
     let parsedConfig = {}
@@ -273,27 +272,12 @@ let EditConfig = React.createClass({
       parsedConfig = JSON.parse(this._config.value)
     }catch(err){
       this.setState({error : "Invalid json"})
+      return
     }
     admin.apps().app(this.props.params.name)
-      .services().service(this.props.params.svcname).setConfig(parsedConfig).then(
-        (d)=>{
-          this.setState({config:d.config});
-          this._config.value = JSON.stringify(d.config, null, 2);
-        }
-      )
-  },
-  load(){
-    this.setState({
-      //config: JSON.stringify(this.props.app.services[this.props.svcname].config, null, 2)
-    //})
-    /*admin.apps().app(this.props.params.name)
-      .services().service(this.props.params.svcname).get().then(
-        (d)=>{
-          this.setState({config:d.config});
-          this._config.value = JSON.stringify(d.config, null, 2);
-        }
-      )
-      */
+      .services().service(this.props.params.svcname).setConfig(parsedConfig).then(()=>{
+        this.props.onUpdate()
+      }).catch(console.error)
   },
   render(){
     return (
@@ -314,11 +298,33 @@ let Error = React.createClass({
   }
 })
 
+let Rule = React.createClass({
+  remove(){
+  },
+  componentDidMount(){
+    let config = this.props.rule
+    delete config._id
+    this._config.value = JSON.stringify(this.props.rule, null, 2)
+  },
+  render(){
+    return (
+      <div className="rule-item">
+        <div className="rule-item-delete" onClick={this.remove}>&times;</div>
+        <textarea ref={(n)=>{this._config=n}} className="rule-item-text">
+        </textarea>
+      </div>
+    )
+  }
+})
+
 let EditRules = React.createClass({
   render(){
     return (
       <div className="edit-rules">
         <div className="rules-list">
+          {this.props.service.rules.map((x)=>{
+            return <Rule key={x._id} rule={x}/>
+          })}
         </div>
       </div>
     )

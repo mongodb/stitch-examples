@@ -149,7 +149,18 @@ body > br {
     }
 
     .edit-rules {
-      .rule{
+      .rules-list{
+        .rule-item{
+          .rule-item-delete{
+            float:left;
+            padding: 10px;
+          }
+          .rule-item-text{
+            float:left;
+            width:200px;
+            min-height:100px;
+          }
+        }
       }
     }
   }
