@@ -20,6 +20,10 @@ $gray8: #f5f6f7;
   box-sizing: border-box;
 }
 
+.clearfix {
+  clear:both;
+}
+
 body {
   font-family: sans-serif;
   color: $gray1;
@@ -31,3 +35,103 @@ body > br {
   display: none;
 }
 
+.apps-home{
+  padding:20px;
+
+  .apps-home-applist{
+    list-style:none;
+    width:200px;
+  }
+
+}
+
+.apps-home-applistitem{
+  vertical-align: middle;
+  padding:10px;
+  border:1px solid $gray5;
+  &:nth-child(n+2) {
+    margin-top: -1px;
+  }
+
+  .applistitem-links {
+    float:right;
+    .applistitem-name {
+      font-size:1.2em;
+    }
+
+    .applistitem-edit {
+      padding-right:5px;
+      font-size:.8em;
+    }
+    .applistitem-remove {
+      cursor:pointer;
+      font-weight:bold;
+      font-size:.8em;
+    }
+  }
+}
+
+.apphome{
+  padding:20px;
+  .title{
+    font-size:2em;
+    font-weight:bold;
+  }
+  .apptabs{
+    margin-top:20px;
+    .tab{
+      .active {
+        font-weight:bold;
+      }
+      padding:8px;
+      margin-right:5px;
+      border-left:1px solid $gray6;
+      border-right:1px solid $gray6;
+      border-top:1px solid $gray6;
+    }
+
+  }
+ .svcs-list{
+   margin:10px;
+   width:300px;
+   .svc-list-item{
+     vertical-align: middle;
+     padding:10px;
+     border:1px solid $gray5;
+     /*j.
+       <span>{this.props.serviceName} ({this.props.service.type})</span>
+       <span onClick={this.remove}>&times;</span>
+     */
+     &:nth-child(n+2) {
+       margin-top: -1px;
+     }
+   }
+    .svc-list-item-name{
+      display:inline-block;
+      float:left;
+    }
+    .svc-list-item-links{
+      float:right;
+      .svc-list-item-remove{
+        cursor:pointer;
+        font-weight:bold;
+      }
+    }
+ }
+}
+.svcs-tab{
+  margin-top:10px;
+  .svc-add-button{
+    padding:5px;
+  }
+}
+/*
+<div className="apphome">
+<h3>{this.state.app ? this.state.app.name : null}</h3>
+<div className="apptabs">
+<span className="tab apptabs-services">Services</span>
+<span className="tab apptabs-auth">Authentication</span>
+</div>
+{this.props.children ? React.cloneElement(this.props.children, { app: this.state.app }) : null}
+</div>
+ */
