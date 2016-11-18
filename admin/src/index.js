@@ -2,22 +2,11 @@ import React from 'react';
 import {render, findDOMNode} from 'react-dom';
 import {Admin, BaasClient, MongoClient} from 'baas';
 import {browserHistory, Router, Route, IndexRoute, Link} from 'react-router'
-//import AuthControls from "./auth.js"
-//import {Home} from "./home.js"
-//import Modal from "react-modal"
-//import ObjectID from "bson-objectid";
-//import { DragSource, DropTarget } from 'react-dnd';
-//import { DragDropContext } from 'react-dnd';
-//import HTML5Backend from 'react-dnd-html5-backend';
-//import {Converter} from 'showdown';
-//import { MentionsInput, Mention } from 'react-mentions'
 
 var FontAwesome = require('react-fontawesome');
 require("../static/admin.scss")
 
-
 let admin = new Admin("http://localhost:8080")
-window.admin = admin
 
 let AppListItem = React.createClass({
   remove(){
@@ -32,9 +21,8 @@ let AppListItem = React.createClass({
     let app = this.props.app
     return (
       <div key={app.name} className="apps-home-applistitem">
-        <span className="applistitem-name">{app.name}</span>
+        <Link className="applistitem-edit" to={"/apps/" + app.name}>{app.name}</Link>
         <div className="applistitem-links">
-          <Link className="applistitem-edit" to={"/apps/" + app.name}>edit</Link>
           <span className="applistitem-remove" onClick={this.remove}>&times;</span>
         </div>
       </div>
@@ -71,17 +59,33 @@ let ServiceListItem = React.createClass({
 
 let Home = React.createClass({
   getInitialState(){
-    return {apps:[]}
+    return {error:null,apps:[]}
   },
   componentDidMount(){
     this.load()
   },
   load(){
-    admin.apps().list().then((apps)=>{this.setState({apps:apps})})
+    admin.apps().list().then((apps)=>{this.setState({apps:apps, error:null})})
+  },
+  save(){
+    admin.apps()
+      .create({name:this._name.value})
+        .then(this.load)
+        .fail((r)=>{this.setState({error:r.responseJSON.error})})
+        .catch(console.error);
   },
   render(){
     return (
       <div className="apps-home">
+        {this.state.error ? <Error error={this.state.error}/> : null}
+        {this.state.newform ? 
+          <div>
+            <input type="text" placeholder="Name" ref={(n)=>{this._name=n}} type="text"/>
+            <button onClick={this.save}>Submit</button>
+            <button onClick={()=>{this.setState({newform:false})}}>cancel</button>
+          </div>
+          : <button onClick={()=>{this.setState({newform:true})}}>New App...</button>
+        }
         <div className="apps-home-applist">
         { 
           this.state.apps.map(
@@ -140,15 +144,22 @@ let App = React.createClass({
 })
 
 let AddServiceForm = React.createClass({
+  getInitialState(){
+    return {error:null}
+  },
   save(){
-    admin.apps().app(this.props.app.name).services().create(
-      {name:this._name.value, type:this._type.value}).then(this.props.onUpdate)
+    admin.apps().app(this.props.app.name).services()
+      .create({name:this._name.value, type:this._type.value})
+        .then(this.props.onUpdate)
+        .fail((r)=>{this.setState({error:r.responseJSON.error})})
+        .catch(console.error)
   },
   render(){
     //  TODO: fetch list of available service types from API.
     let serviceTypes = ["mongodb", "twilio", "http", "aws-ses", "aws-sqs", "github"]
     return (
       <div>
+        {this.state.error ? <Error error={this.state.error}/> : null}
         <label>Service Name<input ref={(n)=>{this._name=n}} type="text"/></label>
         <label>Service Type
           <select ref={(n)=>{this._type=n}}>
@@ -248,6 +259,10 @@ let EditService = React.createClass({
               <Link to={"/apps/" + appName +"/services/" + svcname+"/config"} activeClassName="active">Config</Link>
             </div>
             <div className="service-edit-menu-item">
+              {/*
+                TODO: this link should be disabled or hidden if 
+                the current service does not actually support triggers.
+              */}
               <Link to={"/apps/" + appName +"/services/" + svcname+"/triggers"} activeClassName="active">Triggers</Link>
             </div>
             <div className="service-edit-menu-item">
@@ -312,7 +327,7 @@ let Error = React.createClass({
 
 let Rule = React.createClass({
   getInitialState(){
-    return {_id:this.props.rule._id}
+    return {_id:this.props.rule._id, error:null}
   },
   resetText(){
     let config = Object.assign({}, this.props.rule)
@@ -331,6 +346,7 @@ let Rule = React.createClass({
         .catch(console.error);
   },
   save(){
+    this.setState({error:null})
     let parsedRule = {}
     try{
       parsedRule = JSON.parse(this._config.value)
@@ -344,11 +360,13 @@ let Rule = React.createClass({
       .rules().rule(this.state._id)
       .update(parsedRule)
         .then(()=>{this.props.onUpdate()})
+        .fail((r)=>{this.setState({error:r.responseJSON.error})})
         .catch(console.error);
   },
   render(){
     return (
       <div className="rule-item">
+        {this.state.error ? <Error error={this.state.error}/> : null}
         <textarea ref={(n)=>{this._config=n}} className="rule-item-text">
         </textarea>
         <div className="rule-item-actions">
@@ -387,10 +405,31 @@ let EditRules = React.createClass({
 })
 
 let EditTriggers =React.createClass({
+  getInitialState(){
+    return {triggers:[]}
+  },
+  load(){
+    admin.apps().app(this.props.app.name).services().service(this.props.svcname).triggers().list()
+    .then((d)=>{
+      this.setState({triggers:d})
+    })
+    .catch(console.error)
+  },
+  create(){
+    admin.apps().app(this.props.app.name).services().service(this.props.svcname).triggers().create()
+      .then(this.load)
+      .catch(console.error)
+  },
+  componentDidMount(){
+    this.load()
+  },
   render(){
     return (
       <div className="edit-triggers">
-        edit triggers
+        <button onClick={this.create}>Add...</button>
+        <div className="triggers-list">
+          {this.state.triggers.map((t)=><div key={t._id}>{JSON.stringify(t)}</div>)}
+        </div>
       </div>
     )
   }
@@ -510,6 +549,7 @@ let Authentication = React.createClass({
   load(){
     admin.apps().app(this.props.app.name).authProviders().list()
     .then((d)=>{
+      d = d || {}
       this.setState({providers:d})
       if(d["oauth2/facebook"]){
         this._fbId.value = d["oauth2/facebook"].clientId
@@ -561,7 +601,6 @@ let Authentication = React.createClass({
       .catch(console.error)
   },
   render(){
-    let pKeys = Object.keys(this.state.providers || {})
     return (
       <div className="edit-auth">
         <div className="auth-provider">
