@@ -71,6 +71,10 @@ body > br {
   }
 }
 
+.active {
+  font-weight:bold;
+}
+
 .apphome{
   padding:20px;
   .title{
@@ -80,9 +84,6 @@ body > br {
   .apptabs{
     margin-top:20px;
     .tab{
-      .active {
-        font-weight:bold;
-      }
       padding:8px;
       margin-right:5px;
       border-left:1px solid $gray6;
@@ -125,9 +126,38 @@ body > br {
     padding:5px;
   }
 }
+
+.edit-variables{
+  margin-top: 20px;
+  .variable-add{
+    margin-bottom:30px;
+  }
+  .edit-config-text{
+    width:200px;
+    min-height:100px;
+  }
+  .variable-item{
+    width:200px;
+    margin-top:30px;
+    .var-item-text{
+      height:100px;
+    }
+    .variable-item-actions{
+      float:right;
+    }
+  }
+}
+
 .service-edit{
   margin-top:20px;
+  margin-left:20px;
+  .service-name{
+    font-weight:bold;
+    font-size:1.3em;
+    margin-bottom:10px;
+  }
   .service-edit-menu{
+    width:150px;
     float:left;
     .service-edit-menu-item{
       padding:5px;
@@ -137,6 +167,8 @@ body > br {
       }
     }
   }
+
+
   .service-edit-content{
     padding-left:50px;
     float:left;
@@ -151,13 +183,18 @@ body > br {
     .edit-rules {
       .rules-list{
         .rule-item{
-          .rule-item-delete{
-            float:left;
+          margin-top:10px;
+          .rule-item-actions{
+            float:right;
             padding: 10px;
+            .rule-item-delete{
+              cursor:pointer;
+              font-weight:bold;
+            }
           }
           .rule-item-text{
             float:left;
-            width:200px;
+            width:300px;
             min-height:100px;
           }
         }
