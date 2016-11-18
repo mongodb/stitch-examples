@@ -22,11 +22,10 @@ window.admin = admin
 let AppListItem = React.createClass({
   remove(){
     if(confirm("sure you want to delete " + this.props.app.name + "?")) {
-      admin.apps().app(this.props.app.name).remove().then(
-        ()=>{
-          this.props.onChange()
-        }
-      ).catch(console.error)
+      admin.apps().app(this.props.app.name).remove()
+        .then(this.props.onChange)
+        .fail((r)=>{this.setState({error:r.responseJSON.error})})
+        .catch(console.error)
     }
   },
   render(){
@@ -111,28 +110,32 @@ let App = React.createClass({
     })
   },
   render(){
-    return (
-      <div className="apphome">
-        <div className="title">{this.state.app ? this.state.app.name : null}</div>
-        <div className="apptabs">
-          <span className="tab apptabs-services">
-            <Link to={`/apps/${this.state.app.name}/services`} activeClassName="active">Services</Link>
-          </span>
-          <span className="tab apptabs-auth">
-            <Link to={`/apps/${this.state.app.name}/auth`} activeClassName="active">Authentication</Link>
-          </span>
-          <span className="tab apptabs-variables">
-            <Link to={`/apps/${this.state.app.name}/variables`} activeClassName="active">Variables</Link>
-          </span>
+    if(this.state.app.name){
+      return (
+        <div className="apphome">
+          <div className="title">{this.state.app ? this.state.app.name : null}</div>
+          <div className="apptabs">
+            <span className="tab apptabs-services">
+              <Link to={`/apps/${this.state.app.name}/services`} activeClassName="active">Services</Link>
+            </span>
+            <span className="tab apptabs-auth">
+              <Link to={`/apps/${this.state.app.name}/auth`} activeClassName="active">Authentication</Link>
+            </span>
+            <span className="tab apptabs-variables">
+              <Link to={`/apps/${this.state.app.name}/variables`} activeClassName="active">Variables</Link>
+            </span>
+          </div>
+          {
+            React.Children.map(
+              this.props.children,
+              (c)=>(React.cloneElement(c, { app: this.state.app, onUpdate:this.load }))
+            )
+          }
         </div>
-        {
-          React.Children.map(
-            this.props.children,
-            (c)=>(React.cloneElement(c, { app: this.state.app, onUpdate:this.load }))
-          )
-        }
-      </div>
-    )
+      )
+    }else{
+      return null
+    }
   }
 })
 
@@ -205,7 +208,14 @@ let Services = React.createClass({
         </div>
       )
     }else{
-      return this.props.children;
+      let svcObj = this.state.services[this.props.params.svcname]
+      return (
+        <div className="svcs-tab">
+          {React.Children.map(this.props.children, (c)=>{
+            return React.cloneElement(c, {svcname:this.props.params.svcname, app:this.props.app, service: svcObj, onUpdate:this.load})
+          })}
+        </div>
+      )
     }
   }
 })
@@ -355,13 +365,17 @@ let EditRules = React.createClass({
   getInitialState(){
     return {showRuleForm:false}
   },
+  addRule(){
+    admin.apps().app(this.props.app.name)
+      .services().service(this.props.svcname)
+      .rules().create({})
+        .then(this.props.onUpdate)
+        .catch(console.error);
+  },
   render(){
     return (
       <div className="edit-rules">
-        {!this.state.showRuleForm ?
-          <button className="new-rule" 
-            onClick={()=>{this.setState({showRuleForm:true})}}>Add Rule</button>
-          : null }
+        <button className="new-rule" onClick={this.addRule}>Add Rule</button>
         <div className="rules-list">
           {(this.props.service.rules || []).map((x, i)=>{
             return <Rule key={x._id} rule={x} svcname={this.props.svcname} app={this.props.app} onUpdate={this.props.onUpdate}/>
@@ -381,17 +395,6 @@ let EditTriggers =React.createClass({
     )
   }
 })
-
-let Authentication = React.createClass({
-  render(){
-    return (
-      <div className="edit-auth">
-        edit authentication
-      </div>
-    )
-  }
-})
-
 
 let Variable = React.createClass({
   getInitialState(){
@@ -423,11 +426,12 @@ let Variable = React.createClass({
     admin.apps().app(this.props.app.name)
       .variables().variable(this.props.variable.name).update(parsedVar)
         .then(()=>{this.props.onUpdate()})
-        .catch(console.error);
+        .fail((r)=>{this.setState({error:r.responseJSON.error})})
   },
   render(){
     return (
       <div className="variable-item">
+        {this.state.error ? <Error error={this.state.error}/> : null}
         <textarea ref={(n)=>{this._config=n}} className="var-item-text">
         </textarea>
         <div className="variable-item-actions">
@@ -441,20 +445,26 @@ let Variable = React.createClass({
 })
 
 let Variables = React.createClass({ 
+  getInitialState(){
+    return {error:null}
+  },
   save(){
     let parsedVar = {}
     admin.apps().app(this.props.app.name).variables().create({
       name:this._name.value,
       type:this._type.value,
-    }).then(this.props.onUpdate).catch(console.error)
+    }).then(this.props.onUpdate)
+      .fail((r)=>{this.setState({error:r.responseJSON.error})})
+
   },
   render(){
     let varKeys = Object.keys(this.props.app.variables || {})
     return (
       <div className="edit-variables">
         <div className="variable-add">
+          {this.state.error ? <Error error={this.state.error}/> : null}
           <div>New Variable</div>
-          <input type="text" ref={(n)=>{this._name=n}}></input>
+          <input type="text" placeholder="variable name" ref={(n)=>{this._name=n}}></input>
           <select ref={(n)=>{this._type=n}}>
             <option value="pipeline">Pipeline</option>
             <option value="literal">Literal</option>
@@ -469,12 +479,136 @@ let Variables = React.createClass({
         </div>
       </div>
     )
-
   }
 })
 
+let AuthProvider = React.createClass({ 
+  getInitialState: () => ({error:null}),
+  componentDidMount(){
+    if(this.props.provider){
+      this._config.value = JSON.stringify(this.props.provider, null, 2);
+    }
+  },
+  render(){
+    return (
+      <div className="auth-provider-edit-config">
+        <div>{this.props.id}</div>
+        {this.state.error ? <Error error={this.state.error}/> : null}
+        <textarea ref={(n)=>{this._config=n}} className="edit-config-text"></textarea>
+        <div>
+          <button onClick={this.save}>Save</button>
+        </div>
+      </div>
+    )
+  }
+})
 
-
+let Authentication = React.createClass({ 
+  getInitialState(){
+    return {error:null, providers:{}, editing:{}}
+  },
+  load(){
+    admin.apps().app(this.props.app.name).authProviders().list()
+    .then((d)=>{
+      this.setState({providers:d})
+      if(d["oauth2/facebook"]){
+        this._fbId.value = d["oauth2/facebook"].clientId
+        this._fbSecret.value = d["oauth2/facebook"].clientSecret
+      }
+      if(d["oauth2/google"]){
+        this._googId.value = d["oauth2/google"].clientId
+        this._googSecret.value = d["oauth2/google"].clientSecret
+      }
+    })
+    .catch(console.error)
+  },
+  editing(pName, val){
+    if(val === undefined){
+      return this.state.editing[pName]
+    }
+    let editing = Object.assign({}, this.state.editing)
+    editing[pName] = val
+    this.setState({editing})
+  },
+  remove(pName){
+    if(pName in this.state.providers){
+      // need to delete it
+      let pParts = pName.split("/")
+      admin.apps().app(this.props.app.name).authProviders().provider(pParts[0], pParts[1])
+      .remove()
+        .then(this.load)
+        .catch(console.error)
+    }else{
+      // need to unset editing form
+      this.editing(pName, false)
+    }
+  },
+  componentDidMount(){
+    this.load()
+  },
+  enable(pName){
+    let pParts = pName.split("/")
+    let data = {authType : pParts[0], authName: pParts[1]}
+    admin.apps().app(this.props.app.name).authProviders().create(data)
+      .then(this.load)
+      .catch(console.error)
+  },
+  save(pName, data){
+    let pParts = pName.split("/")
+    admin.apps().app(this.props.app.name).authProviders().provider(pParts[0], pParts[1])
+    .update(data)
+      .then(this.load)
+      .catch(console.error)
+  },
+  render(){
+    let pKeys = Object.keys(this.state.providers || {})
+    return (
+      <div className="edit-auth">
+        <div className="auth-provider">
+          <div className="auth-provider-name">local/userpass</div>
+          {"local/userpass" in this.state.providers ?
+            <button onClick={()=>{this.remove("local/userpass")}}>Disable</button> :
+            <button onClick={()=>{this.enable("local/userpass")}}>Enable</button>
+          }
+        </div>
+        <div className="auth-provider">
+          <div className="auth-provider-name">oauth2/facebook</div>
+          {"oauth2/facebook" in this.state.providers || this.editing("oauth2/facebook") ?
+            <div>
+              <div className="auth-provider-input"><label>Client ID<input type="text" ref={(n)=>{this._fbId=n}}/></label></div>
+              <div className="auth-provider-input"><label>Client Secret<input type="text" ref={(n)=>{this._fbSecret=n}}/></label></div>
+              <div>
+                <button onClick={
+                    ()=>{
+                      this.save("oauth2/facebook",
+                        {clientId:this._fbId.value,clientSecret:this._fbSecret.value}
+                      )
+                }}> Save </button>
+                <button onClick={()=>{this.remove("oauth2/facebook")}}>Disable</button>
+              </div>
+            </div> : <button onClick={()=>{this.enable("oauth2/facebook")}}>Enable</button> 
+          }
+        </div>
+        <div className="auth-provider">
+          <div className="auth-provider-name">oauth2/google</div>
+          {"oauth2/google" in this.state.providers || this.editing("oauth2/google") ?
+            <div>
+              <div><label>Client ID<input type="text" ref={(n)=>{this._googId=n}}/></label></div>
+              <div><label>Client Secret<input type="text" ref={(n)=>{this._googSecret=n}}/></label></div>
+                <button onClick={
+                    ()=>{
+                      this.save("oauth2/google",
+                        {clientId:this._googId.value,clientSecret:this._googSecret.value}
+                      )
+                }}> Save </button>
+              <button onClick={()=>{this.remove("oauth2/google")}}>Disable</button>
+            </div> : <button onClick={()=>{this.enable("oauth2/google")}}>Enable</button> 
+          }
+        </div>
+      </div>
+    )
+  }
+})
 
 render((
   <div>

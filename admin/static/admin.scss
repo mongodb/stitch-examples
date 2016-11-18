@@ -127,6 +127,29 @@ body > br {
   }
 }
 
+.edit-auth{
+  .auth-provider{
+    &-name{
+      font-weight:bold;
+      margin-bottom:5px;
+    }
+    &-input{
+      
+    }
+    button{
+      padding:5px;
+    }
+    width:300px;
+    margin-top:8px;
+    margin-bottom:8px;
+    padding:5px;
+    border:1px solid $gray5;
+    &:nth-child(n+2) {
+      margin-top: -1px;
+    }
+  }
+}
+
 .edit-variables{
   margin-top: 20px;
   .variable-add{
