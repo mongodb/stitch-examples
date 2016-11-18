@@ -8,6 +8,14 @@ require("../static/admin.scss")
 
 let admin = new Admin("http://localhost:8080")
 
+let handleError = (r)=>{
+  if(r.status == 401){
+    browserHistory.push("/login")
+    return
+  }
+  console.error(r)
+}
+
 let AppListItem = React.createClass({
   remove(){
     if(confirm("sure you want to delete " + this.props.app.name + "?")) {
@@ -66,17 +74,19 @@ let Home = React.createClass({
   },
   load(){
     admin.apps().list().then((apps)=>{this.setState({apps:apps, error:null})})
+    .catch(handleError)
   },
   save(){
     admin.apps()
       .create({name:this._name.value})
         .then(this.load)
         .fail((r)=>{this.setState({error:r.responseJSON.error})})
-        .catch(console.error);
+        .catch(handleError)
   },
   render(){
     return (
       <div className="apps-home">
+        <div> <Link to="/logout">Log out</Link></div>
         {this.state.error ? <Error error={this.state.error}/> : null}
         {this.state.newform ? 
           <div>
@@ -109,9 +119,11 @@ let App = React.createClass({
     admin.apps().app(this.props.params.name).get().then((app)=>{
       this.setState({app:app})
       return admin.apps().app(this.props.params.name).services().list()
-    }).then((svcs) => {
+    })
+    .then((svcs) => {
       this.setState({services:svcs})
     })
+    .catch(handleError)
   },
   render(){
     if(this.state.app.name){
@@ -152,7 +164,7 @@ let AddServiceForm = React.createClass({
       .create({name:this._name.value, type:this._type.value})
         .then(this.props.onUpdate)
         .fail((r)=>{this.setState({error:r.responseJSON.error})})
-        .catch(console.error)
+        .catch(handleError)
   },
   render(){
     //  TODO: fetch list of available service types from API.
@@ -182,9 +194,11 @@ let Services = React.createClass({
     this.load()
   },
   load(){
-    admin.apps().app(this.props.params.name).services().list().then((svcs) => {
+    admin.apps().app(this.props.params.name).services().list()
+    .then((svcs) => {
       this.setState({services:svcs})
     })
+    .catch(handleError)
   },
   render(){
     let svcKeys = Object.keys(this.state.services)
@@ -240,11 +254,11 @@ let EditService = React.createClass({
   },
   load(){
     admin.apps().app(this.props.params.name)
-      .services().service(this.props.params.svcname).get().then(
-        (d)=>{
+      .services().service(this.props.params.svcname).get()
+      .then((d)=>{
           this.setState({service:d})
-        }
-      )
+        })
+      .catch(handleError)
   },
   render(){
     let svcname = this.props.params.svcname
@@ -304,7 +318,8 @@ let EditConfig = React.createClass({
     admin.apps().app(this.props.params.name)
       .services().service(this.props.params.svcname).setConfig(parsedConfig).then(()=>{
         this.props.onUpdate()
-      }).catch(console.error)
+      })
+      .catch(handleError)
   },
   render(){
     return (
@@ -343,7 +358,7 @@ let Rule = React.createClass({
       .rules().rule(this.state._id)
       .remove()
         .then(this.props.onUpdate)
-        .catch(console.error);
+        .catch(handleError)
   },
   save(){
     this.setState({error:null})
@@ -361,7 +376,7 @@ let Rule = React.createClass({
       .update(parsedRule)
         .then(()=>{this.props.onUpdate()})
         .fail((r)=>{this.setState({error:r.responseJSON.error})})
-        .catch(console.error);
+        .catch(handleError)
   },
   render(){
     return (
@@ -388,7 +403,7 @@ let EditRules = React.createClass({
       .services().service(this.props.svcname)
       .rules().create({})
         .then(this.props.onUpdate)
-        .catch(console.error);
+        .catch(handleError)
   },
   render(){
     return (
@@ -410,15 +425,15 @@ let EditTriggers =React.createClass({
   },
   load(){
     admin.apps().app(this.props.app.name).services().service(this.props.svcname).triggers().list()
-    .then((d)=>{
-      this.setState({triggers:d})
-    })
-    .catch(console.error)
+      .then((d)=>{
+        this.setState({triggers:d})
+      })
+      .catch(handleError)
   },
   create(){
     admin.apps().app(this.props.app.name).services().service(this.props.svcname).triggers().create()
       .then(this.load)
-      .catch(console.error)
+      .catch(handleError)
   },
   componentDidMount(){
     this.load()
@@ -451,7 +466,7 @@ let Variable = React.createClass({
     admin.apps().app(this.props.app.name)
       .variables().variable(this.props.variable.name).remove()
       .then(this.props.onUpdate)
-      .catch(console.error);
+      .catch(handleError)
   },
   save(){
     let parsedVar = {}
@@ -466,6 +481,7 @@ let Variable = React.createClass({
       .variables().variable(this.props.variable.name).update(parsedVar)
         .then(()=>{this.props.onUpdate()})
         .fail((r)=>{this.setState({error:r.responseJSON.error})})
+        .catch(handleError)
   },
   render(){
     return (
@@ -494,7 +510,7 @@ let Variables = React.createClass({
       type:this._type.value,
     }).then(this.props.onUpdate)
       .fail((r)=>{this.setState({error:r.responseJSON.error})})
-
+      .catch(handleError)
   },
   render(){
     let varKeys = Object.keys(this.props.app.variables || {})
@@ -560,7 +576,7 @@ let Authentication = React.createClass({
         this._googSecret.value = d["oauth2/google"].clientSecret
       }
     })
-    .catch(console.error)
+    .catch(handleError)
   },
   editing(pName, val){
     if(val === undefined){
@@ -577,7 +593,7 @@ let Authentication = React.createClass({
       admin.apps().app(this.props.app.name).authProviders().provider(pParts[0], pParts[1])
       .remove()
         .then(this.load)
-        .catch(console.error)
+        .catch(handleError)
     }else{
       // need to unset editing form
       this.editing(pName, false)
@@ -591,14 +607,14 @@ let Authentication = React.createClass({
     let data = {authType : pParts[0], authName: pParts[1]}
     admin.apps().app(this.props.app.name).authProviders().create(data)
       .then(this.load)
-      .catch(console.error)
+      .catch(handleError)
   },
   save(pName, data){
     let pParts = pName.split("/")
     admin.apps().app(this.props.app.name).authProviders().provider(pParts[0], pParts[1])
     .update(data)
       .then(this.load)
-      .catch(console.error)
+      .catch(handleError)
   },
   render(){
     return (
@@ -649,10 +665,52 @@ let Authentication = React.createClass({
   }
 })
 
+let Logout = React.createClass({ 
+  componentDidMount(){
+    admin.logout()
+      .then(()=>{
+        browserHistory.push("/login")
+      })
+      .catch(console.error)
+
+    this.browserHist
+  },
+  render(){
+    return null
+  }
+})
+
+let Login = React.createClass({
+  doLogin(){
+    admin.localAuth(this._name.value, this._pw.value)
+      .then(()=>{browserHistory.push("/")})
+      .catch(handleError)
+  },
+  render(){
+    return (
+      <div className="login-form">
+        <div>
+          <label>Username
+            <input type="text" placeholder="username" ref={(n)=>{this._name=n}}/>
+          </label>
+        </div>
+        <div>
+          <label>Password
+            <input type="password" placeholder="password" ref={(n)=>{this._pw=n}}/>
+          </label>
+        </div>
+        <button onClick={this.doLogin}>Log In</button>
+      </div>
+    )
+  }
+})
+
 render((
   <div>
     <Router history={browserHistory}>
-      <Route path="/" client={admin}>
+      <Route path="/login" component={Login}/>
+      <Route path="/logout" component={Logout}/>
+      <Route path="/">
         <IndexRoute component={Home} />
         <Route path="/apps">
           <Route path=":name" component={App}>
