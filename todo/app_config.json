@@ -25,11 +25,11 @@
 				{
 					"namespace": "todo.items",
 					"visible": {"$$root.user": "$$auth.id"},
-					"validate": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": null}]},
-					"change": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": null}]},
+					"validate": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": {"$exists": 0}}]},
+					"change": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": {"$exists": 0}}]},
 					"fields": {
 						"_id": {
-							"change": {"$$old": {"$exists": false}}
+							
 						},
 						"text": {
 							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
@@ -47,7 +47,7 @@
 					"change": {"$$new._id": "$$auth.id"},
 					"fields": {
 						"_id": {
-							"change": {"$$old": {"$exists": false}}
+							
 						},
 						"phone_number": {
 							"validate": {
