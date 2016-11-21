@@ -233,13 +233,3 @@ body > br {
   background: red;
   color:white;
 }
-/*
-<div className="apphome">
-<h3>{this.state.app ? this.state.app.name : null}</h3>
-<div className="apptabs">
-<span className="tab apptabs-services">Services</span>
-<span className="tab apptabs-auth">Authentication</span>
-</div>
-{this.props.children ? React.cloneElement(this.props.children, { app: this.state.app }) : null}
-</div>
- */

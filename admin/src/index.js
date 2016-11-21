@@ -1,7 +1,14 @@
 import React from 'react';
 import {render, findDOMNode} from 'react-dom';
 import {Admin, BaasClient, MongoClient} from 'baas';
-import {browserHistory, Router, Route, IndexRoute, Link} from 'react-router'
+
+// Importing react-router components this way to minimize bundle size.
+// See https://github.com/ReactTraining/react-router/blob/master/docs/guides/MinimizingBundleSize.md
+import Link from 'react-router/lib/Link'
+import Route from 'react-router/lib/Route'
+import IndexRoute from 'react-router/lib/IndexRoute'
+import Router from 'react-router/lib/Router'
+import browserHistory from 'react-router/lib/browserHistory'
 
 var FontAwesome = require('react-fontawesome');
 require("../static/admin.scss")
