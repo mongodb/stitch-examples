@@ -23,7 +23,6 @@
 		}
 	},
 	"ui": {
-		"cors": true,
 		"staticDir":"ui/static",
 		"session":{
 			"cookieSecret":"secret"
