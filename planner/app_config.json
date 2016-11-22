@@ -1,157 +1,250 @@
 {
-	"authProviders": {
-		"local/userpass": {
-			"metadataFields": ["name", "email"]
-		},
-		"oauth2/facebook": {
-			"metadataFields": ["email", "name"],
-			"clientId": "APP-ID",
-			"clientSecret": "APP-SECRET"
-		},
-		"oauth2/google": {
-			"metadataFields": ["email", "name"],
-			"clientId": "APP-ID",
-			"clientSecret": "APP-SECRET"
-		}
-	},
-
-	"actions": {
-		"sendNotification": {
-			"pipeline": [
-				{
-					"service": "mdb1",
-					"action": "find",
-					"args": {
-						"database": "planner",
-						"collection": "users",
-						"query": {"_id": {"$in": "$$action.userIds"}}
-					}
-				},
-				{
-					"service": "pn1",
-					"action": "publish",
-					"args": {
-						"channel": "$$item.channel",
-						"message": {
-							"data": {
-								"message": {"$concat": ["$$auth.data.name", " mentioned you in a comment"]}
-							},
-							"pn_gcm": {
-								"data": {
-									"message": {"$concat": ["$$auth.data.name", " mentioned you in a comment"]}
-								}
-							}
-						}
-					}
-				}
-			],
-			"args": ["userIds"]
-		}
-	},
-
-	"services": {
-		"mdb1": {
-			"type": "mongodb",
-			"config": {
-				"uri": "mongodb://localhost:27017"
-			},
-			"rules": [
-				{
-					"namespace": "planner.boards",
-					"visible": {"$or": [{"$$root.owner_id": "$$auth.id"}, {"$$root.members": "$$auth.id"}]},
-					"fields": {
-						"_id": {
-							"change": {"$$old": {"$exists": false}}
-						},
-						"name": {
-
-						},
-						"owner_id": {
-
-						},
-						"lists": {
-							"fields": {
-								"$$other": {
-								}
-							}
-						},
-						"lcount": {
-
-						},
-						"members": {
-
-						}
-					}
-				},
-				{
-					"namespace": "planner.cards",
-					"fields": {
-						"_id": {
-							"change": {"$$old": {"$exists": false}}
-						},
-						"author": {
-							"change": {"$$old": {"$exists": false}},
-							"validate": {"$$new": "$$auth.id"}
-						},
-						"summary": {
-							"validate": {"$and": [{"$$new": {"$type": "string"}}, {"$$new": {"$ne": ""}}]}
-						},
-						"comments": {
-							
-						},
-						"description": {
-
-						}
-					}
-				},
-				{
-					"namespace": "planner.users",
-					"change": {"$$old": {"$exists": false}},
-					"fields": {
-						"_id": {
-						},
-						"authId": {
-							"validate": {"$$new": "$$auth.id"}
-						},
-						"email": {
-						},
-						"name": {
-						},
-						"channel": {
-							"visible": {"$$root.authId": "$$auth.id"}
-						}
-					}
-				}
-			]
-		},
-
-		"ses1": {
-			"type": "aws-ses",
-			"config": {
-				"region": "us-east-1",
-				"accessKeyId": "ACCESS-KEY-ID",
-				"secretAccessKey": "SECRET-ACCESS-KEY"
-			},
-			"rules": [
-				{
-					"priority": 0,
-					"actions": ["send"]
-				}
-			]
-		},
-
-		"pn1": {
-			"type": "pubnub",
-			"config": {
-				"subscribeKey": "SUB-KEY",
-				"publishKey": "PUB-KEY"
-			},
-			"rules": [
-				{
-					"priority": 0,
-					"actions": ["publish"]
-				}
-			]
-		}
-	}
+  "authProviders": {
+    "local/userpass": {
+      "metadataFields": [
+        "name",
+        "email"
+      ]
+    },
+    "oauth2/facebook": {
+      "metadataFields": [
+        "email",
+        "name"
+      ],
+      "clientId": "APP-ID",
+      "clientSecret": "APP-SECRET"
+    },
+    "oauth2/google": {
+      "metadataFields": [
+        "email",
+        "name"
+      ],
+      "clientId": "APP-ID",
+      "clientSecret": "APP-SECRET"
+    }
+  },
+  "actions": {
+    "sendNotification": {
+      "pipeline": [
+        {
+          "service": "mdb1",
+          "action": "find",
+          "args": {
+            "database": "planner",
+            "collection": "users",
+            "query": {
+              "_id": {
+                "$in": "$$action.userIds"
+              }
+            }
+          }
+        },
+        {
+          "service": "pn1",
+          "action": "publish",
+          "args": {
+            "channel": "$$item.channel",
+            "message": {
+              "data": {
+                "message": {
+                  "$concat": [
+                    "$$auth.data.name",
+                    " mentioned you in a comment"
+                  ]
+                }
+              },
+              "pn_gcm": {
+                "data": {
+                  "message": {
+                    "$concat": [
+                      "$$auth.data.name",
+                      " mentioned you in a comment"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "args": [
+        "userIds"
+      ]
+    }
+  },
+  "services": {
+    "mdb1": {
+      "type": "mongodb",
+      "config": {
+        "uri": "mongodb://localhost:27017"
+      },
+      "rules": [
+        {
+          "namespace": "planner.boards",
+          "visible": {
+            "$or": [
+              {
+                "$$root.owner_id": "$$auth.id"
+              },
+              {
+                "$$root.members": "$$auth.id"
+              }
+            ]
+          },
+          "validate": {
+            "$or": [
+              {
+                "$$oldRoot": {
+                  "$exists": 1
+                }
+              },
+              {
+                "$$newRoot.name": {
+                  "$nin": "$$var.myBoards"
+                }
+              }
+            ]
+          },
+          "fields": {
+            "_id": {
+              "change": {
+                "$$old": {
+                  "$exists": false
+                }
+              }
+            },
+            "name": {
+            	"required": true
+            },
+            "owner_id": {},
+            "lists": {
+              "fields": {
+                "$$other": {}
+              }
+            },
+            "lcount": {},
+            "members": {}
+          }
+        },
+        {
+          "namespace": "planner.cards",
+          "fields": {
+            "_id": {
+              "change": {
+                "$$old": {
+                  "$exists": false
+                }
+              }
+            },
+            "author": {
+              "change": {
+                "$$old": {
+                  "$exists": false
+                }
+              },
+              "validate": {
+                "$$new": "$$auth.id"
+              }
+            },
+            "summary": {
+              "validate": {
+                "$and": [
+                  {
+                    "$$new": {
+                      "$type": "string"
+                    }
+                  },
+                  {
+                    "$$new": {
+                      "$ne": ""
+                    }
+                  }
+                ]
+              }
+            },
+            "comments": {},
+            "description": {}
+          }
+        },
+        {
+          "namespace": "planner.users",
+          "change": {
+            "$$old": {
+              "$exists": false
+            }
+          },
+          "fields": {
+            "_id": {},
+            "authId": {
+              "validate": {
+                "$$new": "$$auth.id"
+              }
+            },
+            "email": {},
+            "name": {},
+            "channel": {
+              "visible": {
+                "$$root.authId": "$$auth.id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ses1": {
+      "type": "aws-ses",
+      "config": {
+        "region": "us-east-1",
+        "accessKeyId": "ACCESS-KEY-ID",
+        "secretAccessKey": "SECRET-ACCESS-KEY"
+      },
+      "rules": [
+        {
+          "priority": 0,
+          "actions": [
+            "send"
+          ]
+        }
+      ]
+    },
+    "pn1": {
+      "type": "pubnub",
+      "config": {
+        "subscribeKey": "SUB-KEY",
+        "publishKey": "PUB-KEY"
+      },
+      "rules": [
+        {
+          "priority": 0,
+          "actions": [
+            "publish"
+          ]
+        }
+      ]
+    }
+  },
+  "variables": {
+    "myBoards": {
+      "type": "pipeline",
+      "source": {
+        "pipeline": [
+          {
+            "service": "mdb1",
+            "action": "find",
+            "args": {
+              "database": "planner",
+              "collection": "boards",
+              "query": {
+                "owner_id": "$$auth.id"
+              },
+              "project": {
+                "name": 1
+              }
+            }
+          }
+        ],
+        "output": "array"
+      }
+    }
+  }
 }

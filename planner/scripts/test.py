@@ -23,68 +23,7 @@ class TestMethods(unittest.TestCase):
 		self._m_client = client
 
 		creds = UserPass('unique_user@domain.com', 'password')
-		cl = AdminClient(Connection(creds))
-
-		app_name = str(ObjectId())
-		self._app = cl.new_app(app_name)
-
-		for ap_name in app_config.auth_providers:
-			ap = ap_name.split('/')
-			ap = AuthProvider(self._app._conn, app_name, ap[0], ap[1])
-			ap.enable()
-			ap.set_config(app_config.auth_providers[ap_name])
-			ap.save()
-
-		for svc in app_config.services:
-			svc_desc = app_config.services[svc]
-
-			# Create service
-			if svc_desc['type'] == mongodb.Service.Type:
-				svc = mongodb.Service(self._app.new_service(svc, mongodb.Service.Type))
-
-				svc.save_config(svc_desc['config']['uri'])
-
-				for rule in svc_desc['rules']:
-					new_rule = svc.new_rule()
-					new_rule.priority(rule['priority'])
-					new_rule.actions(rule['actions'])
-					new_rule.namespace(rule['namespace'])
-
-					if 'name' in rule:
-						new_rule.name(rule['name'])
-
-					if 'validate' in rule:
-						new_rule.validate(rule['validate'])
-
-					if 'filter' in rule:
-						new_rule.filter(rule['filter'])
-
-					if 'fields' in rule:
-						include_fields=[]
-						mutable_fields=[]
-						all_mutable = False
-
-						if 'include' in rule['fields']:
-							include_fields = rule['fields']['include']
-
-						if 'mutable' in rule['fields']:
-							mutable_fields = rule['fields']['mutable']
-
-						if 'allMutable' in rule['fields']:
-							all_mutable = rule['fields']['allMutable']
-
-						new_rule.fields(mongodb.Fields(include_fields, mutable_fields, all_mutable))
-					
-					new_rule.build().save()
-
-				if 'variables' in svc_desc:
-					for var in svc_desc['variables']:
-						svc.save_variable(Variable.from_JSON(var))
-
-		self._cl = APIClient(Connection(creds), app=app_name)
-
-	def tearDown(self):
-		self._app.delete()
+		self._cl = APIClient(Connection(creds), app='planner')
 
 	def test_boards(self):
 		mdb = mongodb.Service(self._cl.service('mdb1'))
@@ -92,27 +31,27 @@ class TestMethods(unittest.TestCase):
 		# Create board
 		# TODO(erd): This should have a rule to enforce count is >= 0
 		boards = mdb.database('planner').collection('boards')
-		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 
-		# # Create board twice should fail
-		# with self.assertRaisesRegexp(Error, 'Failed validation'):
-		# 	boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		# Create board twice should fail
+		with self.assertRaisesRegexp(Error, 'validation failed'):
+			boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 
 		# Create board without name should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		with self.assertRaisesRegexp(Error, 'name is required'):
+			boards.insert({'owner_id': self._cl.user()['_id']})
 
 		# Create board without valid name should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'name': '', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		with self.assertRaisesRegexp(Error, 'validation failed'):
+			boards.insert({'name': '', 'owner_id': self._cl.user()['_id']})
 
 		# Create board without valid owner_id should fail
-		with self.assertRaisesRegexp(Error, 'Failed validation'):
-			boards.insert({'name': '', 'owner_id': 'myid', 'lcount': 0})
+		with self.assertRaisesRegexp(Error, 'validation failed'):
+			boards.insert({'name': '', 'owner_id': 'myid'})
 
 		# Create some other board
 		other_board = ObjectId()
-		self._m_client.planner.boards.insert_one({'_id': other_board, 'name': 'Personal', 'owner_id': ObjectId(), 'lcount': 0, 'members': [self._cl.user()['_id']]})
+		self._m_client.planner.boards.insert_one({'_id': other_board, 'name': 'Personal', 'owner_id': ObjectId(), 'members': [self._cl.user()['_id']]})
 
 		# Finding own board should work
 		personal = boards.find({'owner_id': self._cl.user()['_id'], 'name': 'Personal'})
@@ -120,23 +59,23 @@ class TestMethods(unittest.TestCase):
 		personal = personal[0]
 		self.assertTrue(personal['owner_id'] == self._cl.user()['_id'])
 
-		# Adding a member should fail if username isn't registered
-		# This won't fail. No way to express
-		boards.update(
-			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
-			{'$addToSet': {'members': 'otheruser'}})
+		# # Adding a member should fail if username isn't registered
+		# # This won't fail. No way to express
+		# boards.update(
+		# 	{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+		# 	{'$addToSet': {'members': 'otheruser'}})
 
-		# Adding a member that is registered should work.
-		# This won't fail. No way to express
-		boards.update(
-			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
-			{'$addToSet': {'members': 'gooduser'}})
+		# # Adding a member that is registered should work.
+		# # This won't fail. No way to express
+		# boards.update(
+		# 	{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+		# 	{'$addToSet': {'members': 'gooduser'}})
 
-		# Adding the same member twice should not work.
-		# This won't fail. No way to express. Pretty much $addToSet should be enforced
-		boards.update(
-			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
-			{'$push': {'members': 'gooduser'}})
+		# # Adding the same member twice should not work.
+		# # This won't fail. No way to express. Pretty much $addToSet should be enforced
+		# boards.update(
+		# 	{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
+		# 	{'$push': {'members': 'gooduser'}})
 
 		# Removing a member should work (registered or not)
 		boards.update(
@@ -146,11 +85,11 @@ class TestMethods(unittest.TestCase):
 			{'owner_id': self._cl.user()['_id'], 'name': 'Personal'},
 			{'$pull': {'members': 'otheruser'}})
 
-		# Modifying members on a board that am member of should fail
-		with self.assertRaisesRegexp(Error, 'is not mutable'):
-			boards.update(
-				{'_id': other_board},
-				{'$addToSet': {'members': 'gooduser'}}, rule='updateAsMember')
+		# # Modifying members on a board that am member of should fail
+		# with self.assertRaisesRegexp(Error, 'is not mutable'):
+		# 	boards.update(
+		# 		{'_id': other_board},
+		# 		{'$addToSet': {'members': 'gooduser'}})
 
 		# Deleting own board should work
 		boards.remove({'_id': personal['_id']})
@@ -165,16 +104,14 @@ class TestMethods(unittest.TestCase):
 
 		# With a board
 		boards = mdb.database('planner').collection('boards')
-		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 		personal_board = boards.find({'name': 'Personal'})[0]
-
-		num_lists = personal_board['lcount']
 
 		# Adding a new list should work
 		list_id = ObjectId()
-		idx_1 = num_lists
+		idx_1 = 0
 		boards.update({'_id': personal_board['_id']}, 
-			{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': num_lists}},
+			{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': 0}},
 			'$inc': {'lcount': 1}})
 
 		# Adding a new list to someone else's board
@@ -183,33 +120,32 @@ class TestMethods(unittest.TestCase):
 		other_board_1 = ObjectId()
 		other_board_2 = ObjectId()
 
-		self._m_client.planner.boards.insert_one({'_id': other_board_1, 'name': 'Shared', 'owner_id': ObjectId(), 'lcount': 0, 'members': [self._cl.user()['_id']]})
-		self._m_client.planner.boards.insert_one({'_id': other_board_2, 'name': 'Shared', 'owner_id': ObjectId(), 'lcount': 0})
+		self._m_client.planner.boards.insert_one({'_id': other_board_1, 'name': 'Shared', 'owner_id': ObjectId(), 'members': [self._cl.user()['_id']]})
+		self._m_client.planner.boards.insert_one({'_id': other_board_2, 'name': 'Shared', 'owner_id': ObjectId()})
 
 		# Should work when we are a member of the list
 		# Expressing this is hard as is since we don't have acceess to the board being used.
 		# We can however gather all of the boards that this user is a part of (agg) and verify?
 		boards.update({'_id': other_board_1}, 
-			{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': num_lists}},
-			'$inc': {'lcount': 1}}, rule='updateAsMember')
+			{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': 0}},
+			'$inc': {'lcount': 1}})
 
 		# Should fail when we are not a member of the list
-		with self.assertRaisesRegexp(Error, '(?i)no matching documents found'):
-			boards.update({'_id': other_board_2}, 
-				{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': num_lists}},
-				'$inc': {'lcount': 1}}, rule='updateAsMember')
+		# with self.assertRaisesRegexp(Error, '(?i)no matching documents found'):
+		# 	boards.update({'_id': other_board_2}, 
+		# 		{'$set': {'lists.'+str(list_id): {'_id': list_id, 'name': 'todo', 'idx': 0}},
+		# 		'$inc': {'lcount': 1}})
 
 		# Adding a new list with a bad name should fail
 		# TODO(erd): Needs a rule that can describe this ($regex not supported)
 
 		personal_board = boards.find({'name': 'Personal'})[0]
-		num_lists = personal_board['lcount']
 
 		# Swapping two lists should work
 		other_id = ObjectId()
-		idx_2 = num_lists
+		idx_2 = 1
 		boards.update({'_id': personal_board['_id']}, 
-			{'$set': {'lists.'+str(other_id): {'_id': other_id, 'name': 'other', 'idx': num_lists}},
+			{'$set': {'lists.'+str(other_id): {'_id': other_id, 'name': 'other', 'idx': 1}},
 			'$inc': {'lcount': 1}})
 		
 		boards.update({
@@ -233,7 +169,7 @@ class TestMethods(unittest.TestCase):
 
 		# With a board and list
 		boards = mdb.database('planner').collection('boards')
-		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 		personal_board = boards.find({'name': 'Personal'})[0]
 
 		# TODO(erd): This should have a rule to enforce count is >= 0
@@ -290,7 +226,7 @@ class TestMethods(unittest.TestCase):
 
 		# With a board, list, and card
 		boards = mdb.database('planner').collection('boards')
-		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id'], 'lcount': 0})
+		boards.insert({'name': 'Personal', 'owner_id': self._cl.user()['_id']})
 		personal_board = boards.find({'name': 'Personal'})[0]
 
 		todo_id = ObjectId()
