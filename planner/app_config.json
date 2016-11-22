@@ -15,6 +15,40 @@
 		}
 	},
 
+	"actions": {
+		"sendNotification": {
+			"pipeline": [
+				{
+					"service": "mdb1",
+					"action": "find",
+					"args": {
+						"database": "planner",
+						"collection": "users",
+						"query": {"_id": {"$in": "$$action.userIds"}}
+					}
+				},
+				{
+					"service": "pn1",
+					"action": "publish",
+					"args": {
+						"channel": "$$item.channel",
+						"message": {
+							"data": {
+								"message": {"$concat": ["$$auth.data.name", " mentioned you in a comment"]}
+							},
+							"pn_gcm": {
+								"data": {
+									"message": {"$concat": ["$$auth.data.name", " mentioned you in a comment"]}
+								}
+							}
+						}
+					}
+				}
+			],
+			"args": ["userIds"]
+		}
+	},
+
 	"services": {
 		"mdb1": {
 			"type": "mongodb",
@@ -82,6 +116,9 @@
 						"email": {
 						},
 						"name": {
+						},
+						"channel": {
+							"visible": {"$$val": "$$auth.id"}
 						}
 					}
 				}
@@ -91,14 +128,28 @@
 		"ses1": {
 			"type": "aws-ses",
 			"config": {
-				"region":"us-east-1",
-				"accessKeyId":"ACCESS-KEY-ID",
-				"secretAccessKey":"SECRET-ACCESS-KEY"
+				"region": "us-east-1",
+				"accessKeyId": "ACCESS-KEY-ID",
+				"secretAccessKey": "SECRET-ACCESS-KEY"
 			},
 			"rules": [
 				{
 					"priority": 0,
 					"actions": ["send"]
+				}
+			]
+		},
+
+		"pn1": {
+			"type": "pubnub",
+			"config": {
+				"subscribeKey": "SUB-KEY",
+				"publishKey": "PUB-KEY"
+			},
+			"rules": [
+				{
+					"priority": 0,
+					"actions": ["publish"]
 				}
 			]
 		}

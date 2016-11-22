@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router'
 import AuthControls from './auth.js'
+import ObjectID from "bson-objectid";
 
 var Home = React.createClass({
   getInitialState: function(){
@@ -52,7 +53,7 @@ let UsernameSetupForm = React.createClass({
   },
   save:function(){
     this.props.db.users.insert(
-      [{_id:this._username.value, authId:{$oid:this.props.auth.user._id}, email:this.props.auth.user.data.email, name:this.props.auth.user.data.name}]
+      [{_id:this._username.value, authId:{$oid:this.props.auth.user._id}, email:this.props.auth.user.data.email, name:this.props.auth.user.data.name, channel: ObjectID()}]
     ).then(this.props.onUpdate)
     .catch(
       ()=>{

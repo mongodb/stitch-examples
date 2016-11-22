@@ -607,6 +607,20 @@ let PostCommentForm = React.createClass({
           }
         }
       ])
+    }).then(()=>{
+      if(mentioned.length == 0) {
+        return;
+      }
+      console.log("MENTIONED IS")
+      console.log(mentioned)
+      return this.props.db._client.executePipeline([
+        {
+          action:"sendNotification",
+          args:{
+            userIds: mentioned
+          }
+        }
+      ])
     })
   },
   render(){
