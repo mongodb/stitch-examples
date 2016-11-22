@@ -18,7 +18,7 @@ var Home = React.createClass({
         if(data.result.length == 0){
           return;
         }
-        this.setState({username:data.result[0]._id})
+        this.setState({username:data.result[0]._id, channel:data.result[0].channel})
       }
     )
   },
@@ -40,7 +40,7 @@ var Home = React.createClass({
     }
     return (
       <div>
-        <div>username: {this.state.username}</div>
+        <div>Username: {this.state.username} | Channel: {this.state.channel}</div>
         {this.state.authed ? (<BoardListing db={this.props.route.db}/>) : <AuthControls client={this.props.route.client}/> }
       </div>
     )

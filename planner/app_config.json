@@ -118,7 +118,7 @@
 						"name": {
 						},
 						"channel": {
-							"visible": {"$$val": "$$auth.id"}
+							"visible": {"$$root.authId": "$$auth.id"}
 						}
 					}
 				}
