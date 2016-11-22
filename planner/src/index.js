@@ -124,7 +124,7 @@ let Board = React.createClass({
     this.props.route.db.boards.find(
       {_id:{$oid:this.props.routeParams.id}}, null).then(
       (data)=>{
-        let board = data.result[0]
+        let board = data.result[0];
         this.setState({board:boardFromDBObj(board)})
       })
   },
@@ -385,7 +385,7 @@ let List = DragDropContext(HTML5Backend)(
       return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": {"$oid": this.props.db._client.authedId()}}]).then(()=>{
         let setObj = {}
         setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.props.data.cards||[]).length+1}
-        db.boards.updateOne(
+        return db.boards.updateOne(
           {_id:{$oid:boardId}},
           {$set:setObj})
       }).then(

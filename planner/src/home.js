@@ -159,7 +159,7 @@ let BoardListing = React.createClass({
 let BoardItem = React.createClass({
   remove: function(){
     if(confirm(`ey you sure you wanna delete '${this.props.data.name}'?`)){
-      this.props.db.boards.remove({_id:this.props.data._id}).then(this.props.onUpdate)
+      this.props.db.boards.deleteOne({_id:this.props.data._id}).then(this.props.onUpdate)
     }
   },
   render:function(){
