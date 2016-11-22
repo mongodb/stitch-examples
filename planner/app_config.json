@@ -94,7 +94,7 @@
 							"validate": {"$$new": "$$auth.id"}
 						},
 						"summary": {
-							"validate": {"$$new": {"$ne": ""}, "$$new": {"$type": "string"}}
+							"validate": {"$and": [{"$$new": {"$type": "string"}}, {"$$new": {"$ne": ""}}]}
 						},
 						"comments": {
 							

@@ -32,7 +32,7 @@
 							
 						},
 						"text": {
-							"validate": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
+							"validate": {"$and": [{"$$new": {"$type": "string"}}, {"$$new": {"$ne": ""}}]}
 						},
 						"user": {},
 						"checked": {
