@@ -11,10 +11,10 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {Converter} from 'showdown';
 import { MentionsInput, Mention } from 'react-mentions'
+import {md5} from 'blueimp-md5'
+import FontAwesome from 'react-fontawesome'
+import {update} from 'react-addons-update'
 
-var md5 = require("blueimp-md5");
-var FontAwesome = require('react-fontawesome');
-var update = require('react-addons-update');
 require("../static/planner.scss")
 
 let modalStyle = {
