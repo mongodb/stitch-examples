@@ -100,7 +100,7 @@
               },
               {
                 "$$newRoot.name": {
-                  "$nin": "$$var.myBoards"
+                  "$nin": "$$var.myBoards.name"
                 }
               }
             ]
@@ -114,7 +114,12 @@
               }
             },
             "name": {
-            	"required": true
+              "required": true,
+              "validate": {
+                "$$new": {
+                  "$ne": ""
+                }
+              }
             },
             "owner_id": {},
             "lists": {

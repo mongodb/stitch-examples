@@ -11,8 +11,6 @@ from bson.objectid import ObjectId
 
 from pymongo import MongoClient
 
-import app_config
-
 class TestMethods(unittest.TestCase):
 
 	def setUp(self):
