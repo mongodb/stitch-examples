@@ -1,14 +1,11 @@
 {
 	"authProviders": {
-		"local/userpass": {
-			"metadataFields": ["name", "email"]
-		},
-		"oauth2/facebook": {
+		"oauth2/google": {
 			"metadataFields": ["email", "name"],
 			"clientId": "APP-ID",
 			"clientSecret": "APP-SECRET"
 		},
-		"oauth2/google": {
+		"oauth2/facebook": {
 			"metadataFields": ["email", "name"],
 			"clientId": "APP-ID",
 			"clientSecret": "APP-SECRET"

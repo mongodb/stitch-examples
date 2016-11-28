@@ -1,11 +1,5 @@
 {
   "authProviders": {
-    "local/userpass": {
-      "metadataFields": [
-        "name",
-        "email"
-      ]
-    },
     "oauth2/facebook": {
       "metadataFields": [
         "email",
