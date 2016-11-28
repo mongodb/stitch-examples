@@ -14,8 +14,8 @@ Edit examples/todo/app_config.json and replace the OAuth credentials with your o
 Make a creds.json file containing the admin credentials for your BaaS deployment:
 ```
 {
-   user: "unique_user@domain.com",
-   password: "password"
+   "user": "unique_user@domain.com",
+   "password": "password"
 }
 ```
 
