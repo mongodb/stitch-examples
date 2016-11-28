@@ -11,7 +11,7 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {Converter} from 'showdown';
 import { MentionsInput, Mention } from 'react-mentions'
-import {md5} from 'blueimp-md5'
+import md5 from 'blueimp-md5'
 import FontAwesome from 'react-fontawesome'
 import {update} from 'react-addons-update'
 
@@ -588,22 +588,10 @@ let PostCommentForm = React.createClass({
       }
       return this.props.db._client.executePipeline([
         {
-          service:"mdb1",
-          action:"find",
+          action:"sendEmail",
           args:{
-            database:"planner",
-            collection:"users",
-            query:{_id:{$in:mentioned}},
-          }
-        },
-        {
-          service:"ses1",
-          action:"send",
-          args:{
-            fromAddress:"eric.daniels@mongodb.com",
-            toAddress:"$$item.email",
-            subject: name + " mentioned you in a comment.",
-            body: comment,
+            userIds: mentioned,
+            comment: comment
           }
         }
       ])
@@ -677,6 +665,7 @@ render((
   <div>
     <Router history={browserHistory}>
       <Route path="/" component={Home} db={db} client={baasClient}/>
+      <Route path="/login" component={AuthControls} db={db} client={baasClient}/>
       <Route path="boards" db={db} component={Boards}>
         <Route path=":id" component={Board} db={db}/>
       </Route>

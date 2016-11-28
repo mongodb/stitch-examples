@@ -2,20 +2,20 @@ import React from 'react';
 
 let AuthControls = React.createClass({
   render: function(){
-    let authed = this.props.client.auth() != null
-    let logout = () => this.props.client.logout()
+    let client = this.props.client || this.props.route.client;
+    let authed = client.auth() != null
     return (
       <div>
-        { authed ? <div>Logged in as {this.props.client.authedId()} via {this.props.client.auth()['provider'].split("/")[1]} </div>: null }
+        { authed ? <div>Logged in as {client.authedId()} via {client.auth()['provider'].split("/")[1]} </div>: null }
         <button disabled={authed} 
-          onClick={() => this.props.client.authWithOAuth("google")}>Login with Google</button>
+          onClick={() => client.authWithOAuth("google")}>Login with Google</button>
         <button disabled={authed}
-          onClick={() => this.props.client.authWithOAuth("facebook")}>Login with Facebook</button>
+          onClick={() => client.authWithOAuth("facebook")}>Login with Facebook</button>
         <button disabled={authed}
-          onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
+          onClick={() => client.linkWithOAuth("google")}>Link with Google</button>
         <button disabled={authed}
-          onClick={() => this.props.client.linkWithOAuth("facebook")}>Link with Facebook</button>
-        <button disabled={!authed} onClick={() => this.props.client.logout()}>Logout</button>
+          onClick={() => client.linkWithOAuth("facebook")}>Link with Facebook</button>
+        <button disabled={!authed} onClick={() => client.logout()}>Logout</button>
       </div>
     )
   },

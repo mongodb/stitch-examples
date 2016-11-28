@@ -18,6 +18,45 @@
     }
   },
   "actions": {
+    "sendEmail": {
+      "pipeline": [
+        {
+          "service": "mdb1",
+          "action": "find",
+          "args": {
+            "database": "planner",
+            "collection": "users",
+            "query": {
+              "_id": {
+                "$in": "$$action.userIds"
+              }
+            }
+          }
+        },
+        {
+          "service": "ses1",
+          "action": "send",
+          "args": {
+            "fromAddress": "$$var.ourEmail",
+            "toAddress": "$$item.email",
+            "subject": {
+              "$concat": [
+                "$$auth.data.name",
+                " mentioned you in a comment."
+              ]
+            },
+            "body": "$$action.comment"
+          }
+        },
+        {
+          "action": "null"
+        }
+      ],
+      "args": [
+        "userIds",
+        "comment"
+      ]
+    },
     "sendNotification": {
       "pipeline": [
         {
@@ -59,6 +98,9 @@
               }
             }
           }
+        },
+        {
+          "action": "null"
         }
       ],
       "args": [
@@ -223,6 +265,10 @@
     }
   },
   "variables": {
+    "ourEmail": {
+      "type": "literal",
+      "source": "email@domain.com"
+    },
     "myBoards": {
       "type": "pipeline",
       "source": {
