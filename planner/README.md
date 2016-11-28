@@ -46,8 +46,6 @@ It supports mentioning users when making comments on cards using @ followed by a
 
 The app will send emails using AWS SES when another user is mentioned using the @ functionality. The email used is sourced from Google/Facebook.
 
-TODO(XXX): make from email to use a variable
-
 To set it up, make the following changes in the UI:
 
 * Go to the **ses1** service.
