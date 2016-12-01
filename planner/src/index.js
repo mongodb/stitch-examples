@@ -495,7 +495,93 @@ let CardEditor = React.createClass({
           <textarea className="text-area ReactModal__Content-input" placeholder="description" ref={(n)=>{this._desc=n}}/>
         </div>
         <button className="button button-is-primary ReactModal__Content-button" onClick={this.save}>Save</button>
+        <FileAttacher db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} boardId={this.props.boardId} comments={this.state.data.comments || []} onUpdate={this.loadCard} boardUpdate={this.props.onUpdate} files={this.state.data.files || []}>
+        </FileAttacher>
         <CardComments db={this.props.db} cardId={this.props.editingId} listId={this.props.listId} boardId={this.props.boardId} comments={this.state.data.comments || []} onUpdate={this.loadCard} boardUpdate={this.props.onUpdate}/>
+      </div>
+    )
+  }
+})
+
+let randomString = (n) =>{
+  let result = ""
+  let chars ='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  for(let i=0;i<n;i++){
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result
+}
+
+let FileAttacher = React.createClass({
+  upload(){
+    let key = "planner-files/" + randomString(10)
+    let fileObj = this._file.files[0]
+    baasClient.executePipeline([
+      {
+        service:"s31",
+        action:"signPolicy",
+        args:{
+          bucket:"planner-files",
+          key: key,
+          acl:"public-read",
+          contentType:"text/plain",
+        }
+      }]
+    ).then((d)=>{
+      let r = d.result[0]
+      var data = new FormData();
+      data.append("AWSAccessKeyId", r.accessKeyId)
+      data.append("key", key)
+      data.append("bucket", "planner-files")
+      data.append("acl", "public-read")
+      data.append("policy", r.policy)
+      data.append("signature", r.signature)
+      data.append("Content-Type","text/plain")
+      data.append("file", fileObj);
+      return $.ajax({
+        url: 'https://planner-files.s3.amazonaws.com/',
+        type: 'POST',
+        data: data,
+        crossDomain: true,
+        cache: false,
+        processData: false,
+        contentType: false,
+       })
+    }).then((d)=>{
+      return this.props.db.cards.updateOne(
+        {_id:this.props.cardId},
+        {$push:
+          {"files": 
+            {
+              name: fileObj.name,
+              path: "https://planner-files.s3.amazonaws.com/" + key
+            }
+          }
+        }
+      )
+    })
+    .then(this.props.onUpdate)
+    .then(this.props.boardUpdate)
+    .catch(console.error)
+  },
+  render(){
+    return (
+      <div>
+        <div>Files</div>
+        {this.props.files.length > 0 ?
+          (<div>
+            {
+              this.props.files.map((d) =>{
+                return (
+                  <div key={d.path}>
+                    <a target="_blank" href={d.path}>{d.name}</a>
+                  </div>
+                )
+              })
+            }
+          </div>) : null }
+        <input name="file" type="file" ref={(n)=>{this._file=n}}/> 
+        <button onClick={this.upload}>Upload</button>
       </div>
     )
   }

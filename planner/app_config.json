@@ -13,8 +13,8 @@
         "email",
         "name"
       ],
-      "clientId": "APP-ID",
-      "clientSecret": "APP-SECRET"
+      "clientId": "APP-SECRET",
+      "clientSecret": "APP-ID"
     }
   },
   "actions": {
@@ -109,6 +109,25 @@
     }
   },
   "services": {
+    "s31" : {
+      "type":"aws-s3",
+      "config": {
+        "accessKeyId": "ACCESS-KEY-ID",
+        "secretAccessKey": "SECRET-ACCESS-KEY",
+        "region": "us-east-1"
+      },
+      "rules": [
+        {
+          "priority": 0,
+          "actions": [ "signPolicy" ],
+          "bucket": "$$var.s3bucket",
+          "key": {"$regex" : "^/planner-files/"},
+          "contentType": "text/plain",
+          "acl": "public-read",
+          "maxLength": 1048576
+        }
+      ]
+    },
     "mdb1": {
       "type": "mongodb",
       "config": {
@@ -204,6 +223,7 @@
               }
             },
             "comments": {},
+            "files": {},
             "description": {}
           }
         },
@@ -265,6 +285,10 @@
     }
   },
   "variables": {
+    "s3bucket" : {
+      "type": "literal",
+      "source": "planner-files"
+    },
     "ourEmail": {
       "type": "literal",
       "source": "email@domain.com"
