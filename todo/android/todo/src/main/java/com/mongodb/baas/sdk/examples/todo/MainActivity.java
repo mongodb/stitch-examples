@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -29,100 +31,224 @@ import com.mongodb.baas.sdk.services.mongodb.MongoClient;
 
 import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "TodoApp";
+
     private CallbackManager _callbackManager;
     private BaaSClient _client;
+    private MongoClient _mongoClient;
+
+    private TodoListAdapter _itemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         _client = new BaaSClient(this, "todo", "http://erd.ngrok.io");
+        initLogin();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (_callbackManager != null) {
+            _callbackManager.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+        Log.e(TAG, "Nowhere to send activity result for ourselves");
+    }
+
+    private void initLogin() {
         _client.getAuthProviders().continueWithTask(new Continuation<AuthProviderInfo, Task<Void>>() {
             @Override
-            public Task<Void> then(@NonNull Task<AuthProviderInfo> task) throws Exception {
+            public Task<Void> then(@NonNull final Task<AuthProviderInfo> task) throws Exception {
+                System.out.println("CONT: " + Thread.currentThread().getId());
                 if (task.isSuccessful()) {
                     if (task.getResult().hasFacebook()) {
                         return logInToFacebook(task.getResult().getFacebook());
                     }
                     return Tasks.forResult(null);
                 } else {
-                    throw task.getException();
+                    return Tasks.forException(task.getException());
                 }
             }
-        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+        }).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                final MongoClient mongoClient = new MongoClient(_client, "mdb1");
-                mongoClient.getDatabase("todo").getCollection("items").findMany().addOnCompleteListener(new OnCompleteListener<List<Document>>() {
+            public void onComplete(@NonNull final Task<Void> task) {
+                if (task.isSuccessful()) {
+                    _mongoClient = new MongoClient(_client, "mdb1");
+                    initTodoView();
+                } else {
+                    Log.e(TAG, "Error getting auth provider info", task.getException());
+                }
+            }
+        });
+    }
+
+    private void initTodoView() {
+        setContentView(R.layout.activity_main_todo_list);
+
+        // Set up items
+        _itemAdapter = new TodoListAdapter(
+                this,
+                R.layout.todo_item,
+                new ArrayList<TodoItem>(),
+                getItemsCollection());
+        ((ListView) findViewById(R.id.todoList)).setAdapter(_itemAdapter);
+
+        // Set up button listeners
+        findViewById(R.id.refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View ignored) {
+                refreshList();
+            }
+        });
+
+        findViewById(R.id.clear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View ignored) {
+                clearChecked();
+            }
+        });
+
+        findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View ignored) {
+                _client.logout().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<List<Document>> task) {
-                        if (task.isSuccessful()) {
-                            final List<Document> documents = task.getResult();
-                            System.out.println("Fetched " + documents.size() + " docs");
-                            for (final Document doc : documents) {
-                                System.out.println(doc);
-                            }
-                        } else {
-                            task.getException().printStackTrace();
-                        }
+                    public void onSuccess(final Void ignored) {
+                        LoginManager.getInstance().logOut();
+                        initLogin();
                     }
                 });
+            }
+        });
+
+        refreshList();
+    }
+
+    private void clearChecked() {
+        final Document query = new Document();
+        query.put("user", _client.getAuth().getUser().getId());
+        query.put("checked", true);
+
+        getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull final Task<Void> task) {
+                if (task.isSuccessful()) {
+                    refreshList();
+                } else {
+                    Log.e(TAG, "Error clearing checked items", task.getException());
+                }
+            }
+        });
+    }
+
+    private Collection getItemsCollection() {
+        return _mongoClient.getDatabase("todo").getCollection("items");
+    }
+
+    private List<TodoItem> convertDocsToTodo(final List<Document> documents) {
+        final List<TodoItem> items = new ArrayList<>(documents.size());
+        for (final Document doc : documents) {
+            items.add(new TodoItem(doc));
+        }
+        return items;
+    }
+
+    private void refreshList() {
+        getItemsCollection().findMany().addOnCompleteListener(new OnCompleteListener<List<Document>>() {
+            @Override
+            public void onComplete(@NonNull final Task<List<Document>> task) {
+                if (task.isSuccessful()) {
+                    final List<Document> documents = task.getResult();
+                    _itemAdapter.clear();
+                    _itemAdapter.addAll(convertDocsToTodo(documents));
+                    _itemAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e(TAG, "Error refreshing list", task.getException());
+                }
             }
         });
     }
 
     private Task<Void> logInToFacebook(final FacebookAuthProviderInfo fbAuthProv) {
 
-        FacebookSdk.setApplicationId(fbAuthProv.getApplicationId());
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
-        if (AccessToken.getCurrentAccessToken() != null) {
-            Log.d("Todo", "Already logged in: " + AccessToken.getCurrentAccessToken().getToken());
-        }
-
-        setContentView(R.layout.activity_main);
-
-        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions(fbAuthProv.getScopes());
-
         final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
+        FacebookSdk.setApplicationId(fbAuthProv.getApplicationId());
 
-        _callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(_callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        final FacebookAuthProvider fbProvider =
-                                FacebookAuthProvider.fromAccessToken(loginResult.getAccessToken().getToken());
-                        _client.logInWithProvider(fbProvider).addOnSuccessListener(new OnSuccessListener<Auth>() {
+        final TaskCompletionSource<Void> initFuture = new TaskCompletionSource<>();
+        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+            @Override
+            public void onInitialized() {
+                initFuture.setResult(null);
+            }
+        });
+        initFuture.getTask().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(final Void ignored) {
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    final FacebookAuthProvider fbProvider =
+                            FacebookAuthProvider.fromAccessToken(AccessToken.getCurrentAccessToken().getToken());
+                    _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                        @Override
+                        public void onComplete(@NonNull final Task<Auth> task) {
+                            if (task.isSuccessful()) {
+                                future.setResult(null);
+                            } else {
+                                Log.e(TAG, "Error logging in with Facebook", task.getException());
+                                future.setException(task.getException());
+                            }
+                        }
+                    });
+                    return;
+                }
+
+                setContentView(R.layout.activity_main);
+
+                final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+                loginButton.setReadPermissions(fbAuthProv.getScopes());
+
+                _callbackManager = CallbackManager.Factory.create();
+                LoginManager.getInstance().registerCallback(_callbackManager,
+                        new FacebookCallback<LoginResult>() {
                             @Override
-                            public void onSuccess(Auth auth) {
+                            public void onSuccess(LoginResult loginResult) {
+                                final FacebookAuthProvider fbProvider =
+                                        FacebookAuthProvider.fromAccessToken(loginResult.getAccessToken().getToken());
+
+                                _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                                    @Override
+                                    public void onComplete(@NonNull final Task<Auth> task) {
+                                        if (task.isSuccessful()) {
+                                            future.setResult(null);
+                                        } else {
+                                            Log.e(TAG, "Error logging in with Facebook", task.getException());
+                                            future.setException(task.getException());
+                                        }
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancel() {
                                 future.setResult(null);
                             }
+
+                            @Override
+                            public void onError(final FacebookException exception) {
+                                future.setException(exception);
+                            }
                         });
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        future.setResult(null);
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        future.setException(exception);
-                    }
-                });
+            }
+        });
 
         return future.getTask();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        _callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

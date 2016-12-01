@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="@string/choose_a_login_provider" />
 
 
     <com.facebook.login.widget.LoginButton
