@@ -1,0 +1,4 @@
+include ':todo'
+include ':baas-sdk'
+project(':baas-sdk').projectDir=new File('/Users/eric/go/src/github.com/10gen/baas/clients/android/sdk/sdk')
+
