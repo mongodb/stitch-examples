@@ -69,6 +69,7 @@ var TodoList = React.createClass({
     }
     items.insert([{text:event.target.value, "user": {"$oid": baasClient.authedId()}}]).then(
       () => {
+        this._newitem.value = ""
         this.loadList();
       }
     )
@@ -83,7 +84,7 @@ var TodoList = React.createClass({
   render: function(){
     let loggedInResult = 
       (<div>
-        <input type="text" placeholder="add a new item..." onKeyDown={this.addItem}/>
+        <input type="text" placeholder="add a new item..." ref={ (n)=>{this._newitem=n} } onKeyDown={this.addItem}/>
         <div>
           <button onClick={this.clear}>Clean up</button>
         </div>
