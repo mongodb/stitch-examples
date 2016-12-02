@@ -1,3 +1,53 @@
-
 body {
+}
+
+.settings-link {
+  // Hidden for now, since it's irrelevant to the demo.
+  display:none;
+}
+
+.new-item-input {
+  font-size: 2em;
+}
+
+.checkbox-input {
+	display:inline-block;
+	width:30px;
+	height:30px;
+	line-height:30px;
+	font-size:2em;
+	text-align:center;
+	border:1px solid black;
+	border-radius:3px;
+}
+
+input[type='checkbox'] {
+}
+input[type='checkbox']:checked {
+}
+
+.new-item{
+margin-left: 40px;
+margin-bottom:10px;
+font-size:1.8em;
+}
+
+.todo-item-root {
+	margin-bottom:10px;
+}
+
+.todo-item-text{
+	font-size: 1.8em;
+	padding-left:10px;
+	&.done {
+		text-decoration: line-through;
+		color: #888;
+	}
+}
+.todo-item-container{
+	display:flex;
+	align-items: center;
+}
+.todo-item-label{
+
 }

@@ -10,19 +10,30 @@ let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
 let users = db.getCollection("users")
 
+let TodoItem = React.createClass({
+	clicked(){
+    items.updateOne({"_id":this.props.item._id}, {$set:{"checked":!this.props.item.checked}})
+		.then(this.props.onChange)
+	},
+	render(){
+	console.log(this.props)
+		let itemClass = this.props.item.checked ? "done" : "";
+		return (
+			<div className="todo-item-root">
+				<label className="todo-item-container">
+					<div className={"checkbox-input " + itemClass} onClick={this.clicked}>
+						{this.props.item.checked ? "✓" : null}
+					</div>
+					<span className={"todo-item-text " + itemClass}>{this.props.item.text}</span>
+				</label>
+			</div>
+		)
+	}
+})
+/*
 function TodoItem({item=null, checkHandler=null}){
-  let itemClass = item.checked ? "done" : "";
-  return (
-    <li>
-      <label>
-      <input type="checkbox"
-        checked={item.checked}
-        onChange={ (event) => { checkHandler(item._id, event.target.checked) }}
-      />
-      <span className={itemClass}>{item.text}</span></label>
-    </li>
-  )
 }
+*/
 
 var AuthControls = React.createClass({
   render: function(){
@@ -30,18 +41,21 @@ var AuthControls = React.createClass({
     let logout = () => this.props.client.logout()
     return (
       <div>
-        { authed ? <div>Logged in as {this.props.client.authedId()} via {baasClient.auth()['provider'].split("/")[1]} </div>: null }
-        <button disabled={authed} 
-          onClick={() => this.props.client.authWithOAuth("google")}>Login with Google</button>
-        <button disabled={authed}
-          onClick={() => this.props.client.authWithOAuth("facebook")}>Login with Facebook</button>
-        <button disabled={authed}
-          onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
-        <button disabled={authed}
-          onClick={() => this.props.client.linkWithOAuth("facebook")}>Link with Facebook</button>
+        { authed ? <div>Logged in via {baasClient.auth()['provider'].split("/")[1]} </div>: null }
+				{	!authed ? 
+					<div>
+						<button onClick={() => this.props.client.authWithOAuth("google")}>Login with Google</button>
+						<button onClick={() => this.props.client.authWithOAuth("facebook")}>Login with Facebook</button>
+					</div>
+					: null
+				}
         <button disabled={!authed} onClick={() => this.props.client.logout()}>Logout</button>
       </div>
     )
+        //<button disabled={authed}
+          //onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
+        //<button disabled={authed}
+          //onClick={() => this.props.client.linkWithOAuth("facebook")}>Link with Facebook</button>
   },
 })
 
@@ -86,16 +100,14 @@ var TodoList = React.createClass({
   render: function(){
     let loggedInResult = 
       (<div>
-        <input type="text" placeholder="add a new item..." ref={ (n)=>{this._newitem=n} } onKeyDown={this.addItem}/>
-        <div>
-          <button onClick={this.clear}>Clean up</button>
-        </div>
+        <button onClick={this.clear}>Clean up</button>
         <ul>
+        <input type="text" className="new-item" placeholder="add a new item..." ref={ (n)=>{this._newitem=n} } onKeyDown={this.addItem}/>
         { 
           this.state.items.length == 0
           ?  <div>list is empty.</div>
            : this.state.items.map((item) => {
-            return <TodoItem key={item._id.$oid} item={item} checkHandler={this.checkHandler}/>;
+            return <TodoItem key={item._id.$oid} item={item} onChange={this.loadList}/>;
           }) 
         }
         </ul>
@@ -108,7 +120,7 @@ var Home = function(){
   let authed = baasClient.auth() != null
   return (
     <div>
-      {authed ? <Link to="/settings">Settings</Link> : null}
+      {authed ? <Link to="/settings" className="settings-link">Settings</Link> : null}
       <div>
         <TodoList/>
         <AuthControls client={baasClient}/>
