@@ -64,6 +64,8 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
                 set.put("checked", b);
                 update.put("$set", set);
 
+                System.out.println("Query: " + query);
+                System.out.println("Update: " + update);
                 _itemSource.updateOne(query, update);
             }
         });

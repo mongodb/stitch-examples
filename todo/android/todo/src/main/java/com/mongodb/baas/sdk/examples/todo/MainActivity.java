@@ -3,6 +3,7 @@ package com.mongodb.baas.sdk.examples.todo;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.mongodb.baas.sdk.services.mongodb.MongoClient;
 
 import org.bson.Document;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,20 +46,47 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TodoApp";
     private static final String APP_NAME = "todo";
-
+    private static final long REFRESH_INTERVAL_MILLIS = 1000;
 
     private CallbackManager _callbackManager;
     private BaasClient _client;
     private MongoClient _mongoClient;
 
     private TodoListAdapter _itemAdapter;
+    private Handler _handler;
+    private Runnable _refresher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        _handler = new Handler();
+        _refresher = new ListRefresher(this);
+
         _client = new BaasClient(this, APP_NAME, "http://erd.ngrok.io");
         initLogin();
+    }
+
+    private static class ListRefresher implements Runnable {
+
+        private WeakReference<MainActivity> _main;
+
+        public ListRefresher(final MainActivity activity) {
+            _main = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void run() {
+            final MainActivity activity = _main.get();
+            if (activity != null) {
+                activity.refreshList().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull final Task<Void> ignored) {
+                        activity._handler.postDelayed(ListRefresher.this, REFRESH_INTERVAL_MILLIS);
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -129,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(final Void ignored) {
                         LoginManager.getInstance().logOut();
+                        _handler.removeCallbacks(_refresher);
                         initLogin();
                     }
                 });
@@ -162,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        refreshList();
+        _refresher.run();
     }
 
     private void addItem(final String text) {
@@ -211,17 +241,19 @@ public class MainActivity extends AppCompatActivity {
         return items;
     }
 
-    private void refreshList() {
-        getItemsCollection().findMany().addOnCompleteListener(new OnCompleteListener<List<Document>>() {
+    private Task<Void> refreshList() {
+        return getItemsCollection().findMany().continueWithTask(new Continuation<List<Document>, Task<Void>>() {
             @Override
-            public void onComplete(@NonNull final Task<List<Document>> task) {
+            public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
                 if (task.isSuccessful()) {
                     final List<Document> documents = task.getResult();
                     _itemAdapter.clear();
                     _itemAdapter.addAll(convertDocsToTodo(documents));
                     _itemAdapter.notifyDataSetChanged();
+                    return Tasks.forResult(null);
                 } else {
                     Log.e(TAG, "Error refreshing list", task.getException());
+                    return Tasks.forException(task.getException());
                 }
             }
         });
