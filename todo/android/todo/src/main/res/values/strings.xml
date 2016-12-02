@@ -7,4 +7,7 @@
     <string name="clear">Clear</string>
     <string name="logout">Logout</string>
     <string name="choose_a_login_provider">Choose a login provider</string>
+    <string name="addHintText">Fetch the kids</string>
+    <string name="addOk">Add</string>
+    <string name="addCancel">Cancel</string>
 </resources>

@@ -1,11 +1,17 @@
 package com.mongodb.baas.sdk.examples.todo;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.facebook.AccessToken;
@@ -68,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         _client.getAuthProviders().continueWithTask(new Continuation<AuthProviderInfo, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull final Task<AuthProviderInfo> task) throws Exception {
-                System.out.println("CONT: " + Thread.currentThread().getId());
                 if (task.isSuccessful()) {
                     if (task.getResult().hasFacebook()) {
                         return logInToFacebook(task.getResult().getFacebook());
@@ -130,7 +135,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.addItem).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View ignored) {
+                final AlertDialog.Builder diagBuilder = new AlertDialog.Builder(MainActivity.this);
+
+                final LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+                final View view = inflater.inflate(R.layout.add_item, null);
+                final EditText text = (EditText) view.findViewById(R.id.addItemText);
+
+                diagBuilder.setView(view);
+                diagBuilder.setPositiveButton(R.string.addOk, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, final int i) {
+                        addItem(text.getText().toString());
+                    }
+                });
+                diagBuilder.setNegativeButton(R.string.addCancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, final int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                diagBuilder.setCancelable(false);
+                diagBuilder.create().show();
+            }
+        });
+
         refreshList();
+    }
+
+    private void addItem(final String text) {
+        final Document doc = new Document();
+        doc.put("user", _client.getAuth().getUser().getId());
+        doc.put("text", text);
+
+        getItemsCollection().insertOne(doc).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull final Task<Void> task) {
+                if (task.isSuccessful()) {
+                    refreshList();
+                } else {
+                    Log.e(TAG, "Error adding item", task.getException());
+                }
+            }
+        });
     }
 
     private void clearChecked() {
