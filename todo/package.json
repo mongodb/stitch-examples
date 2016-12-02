@@ -37,7 +37,11 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "css-loader": "^0.26.1",
     "react": "^15.2.1",
-    "react-dom": "^15.2.1"
+    "react-dom": "^15.2.1",
+    "resolve-url-loader": "^1.6.0",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1"
   }
 }

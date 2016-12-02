@@ -3,6 +3,8 @@ import {render} from 'react-dom';
 import {BaasClient, MongoClient} from 'baas';
 import {browserHistory, Router, Route , Link} from 'react-router'
 
+require("../static/todo.scss")
+
 let baasClient = new BaasClient("http://localhost:8080/v1/app/todo")
 let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
@@ -107,10 +109,10 @@ var Home = function(){
   return (
     <div>
       {authed ? <Link to="/settings">Settings</Link> : null}
-      <p>
+      <div>
         <TodoList/>
         <AuthControls client={baasClient}/>
-      </p>
+      </div>
     </div>
   )
 }
