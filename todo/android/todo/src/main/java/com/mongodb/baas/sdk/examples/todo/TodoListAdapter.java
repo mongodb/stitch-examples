@@ -10,15 +10,32 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import org.bson.Document;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
 
 public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
     private final Collection _itemSource;
+
+    // Store the expected state of the items based off the users intentions. This is to handle this
+    // series of events:
+    // Check Item Request Begin - Item in state X
+    // Refresh List - Item in state Y, View is refreshed
+    // Check Item Request End - Item in State X
+    // Refresh List - Item in state X, View is refreshed
+    //
+    // In this example app, these updates happen on the UI thread,
+    // so no synchronization is necessary.
+    private final Map<ObjectId, Boolean> _itemState;
 
     public TodoListAdapter(
             final Context context,
@@ -28,6 +45,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
     ) {
         super(context, resource, items);
         _itemSource = itemSource;
+        _itemState = new HashMap<>();
     }
 
     @NonNull
@@ -52,7 +70,14 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
         ((TextView) row.findViewById(R.id.text)).setText(item.getText());
 
         final CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkBox);
-        checkBox.setChecked(item.getChecked());
+        checkBox.setOnCheckedChangeListener(null);
+
+        if (_itemState.containsKey(item.getId())) {
+            checkBox.setChecked(_itemState.get(item.getId()));
+        } else {
+            checkBox.setChecked(item.getChecked());
+        }
+
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -64,9 +89,15 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
                 set.put("checked", b);
                 update.put("$set", set);
 
-                System.out.println("Query: " + query);
-                System.out.println("Update: " + update);
-                _itemSource.updateOne(query, update);
+                _itemState.put(item.getId(), b);
+                _itemSource.updateOne(query, update).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull final Task<Void> task) {
+
+                        // Our intent may no longer be valid, so clear the state
+                        _itemState.remove(item.getId());
+                    }
+                });
             }
         });
 
