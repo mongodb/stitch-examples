@@ -1,7 +1,6 @@
 package com.mongodb.baas.sdk.examples.todo;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -28,7 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
-import com.mongodb.baas.sdk.BaaSClient;
+import com.mongodb.baas.sdk.BaasClient;
 import com.mongodb.baas.sdk.auth.Auth;
 import com.mongodb.baas.sdk.auth.AuthProviderInfo;
 import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProvider;
@@ -45,9 +43,11 @@ import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TodoApp";
+    private static final String APP_NAME = "todo";
+
 
     private CallbackManager _callbackManager;
-    private BaaSClient _client;
+    private BaasClient _client;
     private MongoClient _mongoClient;
 
     private TodoListAdapter _itemAdapter;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        _client = new BaaSClient(this, "todo", "http://erd.ngrok.io");
+        _client = new BaasClient(this, APP_NAME, "http://erd.ngrok.io");
         initLogin();
     }
 
