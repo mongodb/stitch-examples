@@ -20,12 +20,13 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +38,9 @@ import com.mongodb.baas.sdk.BaasClient;
 import com.mongodb.baas.sdk.auth.Auth;
 import com.mongodb.baas.sdk.auth.AuthProviderInfo;
 import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProvider;
+import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProviderInfo;
 import com.mongodb.baas.sdk.auth.google.GoogleAuthProvider;
+import com.mongodb.baas.sdk.auth.google.GoogleAuthProviderInfo;
 import com.mongodb.baas.sdk.services.mongodb.MongoClient;
 
 import org.bson.Document;
@@ -92,11 +95,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onLogout() {
+        public void onLogout(final String lastProvider) {
             final MainActivity activity = _main.get();
+
+            final List<Task<Void>> futures = new ArrayList<>();
             if (activity != null) {
                 activity._handler.removeCallbacks(activity._refresher);
-                activity.initLogin();
+
+                switch (lastProvider) {
+                    case GoogleAuthProviderInfo.FQ_NAME:
+                        if (activity._googleApiClient != null) {
+                            final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
+                            com.google.android.gms.auth.api.Auth.GoogleSignInApi.signOut(
+                                    activity._googleApiClient).setResultCallback(new ResultCallback<Status>() {
+                                @Override
+                                public void onResult(@NonNull final Status ignored) {
+                                    future.setResult(null);
+                                }
+                            });
+                            futures.add(future.getTask());
+                        }
+                        break;
+                    case FacebookAuthProviderInfo.FQ_NAME:
+                        LoginManager.getInstance().logOut();
+                        break;
+                }
+
+                Tasks.whenAll(futures).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull final Task<Void> ignored) {
+                        activity.initLogin();
+                    }
+                });
             }
         }
     }
@@ -331,8 +361,7 @@ public class MainActivity extends AppCompatActivity {
                 setContentView(R.layout.activity_main);
 
                 if (info.hasFacebook()) {
-                    final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-                    loginButton.setOnClickListener(new View.OnClickListener() {
+                    findViewById(R.id.fb_login_button).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View ignored) {
 
@@ -386,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
                                     info.getFacebook().getScopes());
                         }
                     });
+                    findViewById(R.id.fb_login_button_frame).setVisibility(View.VISIBLE);
                 }
 
                 if (info.hasGoogle()) {
@@ -411,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                             .addApi(GOOGLE_SIGN_IN_API, gso)
                             .build();
 
-                    findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+                    findViewById(R.id.google_login_button).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View ignored) {
                             final Intent signInIntent =
@@ -419,6 +449,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivityForResult(signInIntent, RC_SIGN_IN);
                         }
                     });
+                    findViewById(R.id.google_login_button).setVisibility(View.VISIBLE);
                 }
             }
         });
