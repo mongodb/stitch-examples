@@ -21,6 +21,11 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,7 +36,7 @@ import com.mongodb.baas.sdk.BaasClient;
 import com.mongodb.baas.sdk.auth.Auth;
 import com.mongodb.baas.sdk.auth.AuthProviderInfo;
 import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProvider;
-import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProviderInfo;
+import com.mongodb.baas.sdk.auth.google.GoogleAuthProvider;
 import com.mongodb.baas.sdk.services.mongodb.MongoClient;
 
 import org.bson.Document;
@@ -40,6 +45,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.android.gms.auth.api.Auth.*;
 import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,8 +53,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "TodoApp";
     private static final String APP_NAME = "todo";
     private static final long REFRESH_INTERVAL_MILLIS = 1000;
+    private static final int RC_SIGN_IN = 421;
 
     private CallbackManager _callbackManager;
+    private GoogleApiClient _googleApiClient;
     private BaasClient _client;
     private MongoClient _mongoClient;
 
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         _refresher = new ListRefresher(this);
 
         _client = new BaasClient(this, APP_NAME, "http://erd.ngrok.io");
+        _mongoClient = new MongoClient(_client, "mdb1");
         initLogin();
     }
 
@@ -78,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             final MainActivity activity = _main.get();
-            if (activity != null) {
+            if (activity != null && activity._client.isAuthed()) {
                 activity.refreshList().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull final Task<Void> ignored) {
@@ -92,6 +101,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            final GoogleSignInResult result = GoogleSignInApi.getSignInResultFromIntent(data);
+            handleGooglSignInResult(result);
+            return;
+        }
+
         if (_callbackManager != null) {
             _callbackManager.onActivityResult(requestCode, resultCode, data);
             return;
@@ -99,27 +115,38 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "Nowhere to send activity result for ourselves");
     }
 
-    private void initLogin() {
-        _client.getAuthProviders().continueWithTask(new Continuation<AuthProviderInfo, Task<Void>>() {
-            @Override
-            public Task<Void> then(@NonNull final Task<AuthProviderInfo> task) throws Exception {
-                if (task.isSuccessful()) {
-                    if (task.getResult().hasFacebook()) {
-                        return logInToFacebook(task.getResult().getFacebook());
+    private void handleGooglSignInResult(final GoogleSignInResult result) {
+        if (result == null) {
+            Log.e(TAG, "Got a null GoogleSignInResult");
+            return;
+        }
+
+        Log.d(TAG, "handleGooglSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            final GoogleAuthProvider googleProvider =
+                    GoogleAuthProvider.fromIdToken(result.getSignInAccount().getServerAuthCode());
+            _client.logInWithProvider(googleProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                @Override
+                public void onComplete(@NonNull final Task<Auth> task) {
+                    if (task.isSuccessful()) {
+                        initTodoView();
+                    } else {
+                        Log.e(TAG, "Error logging in with Google", task.getException());
                     }
-                    return Tasks.forResult(null);
-                } else {
-                    return Tasks.forException(task.getException());
                 }
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Void>() {
+            });
+        }
+    }
+
+    private void initLogin() {
+        _client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AuthProviderInfo>() {
             @Override
-            public void onComplete(@NonNull final Task<Void> task) {
+            public void onComplete(@NonNull final Task<AuthProviderInfo> task) {
                 if (task.isSuccessful()) {
-                    _mongoClient = new MongoClient(_client, "mdb1");
-                    initTodoView();
+                    setupLogin(task.getResult());
                 } else {
-                    Log.e(TAG, "Error getting auth provider info", task.getException());
+                    Log.e(TAG, "Error getting auth info", task.getException());
+                    // Maybe retry here...
                 }
             }
         });
@@ -157,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 _client.logout().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(final Void ignored) {
-                        LoginManager.getInstance().logOut();
                         _handler.removeCallbacks(_refresher);
                         initLogin();
                     }
@@ -259,77 +285,123 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private Task<Void> logInToFacebook(final FacebookAuthProviderInfo fbAuthProv) {
+    private void setupLogin(final AuthProviderInfo info) {
 
-        final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
-        FacebookSdk.setApplicationId(fbAuthProv.getApplicationId());
+        if (_client.isAuthed()) {
+            initTodoView();
+            return;
+        }
 
-        final TaskCompletionSource<Void> initFuture = new TaskCompletionSource<>();
-        FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-            @Override
-            public void onInitialized() {
-                initFuture.setResult(null);
-            }
-        });
-        initFuture.getTask().addOnSuccessListener(new OnSuccessListener<Void>() {
+        final List<Task<Void>> initFutures = new ArrayList<>();
+
+        if (info.hasFacebook()) {
+            FacebookSdk.setApplicationId(info.getFacebook().getApplicationId());
+            final TaskCompletionSource<Void> fbInitFuture = new TaskCompletionSource<>();
+            FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+                @Override
+                public void onInitialized() {
+                    fbInitFuture.setResult(null);
+                }
+            });
+            initFutures.add(fbInitFuture.getTask());
+        }
+
+        Tasks.whenAll(initFutures).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(final Void ignored) {
-                if (AccessToken.getCurrentAccessToken() != null) {
-                    final FacebookAuthProvider fbProvider =
-                            FacebookAuthProvider.fromAccessToken(AccessToken.getCurrentAccessToken().getToken());
-                    _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
-                        @Override
-                        public void onComplete(@NonNull final Task<Auth> task) {
-                            if (task.isSuccessful()) {
-                                future.setResult(null);
-                            } else {
-                                Log.e(TAG, "Error logging in with Facebook", task.getException());
-                                future.setException(task.getException());
-                            }
-                        }
-                    });
-                    return;
-                }
-
                 setContentView(R.layout.activity_main);
 
-                final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-                loginButton.setReadPermissions(fbAuthProv.getScopes());
+                if (info.hasFacebook()) {
+                    final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+                    loginButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View ignored) {
 
-                _callbackManager = CallbackManager.Factory.create();
-                LoginManager.getInstance().registerCallback(_callbackManager,
-                        new FacebookCallback<LoginResult>() {
-                            @Override
-                            public void onSuccess(LoginResult loginResult) {
+                            // Check if already logged in
+                            if (AccessToken.getCurrentAccessToken() != null) {
                                 final FacebookAuthProvider fbProvider =
-                                        FacebookAuthProvider.fromAccessToken(loginResult.getAccessToken().getToken());
-
+                                        FacebookAuthProvider.fromAccessToken(AccessToken.getCurrentAccessToken().getToken());
                                 _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
                                     @Override
                                     public void onComplete(@NonNull final Task<Auth> task) {
                                         if (task.isSuccessful()) {
-                                            future.setResult(null);
+                                            initTodoView();
                                         } else {
                                             Log.e(TAG, "Error logging in with Facebook", task.getException());
-                                            future.setException(task.getException());
                                         }
                                     }
                                 });
+                                return;
                             }
 
-                            @Override
-                            public void onCancel() {
-                                future.setResult(null);
-                            }
+                            _callbackManager = CallbackManager.Factory.create();
+                            LoginManager.getInstance().registerCallback(_callbackManager,
+                                    new FacebookCallback<LoginResult>() {
+                                        @Override
+                                        public void onSuccess(LoginResult loginResult) {
+                                            final FacebookAuthProvider fbProvider =
+                                                    FacebookAuthProvider.fromAccessToken(loginResult.getAccessToken().getToken());
 
-                            @Override
-                            public void onError(final FacebookException exception) {
-                                future.setException(exception);
-                            }
-                        });
+                                            _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                                                @Override
+                                                public void onComplete(@NonNull final Task<Auth> task) {
+                                                    if (task.isSuccessful()) {
+                                                        initTodoView();
+                                                    } else {
+                                                        Log.e(TAG, "Error logging in with Facebook", task.getException());
+                                                    }
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onCancel() {}
+
+                                        @Override
+                                        public void onError(final FacebookException exception) {
+                                            initTodoView();
+                                        }
+                                    });
+                            LoginManager.getInstance().logInWithReadPermissions(
+                                    MainActivity.this,
+                                    info.getFacebook().getScopes());
+                        }
+                    });
+                }
+
+                if (info.hasGoogle()) {
+                    final GoogleSignInOptions.Builder gsoBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestServerAuthCode(info.getGoogle().getClientId(), false);
+                    for (final Scope scope: info.getGoogle().getScopes()) {
+                        gsoBuilder.requestScopes(scope);
+                    }
+                    final GoogleSignInOptions gso = gsoBuilder.build();
+
+                    if (_googleApiClient != null) {
+                        _googleApiClient.stopAutoManage(MainActivity.this);
+                        _googleApiClient.disconnect();
+                    }
+
+                    _googleApiClient = new GoogleApiClient.Builder(MainActivity.this)
+                            .enableAutoManage(MainActivity.this, new GoogleApiClient.OnConnectionFailedListener() {
+                                @Override
+                                public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                                    Log.e(TAG, "Error connecting to google: " + connectionResult.getErrorMessage());
+                                }
+                            })
+                            .addApi(GOOGLE_SIGN_IN_API, gso)
+                            .build();
+
+                    findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View ignored) {
+                            final Intent signInIntent =
+                                    GoogleSignInApi.getSignInIntent(_googleApiClient);
+                            startActivityForResult(signInIntent, RC_SIGN_IN);
+                        }
+                    });
+                }
             }
         });
-
-        return future.getTask();
     }
 }
