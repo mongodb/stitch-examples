@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
+import com.mongodb.baas.sdk.AuthListener;
 import com.mongodb.baas.sdk.BaasClient;
 import com.mongodb.baas.sdk.auth.Auth;
 import com.mongodb.baas.sdk.auth.AuthProviderInfo;
@@ -72,8 +73,32 @@ public class MainActivity extends AppCompatActivity {
         _refresher = new ListRefresher(this);
 
         _client = new BaasClient(this, APP_NAME, "http://erd.ngrok.io");
+        _client.addAuthListener(new MyAuthListener(this));
         _mongoClient = new MongoClient(_client, "mdb1");
         initLogin();
+    }
+
+    private static class MyAuthListener extends AuthListener {
+
+        private WeakReference<MainActivity> _main;
+
+        public MyAuthListener(final MainActivity activity) {
+            _main = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void onLogin() {
+            Log.d(TAG, "Logged into BaaS");
+        }
+
+        @Override
+        public void onLogout() {
+            final MainActivity activity = _main.get();
+            if (activity != null) {
+                activity._handler.removeCallbacks(activity._refresher);
+                activity.initLogin();
+            }
+        }
     }
 
     private static class ListRefresher implements Runnable {
@@ -181,13 +206,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View ignored) {
-                _client.logout().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(final Void ignored) {
-                        _handler.removeCallbacks(_refresher);
-                        initLogin();
-                    }
-                });
+                _client.logout();
             }
         });
 
