@@ -1,4 +1,5 @@
 body {
+	font-family:"Georgia", serif;
 }
 
 .settings-link {
@@ -27,9 +28,7 @@ input[type='checkbox']:checked {
 }
 
 .new-item{
-margin-left: 40px;
-margin-bottom:10px;
-font-size:1.8em;
+	font-size:1.8em;
 }
 
 .todo-item-root {
@@ -50,4 +49,61 @@ font-size:1.8em;
 }
 .todo-item-label{
 
+}
+
+.controls{
+  margin-left:80px;
+	display:flex;
+	align-items:center;
+}
+
+.cleanup-button{
+	padding:5px;
+	display:inline-block;
+	color: #888;
+	background-color: #eee;
+	&:hover{
+		background:#eee;
+	}
+}
+
+.cleanup-button {
+position:relative;
+		font-family: Arial, sans-serif;
+    border: 1px solid black;;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+		margin-left:30px;
+    box-shadow: 0 6px #888;
+}
+
+.cleanup-button:active {
+	box-shadow: 0 3px #888;
+	top: 3px;
+}
+
+.items-list{
+  margin-top:15px;
+}
+
+.signin-button {
+  cursor:pointer;
+	display: inline-flex;
+	align-items:center;
+	&-text{
+		padding-left:10px;
+		font-family: sans-serif;
+	}
+  margin-right:20px;
+	padding:10px;
+	border: 1px solid #ccc;
+	border-radius:5px;
+}
+
+.facebook-signin-logo{
+  height: 18px;
+  width: 18px;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAdCAMAAABhTZc9AAAAM1BMVEU7V53////7/P33+Pvm6vPe4++erM9HYaPs7/bY3uu8xd6uutiXpstfd7BNZ6dGYKM+Wp8D8PpVAAAAS0lEQVQoz2MYIoCfh5OZkZkFuyQvCyMYYJVk52DEI8vGiE+WFSjBzY7LTUxAWT6cLgYbSnVZRiTAJIBPlhWvXi68smz4XTUqS6IsADRcAScdHoCmAAAAAElFTkSuQmCC);
+  background-size:18px 18px;
 }
