@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Task<Void> refreshList() {
-        return getItemsCollection().findMany().continueWithTask(new Continuation<List<Document>, Task<Void>>() {
+        return getItemsCollection().find(new Document("user", _client.getAuth().getUser().getId())).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
                 if (task.isSuccessful()) {
