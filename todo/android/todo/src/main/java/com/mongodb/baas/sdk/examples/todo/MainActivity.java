@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         _handler = new Handler();
         _refresher = new ListRefresher(this);
 
-        _client = new BaasClient(this, APP_NAME, "http://erd.ngrok.io");
+        _client = new BaasClient(this, APP_NAME);
         _client.addAuthListener(new MyAuthListener(this));
         _mongoClient = new MongoClient(_client, "mdb1");
         initLogin();
