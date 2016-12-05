@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "css-loader": "^0.26.1",
+    "node-sass": "^3.13.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "resolve-url-loader": "^1.6.0",
