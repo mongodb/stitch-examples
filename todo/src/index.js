@@ -20,9 +20,21 @@ let TodoItem = React.createClass({
 		return (
 			<div className="todo-item-root">
 				<label className="todo-item-container" onClick={this.clicked}>
-					<div className={"checkbox-input " + itemClass}>
-						{this.props.item.checked ? "✓" : null}
-					</div>
+          { this.props.item.checked ? 
+            (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" height="24" viewBox="0 0 24 24" width="24">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            )
+            :
+            (
+              <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                <path d="M0 0h24v24H0z" fill="none"/>
+              </svg>
+            )
+          }
 					<span className={"todo-item-text " + itemClass}>{this.props.item.text}</span>
 				</label>
 			</div>
@@ -41,9 +53,22 @@ var AuthControls = React.createClass({
     let logout = () => this.props.client.logout()
     return (
       <div>
-        { authed ? <div>Logged in as {JSON.stringify(baasClient.auth().data)} via {baasClient.auth()['provider'].split("/")[1]} </div>: null }
+        { authed ? 
+          (
+            <div className="login-header">
+              <img src={baasClient.auth().user.data.picture} className="profile-pic"/>
+              <span className="login-text">
+                <span className="username">{baasClient.auth().user.data.name}</span>
+              </span>
+              <div>
+                <a className="logout" href="#" onClick={() => this.props.client.logout()}>sign out</a>
+              </div>
+            </div>
+          ) : null
+        }
 				{	!authed ? 
-					<div>
+					<div className="login-links-panel">
+            <h2>TODO</h2>
 						<div onClick={() => this.props.client.authWithOAuth("google")} className="signin-button">
 							<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48">
 								<g>
@@ -63,7 +88,6 @@ var AuthControls = React.createClass({
 					</div>
 					: null
 				}
-        {authed ?  <button onClick={() => this.props.client.logout()}>Logout</button> : null}
       </div>
     )
 		//<button disabled={authed} onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
@@ -98,7 +122,7 @@ var TodoList = React.createClass({
     this.loadList()
   },
   componentDidMount(){
-    let intervalId = setInterval(this.timerFunc, 200) 
+    let intervalId = setInterval(this.timerFunc, 500) 
     this.setState({intervalId: intervalId})
   },
   componentWillUnmount(){
@@ -139,7 +163,7 @@ var TodoList = React.createClass({
         <ul className="items-list">
         { 
           this.state.items.length == 0
-          ?  <div>list is empty.</div>
+          ?  <div className="list-empty-label">empty list.</div>
            : this.state.items.map((item) => {
             return <TodoItem key={item._id.$oid} item={item} onChange={this.loadList} onStartChange={this.setPending}/>;
           }) 
@@ -154,11 +178,8 @@ var Home = function(){
   let authed = baasClient.auth() != null
   return (
     <div>
-      {authed ? <Link to="/settings" className="settings-link">Settings</Link> : null}
-      <div>
-        <AuthControls client={baasClient}/>
-        <TodoList/>
-      </div>
+      <AuthControls client={baasClient}/>
+      <TodoList/>
     </div>
   )
 }

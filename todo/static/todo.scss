@@ -1,10 +1,20 @@
 body {
-	font-family:"Georgia", serif;
+  font-family:"Roboto", serif;
+  margin:0px;
 }
 
 .settings-link {
   // Hidden for now, since it's irrelevant to the demo.
   display:none;
+}
+
+.logout {
+  font-size:.8em;
+  margin-left: 10px;
+}
+
+.login-links-panel{
+  margin:40px;
 }
 
 .new-item-input {
@@ -25,6 +35,26 @@ body {
 input[type='checkbox'] {
 }
 input[type='checkbox']:checked {
+}
+
+.profile-pic{
+  height:40px;
+  width:40px;
+  margin-right: 10px;
+}
+
+.login-header{
+  display: flex;
+  margin-bottom:25px;
+  align-items: center;
+  border-bottom:1px solid #ccc;
+  .login-text{
+    color:#888;
+    .username{
+      color: black;
+      font-weight:bold;
+    }
+  }
 }
 
 .new-item{
@@ -60,31 +90,33 @@ input[type='checkbox']:checked {
 .cleanup-button{
 	padding:5px;
 	display:inline-block;
-	color: #888;
-	background-color: #eee;
+	background-color: #fff;
 	&:hover{
-		background:#eee;
+		background:#f0f0f0;
 	}
 }
 
 .cleanup-button {
-position:relative;
-		font-family: Arial, sans-serif;
-    border: 1px solid black;;
-    border-radius: 5px;
-    cursor: pointer;
-    display: inline-block;
-		margin-left:30px;
-    box-shadow: 0 6px #888;
+  position:relative;
+  border: 1px solid black;;
+  cursor: pointer;
+  display: inline-block;
+	margin-left:30px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
 .cleanup-button:active {
-	box-shadow: 0 3px #888;
-	top: 3px;
+	top: 2px;
+  box-shadow: 0 5px 8px rgba(0,0,0,0.19), 0 4px 4px rgba(0,0,0,0.23);
 }
 
 .items-list{
   margin-top:15px;
+  max-width:500px;
+}
+.list-empty-label{
+  color: #888;
+  margin-left:40px;
 }
 
 .signin-button {
@@ -93,7 +125,6 @@ position:relative;
 	align-items:center;
 	&-text{
 		padding-left:10px;
-		font-family: sans-serif;
 	}
   margin-right:20px;
 	padding:10px;
