@@ -1,12 +1,12 @@
 {
 	"authProviders": {
 		"oauth2/google": {
-			"metadataFields": ["email", "name"],
+			"metadataFields": ["email", "name", "picture"],
 			"clientId": "APP-ID",
 			"clientSecret": "APP-SECRET"
 		},
 		"oauth2/facebook": {
-			"metadataFields": ["email", "name"],
+			"metadataFields": ["email", "name", "picture"],
 			"clientId": "APP-ID",
 			"clientSecret": "APP-SECRET"
 		}
