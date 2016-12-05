@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (lastProvider) {
                     case GoogleAuthProviderInfo.FQ_NAME:
-                        if (activity._googleApiClient != null) {
+                        if (activity._googleApiClient != null && activity._googleApiClient.isConnected()) {
                             final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
                             com.google.android.gms.auth.api.Auth.GoogleSignInApi.signOut(
                                     activity._googleApiClient).setResultCallback(new ResultCallback<Status>() {
