@@ -9,9 +9,9 @@ let baasClient = new BaasClient("http://localhost:8080/v1/app/todo")
 let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
 let users = db.getCollection("users")
-
 let TodoItem = React.createClass({
 	clicked(){
+    this.props.onStartChange();
     items.updateOne({"_id":this.props.item._id}, {$set:{"checked":!this.props.item.checked}})
 		.then(this.props.onChange)
 	},
@@ -79,7 +79,7 @@ var TodoList = React.createClass({
     }
     let obj = this;
     items.find(null, null).then(function(data){
-      obj.setState({items:data.result})
+      obj.setState({items:data.result, requestPending:false})
     })
   },
 
@@ -90,11 +90,25 @@ var TodoList = React.createClass({
       this.loadList();
     }, {"rule": "checked"})
   },
-
+  timerFunc(){
+    if(this.state.requestPending){
+      console.log("not fetching, request in progress")
+      return
+    }
+    this.loadList()
+  },
+  componentDidMount(){
+    let intervalId = setInterval(this.timerFunc, 200) 
+    this.setState({intervalId: intervalId})
+  },
+  componentWillUnmount(){
+    clearInterval(this.state.intervalId)
+  },
   addItem: function(event){
     if(event.keyCode != 13 ){
       return
     }
+    this.setState({requestPending:true})
     items.insert([{text:event.target.value, "user": {"$oid": baasClient.authedId()}}]).then(
       () => {
         this._newitem.value = ""
@@ -104,11 +118,14 @@ var TodoList = React.createClass({
   },
 
   clear: function(){
+    this.setState({requestPending:true})
     items.deleteMany({checked:true}).then(() => {
       this.loadList();
     })
   },
-
+  setPending(){
+    this.setState({requestPending:true})
+  },
   render: function(){
     let loggedInResult = 
       (<div>
@@ -124,7 +141,7 @@ var TodoList = React.createClass({
           this.state.items.length == 0
           ?  <div>list is empty.</div>
            : this.state.items.map((item) => {
-            return <TodoItem key={item._id.$oid} item={item} onChange={this.loadList}/>;
+            return <TodoItem key={item._id.$oid} item={item} onChange={this.loadList} onStartChange={this.setPending}/>;
           }) 
         }
         </ul>
