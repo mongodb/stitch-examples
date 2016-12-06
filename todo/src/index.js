@@ -122,7 +122,7 @@ var TodoList = React.createClass({
     this.loadList()
   },
   componentDidMount(){
-    let intervalId = setInterval(this.timerFunc, 500) 
+    let intervalId = setInterval(this.timerFunc, 1000) 
     this.setState({intervalId: intervalId})
   },
   componentWillUnmount(){
