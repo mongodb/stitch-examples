@@ -14,6 +14,10 @@ module.exports = {
         loader:"url-loader?limit=10000&mimetype=image/png"
       },
       {
+        test: /\.svg$/,
+        loader:"url-loader?limit=10000&mimetype=image/svg"
+      },
+      {
         test: /\.scss$/,
         loaders: ['style', 'css', 'resolve-url', 'sass?sourceMap']
       },
