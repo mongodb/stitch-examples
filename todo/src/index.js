@@ -5,8 +5,6 @@ import {browserHistory, Router, Route , Link} from 'react-router'
 
 require("../static/todo.scss")
 
-console.log(process.env);
-
 let apiUrl = "http://localhost:8080";
 switch (process.env.NODE_ENV) {
   case 'prod':
