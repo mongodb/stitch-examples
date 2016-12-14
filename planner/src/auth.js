@@ -15,7 +15,7 @@ let AuthControls = React.createClass({
           onClick={() => client.linkWithOAuth("google")}>Link with Google</button>
         <button disabled={authed}
           onClick={() => client.linkWithOAuth("facebook")}>Link with Facebook</button>
-        <button disabled={!authed} onClick={() => client.logout()}>Logout</button>
+        <button disabled={!authed} onClick={() => client.logout().then(() => location.reload())}>Logout</button>
       </div>
     )
   },

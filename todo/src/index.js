@@ -59,9 +59,8 @@ function TodoItem({item=null, checkHandler=null}){
 
 var AuthControls = React.createClass({
   render: function(){
-		console.log(baasClient.auth())
     let authed = this.props.client.auth() != null
-    let logout = () => this.props.client.logout()
+    let logout = () => this.props.client.logout().then(() => location.reload());
     return (
       <div>
         { authed ? 
@@ -72,7 +71,7 @@ var AuthControls = React.createClass({
                 <span className="username">{baasClient.auth().user.data.name}</span>
               </span>
               <div>
-                <a className="logout" href="#" onClick={() => this.props.client.logout()}>sign out</a>
+                <a className="logout" href="#" onClick={() => logout()}>sign out</a>
               </div>
             </div>
           ) : null
