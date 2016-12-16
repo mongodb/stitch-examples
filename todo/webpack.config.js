@@ -29,8 +29,8 @@ module.exports = {
     extensions: ['', '.js', '.jsx']
   },
   output: {
-    path: __dirname + '/dist',
-    publicPath: '/',
+    path: __dirname + '/' + process.env.DISTROOT + '/dist',
+    publicPath: '/static/',
     filename: 'bundle.js'
   },
   devServer: {

@@ -5,18 +5,7 @@ import {browserHistory, Router, Route , Link} from 'react-router'
 
 require("../static/todo.scss")
 
-let apiUrl = "http://localhost:8080";
-switch (process.env.NODE_ENV) {
-  case 'prod':
-    apiUrl = "https://baas.mongodb.com";
-    break;
-  case 'dev':
-    apiUrl = "http://baas-dev.10gen.cc";
-    break;
-}
-
-
-let baasClient = new BaasClient(`${apiUrl}/v1/app/todo`);
+let baasClient = new BaasClient(`${baseUrl}/v1/app/todo`);
 let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
 let users = db.getCollection("users")
