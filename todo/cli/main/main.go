@@ -24,25 +24,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	msc := client.MongoServiceClient{"todo", "mdb1", *c}
-	_ = c
+	msc := client.MongoServiceClient{
+		"todo", // App name
+		"mdb1", // Service name
+		*c,
+	}
 
 	type item struct {
 		Text    string `json:"text"`
 		Checked bool   `json:"checked"`
 	}
 	out := []item{}
-	err = msc.DB("todo").C("items").Find(map[string]interface{}{}).All(&out)
+	err = msc.DB("todo").C("items").Find(nil).All(&out)
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
+
+	fmt.Println("todo list items:")
 	for _, i := range out {
 		status := checkBox
 		if i.Checked {
 			status = checkedBox
 		}
 		fmt.Printf("%s - %s\n", status, i.Text)
-
 	}
 }
 
