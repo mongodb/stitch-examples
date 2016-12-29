@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/10gen/baas/client"
+	"github.com/10gen/baas/clients/golang"
 	"github.com/mitchellh/go-homedir"
 )
 
