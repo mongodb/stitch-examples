@@ -50,14 +50,18 @@ var AuthControls = React.createClass({
   render: function(){
     let authed = this.props.client.auth() != null
     let logout = () => this.props.client.logout().then(() => location.reload());
+    const userData = baasClient.auth().user.data
     return (
       <div>
         { authed ? 
           (
             <div className="login-header">
-              <img src={baasClient.auth().user.data.picture} className="profile-pic"/>
+              {userData && userData.picture ? 
+                <img src={userData.picture} className="profile-pic"/>
+                : null
+              }
               <span className="login-text">
-                <span className="username">{baasClient.auth().user.data.name}</span>
+                <span className="username">{userData && userData.name ? userData.name : "?"}</span>
               </span>
               <div>
                 <a className="logout" href="#" onClick={() => logout()}>sign out</a>
