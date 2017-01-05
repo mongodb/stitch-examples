@@ -91,7 +91,7 @@ func getClient() (*client.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.Authenticator = &client.RefreshTokenAuth{baasUrl, creds.RefreshToken}
+	c.Authenticator = &client.RefreshTokenAuth{creds.RefreshToken}
 	err = c.AuthenticateApp(appName)
 	if err != nil {
 		return nil, err
