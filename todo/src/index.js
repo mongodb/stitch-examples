@@ -50,7 +50,10 @@ var AuthControls = React.createClass({
   render: function(){
     let authed = this.props.client.auth() != null
     let logout = () => this.props.client.logout().then(() => location.reload());
-    const userData = baasClient.auth().user.data
+    let userData = null
+    if(baasClient.auth() && baasClient.auth().user){
+      userData = baasClient.auth().user.data
+    }
     return (
       <div>
         { authed ? 
