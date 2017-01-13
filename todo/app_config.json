@@ -21,33 +21,33 @@
 			"rules": [
 				{
 					"namespace": "todo.items",
-					"visible": {"$$root.user": "$$auth.id"},
-					"validate": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": {"$exists": 0}}]},
-					"change": {"$or": [{"$$newRoot.user": "$$auth.id"}, {"$$newRoot": {"$exists": 0}}]},
+					"read": {"$$root.user": "$$auth.id"},
+					"write": {"$or": [{"$$oldRoot.user": "$$auth.id"}, {"$$oldRoot": {"$exists": 0}}]},
 					"fields": {
 						"_id": {
 							
 						},
 						"text": {
-							"validate": {"$and": [{"$$new": {"$type": "string"}}, {"$$new": {"$ne": ""}}]}
+							"valid": {"$$new": {"$type": "string"}, "$$new": {"$ne": ""}}
 						},
-						"user": {},
+						"user": {
+							"valid": "$$auth.id"
+						},
 						"checked": {
-							"validate": {"$$new": {"$type": "bool"}}
+							"valid": {"$$new": {"$type": "bool"}}
 						}
 					}
 				},
 				{
 					"namespace": "todo.users",
-					"visible": {"$$root._id": "$$auth.id"},
-					"validate": {"$$new._id": "$$auth.id"},
-					"change": {"$$new._id": "$$auth.id"},
+					"read": {"$$root._id": "$$auth.id"},
+					"write": {"$or": [{"$$oldRoot.id": "$$auth.id"}, {"$$oldRoot": {"$exists": 0}}]},
 					"fields": {
 						"_id": {
-							
+							"valid": "$$auth.id"
 						},
 						"phone_number": {
-							"validate": {
+							"valid": {
 								"$$new": {"$type": "string"},
 								"$or": [
 									{"$$new": {"$eq": ""}, "$$newRoot.number_status": "unverified"},
@@ -56,10 +56,10 @@
 							}
 						},
 						"number_status": {
-							"validate": { "$$new": {"$in": ["pending", "unverified", "verified"]}}
+							"valid": { "$$new": {"$in": ["pending", "unverified", "verified"]}}
 						},
 						"verify_code": {
-							"validate": {"$$newRoot.number_status": {"$in": ["pending", "verified"]}}
+							"valid": {"$$newRoot.number_status": {"$in": ["pending", "verified"]}}
 						}
 					}
 				}
