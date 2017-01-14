@@ -118,7 +118,6 @@
       },
       "rules": [
         {
-          "priority": 0,
           "actions": [ "signPolicy" ],
           "bucket": "$$var.s3bucket",
           "key": {"$regex" : "^/planner-files/"},
@@ -136,7 +135,7 @@
       "rules": [
         {
           "namespace": "planner.boards",
-          "visible": {
+          "read": {
             "$or": [
               {
                 "$$root.owner_id": "$$auth.id"
@@ -146,7 +145,7 @@
               }
             ]
           },
-          "validate": {
+          "valid": {
             "$or": [
               {
                 "$$oldRoot": {
@@ -162,7 +161,7 @@
           },
           "fields": {
             "_id": {
-              "change": {
+              "write": {
                 "$$old": {
                   "$exists": false
                 }
@@ -170,17 +169,17 @@
             },
             "name": {
               "required": true,
-              "validate": {
+              "valid": {
                 "$$new": {
                   "$ne": ""
                 }
               }
             },
-            "owner_id": {},
+            "owner_id": {
+              
+            },
             "lists": {
-              "fields": {
-                "$$other": {}
-              }
+              "otherFields": {}
             },
             "lcount": {},
             "members": {}
@@ -190,24 +189,24 @@
           "namespace": "planner.cards",
           "fields": {
             "_id": {
-              "change": {
+              "write": {
                 "$$old": {
                   "$exists": false
                 }
               }
             },
             "author": {
-              "change": {
+              "write": {
                 "$$old": {
                   "$exists": false
                 }
               },
-              "validate": {
+              "valid": {
                 "$$new": "$$auth.id"
               }
             },
             "summary": {
-              "validate": {
+              "valid": {
                 "$and": [
                   {
                     "$$new": {
@@ -229,7 +228,8 @@
         },
         {
           "namespace": "planner.users",
-          "change": {
+          "read": {"$$root.authId": "$$auth.id"},
+          "write": {
             "$$old": {
               "$exists": false
             }
@@ -237,14 +237,14 @@
           "fields": {
             "_id": {},
             "authId": {
-              "validate": {
+              "valid": {
                 "$$new": "$$auth.id"
               }
             },
             "email": {},
             "name": {},
             "channel": {
-              "visible": {
+              "read": {
                 "$$root.authId": "$$auth.id"
               }
             }
@@ -261,7 +261,6 @@
       },
       "rules": [
         {
-          "priority": 0,
           "actions": [
             "send"
           ]
@@ -276,7 +275,6 @@
       },
       "rules": [
         {
-          "priority": 0,
           "actions": [
             "publish"
           ]

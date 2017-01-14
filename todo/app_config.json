@@ -74,7 +74,6 @@
 			},
 			"rules": [
 				{
-					"priority": 0,
 					"actions": ["send"]
 				}
 			],
