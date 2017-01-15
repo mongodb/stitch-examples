@@ -145,6 +145,14 @@
               }
             ]
           },
+          "write": {
+            "$or": [
+              {
+                "$$oldRoot.owner_id": "$$auth.id"
+              },
+              { "$$oldRoot": { "$exists": false } }
+            ]
+          },
           "valid": {
             "$or": [
               {
@@ -161,11 +169,6 @@
           },
           "fields": {
             "_id": {
-              "write": {
-                "$$old": {
-                  "$exists": false
-                }
-              }
             },
             "name": {
               "required": true,
@@ -206,6 +209,9 @@
               }
             },
             "summary": {
+              "write": {
+                "$or": [{"$$old": {"$exists": false}}, {"$$oldRoot.author": "$$auth.id"}]
+              },
               "valid": {
                 "$and": [
                   {
@@ -221,9 +227,21 @@
                 ]
               }
             },
-            "comments": {},
-            "files": {},
-            "description": {}
+            "comments": {
+              "write": {
+                "$or": [{"$$oldRoot.author": "$$auth.id"}]
+              }
+            },
+            "files": {
+              "write": {
+                "$or": [{"$$oldRoot.author": "$$auth.id"}]
+              }
+            },
+            "description": {
+              "write": {
+                "$or": [{"$$old": {"$exists": false}}, {"$$oldRoot.author": "$$auth.id"}]
+              }
+            }
           }
         },
         {
