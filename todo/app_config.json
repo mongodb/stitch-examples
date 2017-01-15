@@ -21,6 +21,7 @@
 			"rules": [
 				{
 					"namespace": "todo.items",
+					"filters": [{"matchExpression": {"user": "$$auth.id"}, "when": {"$$true": true}}],
 					"read": {"$$root.user": "$$auth.id"},
 					"write": {"$or": [{"$$oldRoot.user": "$$auth.id"}, {"$$oldRoot": {"$exists": 0}}]},
 					"fields": {
@@ -40,7 +41,8 @@
 				},
 				{
 					"namespace": "todo.users",
-					"read": {"$$root._id": "$$auth.id"},
+					"filters": [{"matchExpression": {"user": "$$auth.id"}, "when": {"$$true": true}}],
+					"read": {"$$root.user": "$$auth.id"},
 					"write": {"$or": [{"$$oldRoot.id": "$$auth.id"}, {"$$oldRoot": {"$exists": 0}}]},
 					"fields": {
 						"_id": {
