@@ -1,4 +1,5 @@
 {
+  "name": "planner",
   "authProviders": {
     "oauth2/facebook": {
       "metadataFields": [

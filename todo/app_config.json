@@ -1,4 +1,5 @@
 {
+	"name": "todo",
 	"authProviders": {
 		"oauth2/google": {
 			"metadataFields": ["email", "name", "picture"],
