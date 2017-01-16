@@ -4,12 +4,14 @@
 		"oauth2/google": {
 			"metadataFields": ["email", "name", "picture"],
 			"clientId": "APP-ID",
-			"clientSecret": "APP-SECRET"
+			"clientSecret": "APP-SECRET",
+			"redirectURIs": ["http://localhost:8001"]
 		},
 		"oauth2/facebook": {
 			"metadataFields": ["email", "name", "picture"],
 			"clientId": "APP-ID",
-			"clientSecret": "APP-SECRET"
+			"clientSecret": "APP-SECRET",
+			"redirectURIs": ["http://localhost:8001"]
 		}
 	},
 

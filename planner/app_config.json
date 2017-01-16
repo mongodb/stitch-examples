@@ -7,7 +7,8 @@
         "name"
       ],
       "clientId": "APP-ID",
-      "clientSecret": "APP-SECRET"
+      "clientSecret": "APP-SECRET",
+      "redirectURIs": ["http://localhost:8001"]
     },
     "oauth2/google": {
       "metadataFields": [
@@ -15,7 +16,8 @@
         "name"
       ],
       "clientId": "APP-SECRET",
-      "clientSecret": "APP-ID"
+      "clientSecret": "APP-ID",
+      "redirectURIs": ["http://localhost:8001"]
     }
   },
   "actions": {
