@@ -72,11 +72,11 @@ func getClient() (*client.Client, error) {
 		return nil, err
 	}
 
-	confPath := filepath.Join(home, ".baas.yml")
+	confPath := filepath.Join(home, ".server.yml")
 	cf, err := os.Open(confPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("No creds found - log in and copy the token info to ~/.baas.yml")
+			fmt.Println("No creds found - log in and copy the token info to ~/.server.yml")
 			promptLogin(c)
 			os.Exit(1)
 			return nil, nil
