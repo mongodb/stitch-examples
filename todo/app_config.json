@@ -128,7 +128,8 @@
 	"variables": {
 		"ourNumber": {
 			"type": "literal",
-			"source": "OUR_NUMBER"
+			"source": "OUR_NUMBER",
+			"private": true
 		}
 	}
 }
