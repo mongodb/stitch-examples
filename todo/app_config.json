@@ -83,24 +83,6 @@
 				}
 			],
 			"triggers": [
-				{
-					"pipeline": [
-						{
-							"action": "expr",
-							"args": {
-								"expression": {
-									"user": "$$var.id_from_phone._id",
-									"text": "$$trigger.Body"
-								}
-							}
-						},
-						{
-							"service": "mdb1",
-							"action": "insert",
-							"args": {"database": "todo", "collection": "items"}
-						}
-					]
-				}
 			]
 		}
 	},
@@ -110,23 +92,6 @@
 			"type": "literal",
 			"source": "OUR_NUMBER",
 			"private": true
-		},
-		"id_from_phone": {
-			"type": "pipeline",
-			"source": {
-				"pipeline": [
-					{
-						"service": "mdb1",
-						"action": "find",
-						"args": {
-							"database": "todo",
-							"collection": "users", 
-							"query": {"phone_number": "$$trigger.From"}
-						}
-					}
-				],
-				"output": "singleDoc"
-			}
 		}
 	}
 }
