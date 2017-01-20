@@ -46,7 +46,7 @@ let modalStyle = {
   }
 }
 
-let baasClient = new BaasClient(baseUrl, "planner");
+let baasClient = new BaasClient("planner");
 let rootDb = new MongoClient(baasClient, "mdb1").getDb("planner")
 let db = {
   _client: baasClient,
