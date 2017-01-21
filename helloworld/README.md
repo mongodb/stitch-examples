@@ -43,8 +43,8 @@ Some default settings will be created for the namespace, which you can leave as-
 
 ### Serve the app
 
-In your terminal, go to the root directory where the html file is (`examples/helloworld`).
-Run the command:
+Edit `index.html` in this directory, and change the line `var MY_APP_ID = "..."` so that it contains the name of the app you created earlier.
+Then run the command:
 
 `python -m SimpleHTTPServer`
 
