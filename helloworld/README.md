@@ -1,4 +1,4 @@
-# HelloWord sample app.
+# HelloWorld sample app.
 
 ### Create a new app
 * Go to https://baas-dev.10gen.cc/ and log in.
