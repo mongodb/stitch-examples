@@ -19,7 +19,7 @@ Follow the instructions for at least one of the providers listed below:
 5. Under "Valid OAuth redirect URIs" add the following entry with your app name substituted where appropriate:
 	`https://baas-dev.10gen.cc/v1/app/<your_app_name>/auth/oauth2/facebook/callback`
 
-Return back to the BaaS authentication settings page, and enter your App ID and App Secret as client ID and client secret respectively from the Facebook app dashboard. Add "http://localhost:8000/" to the list of redirect URIs, and save it.
+Return back to the BaaS authentication settings page, and enter your App ID and App Secret as client ID and client secret respectively from the Facebook app dashboard. Add `http://localhost:8000/` to the list of redirect URIs, and save it.
 
 ##### Google
 1. Get your client ID and client secret (See: [Google - Setting up OAuth 2.0](https://support.google.com/cloud/answer/6158849?hl=en))
@@ -28,7 +28,7 @@ Return back to the BaaS authentication settings page, and enter your App ID and 
 	`https://baas-dev.10gen.cc/v1/app/<your_app_name>/auth/oauth2/google/callback` 
 4. On the BaaS admin site
 
-Return back to the BaaS authentication settings page, and enter your client ID and client Secret in the Google auth settings panel. Add "http://localhost:8000/" to the list of redirect URIs, and save it. Add "http://localhost:8000/" to the list of redirect URIs, and save it. 
+Return back to the BaaS authentication settings page, and enter your client ID and client Secret in the Google auth settings panel. Add `http://localhost:8000/` to the list of redirect URIs, and save it.
 
 ### Set up a MongoDB service
 
@@ -39,6 +39,7 @@ Return back to the BaaS authentication settings page, and enter your client ID a
 ### Create a namespace.
 
 In the "Rules" tab of the MongoDB service, click on "Add namespace" and give it the name `my_db.items`.
+Some default settings will be created for the namespace, which you can leave as-is for now.
 
 ### Serve the app
 
