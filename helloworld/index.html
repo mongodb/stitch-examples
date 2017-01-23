@@ -13,8 +13,7 @@
 
     <div class="content">
       <div id="greeting"></div>
-      <textarea id="note" placeholder="you can save some data here.">
-      </textarea>
+      <textarea id="note" placeholder="you can save some data here."></textarea>
       <button id="save">Save</button>
     </div>
 
@@ -24,7 +23,7 @@
     // Set this value to match the ID of the app you create in the baas admin site.
     var MY_APP_ID = "helloworld";
 
-    var baasClient = new Baas.BaasClient(MY_APP_ID);
+    var baasClient = new Baas.BaasClient(MY_APP_ID, {baseUrl:"http://localhost:8080"});
     function setupPage(){
       var userInfo = baasClient.auth()
       console.log("user info is", userInfo)
