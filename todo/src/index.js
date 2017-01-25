@@ -5,7 +5,7 @@ import {browserHistory, Router, Route , Link} from 'react-router'
 
 require("../static/todo.scss")
 
-let baasClient = new BaasClient("todo");
+let baasClient = new BaasClient("todo", {baseUrl: "http://localhost:8080"});
 let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
 let users = db.getCollection("users")
