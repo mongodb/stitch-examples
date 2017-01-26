@@ -353,6 +353,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             initFutures.add(fbInitFuture.getTask());
+        } else {
+            FacebookSdk.setApplicationId("INVALID");
+            final TaskCompletionSource<Void> fbInitFuture = new TaskCompletionSource<>();
+            FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+                @Override
+                public void onInitialized() {
+                    fbInitFuture.setResult(null);
+                }
+            });
+            initFutures.add(fbInitFuture.getTask());
         }
 
         Tasks.whenAll(initFutures).addOnSuccessListener(new OnSuccessListener<Void>() {
