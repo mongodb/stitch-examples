@@ -1,140 +1,4 @@
 {
-  "services": {
-    "mdb1": {
-      "type": "mongodb",
-      "config": {
-        "ssl": false,
-        "uri": "mongodb://localhost:27017"
-      },
-      "rules": {
-        "5888d4c3772e2e4a41158d64": {
-          "_id": "5888d4c3772e2e4a41158d64",
-          "namespace": "todo.items",
-          "write": {
-            "$or": [
-              {
-                "$$oldRoot.user": "$$auth.id"
-              },
-              {
-                "$$oldRoot": {
-                  "$exists": 0
-                }
-              }
-            ]
-          },
-          "read": {
-            "$$root.user": "$$auth.id"
-          },
-          "fields": {
-            "_id": {},
-            "checked": {
-              "valid": {
-                "$$new": {
-                  "$type": "bool"
-                }
-              }
-            },
-            "text": {
-              "valid": {
-                "$$new": {
-                  "$ne": ""
-                }
-              }
-            },
-            "user": {
-              "valid": "$$auth.id"
-            }
-          }
-        },
-        "5888d4c3772e2e4a41158d6b": {
-          "_id": "5888d4c3772e2e4a41158d6b",
-          "namespace": "todo.users",
-          "write": {
-            "$or": [
-              {
-                "$$oldRoot.id": "$$auth.id"
-              },
-              {
-                "$$oldRoot": {
-                  "$exists": 0
-                }
-              }
-            ]
-          },
-          "read": {
-            "$$root._id": "$$auth.id"
-          },
-          "fields": {
-            "_id": {
-              "valid": "$$auth.id"
-            },
-            "number_status": {
-              "valid": {
-                "$$new": {
-                  "$in": [
-                    "pending",
-                    "unverified",
-                    "verified"
-                  ]
-                }
-              }
-            },
-            "phone_number": {
-              "valid": {
-                "$or": [
-                  {
-                    "$$newRoot.number_status": "unverified",
-                    "$$new": {
-                      "$eq": ""
-                    }
-                  },
-                  {
-                    "$$newRoot.number_status": {
-                      "$in": [
-                        "pending",
-                        "verified"
-                      ]
-                    },
-                    "$$new": {
-                      "$ne": ""
-                    }
-                  }
-                ],
-                "$$new": {
-                  "$type": "string"
-                }
-              }
-            },
-            "verify_code": {
-              "valid": {
-                "$$newRoot.number_status": {
-                  "$in": [
-                    "pending",
-                    "verified"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "tw1": {
-      "type": "twilio",
-      "config": {
-        "auth_token": "AUTH_TOKEN",
-        "sid": "SID"
-      },
-      "rules": {
-        "5888d4c3772e2e4a41158d5d": {
-          "_id": "5888d4c3772e2e4a41158d5d",
-          "actions": [
-            "send"
-          ]
-        }
-      }
-    }
-  },
   "authProviders": {
     "oauth2/facebook": {
       "clientId": "APP-ID",
@@ -159,11 +23,191 @@
       ]
     }
   },
+  "services": {
+    "mdb1": {
+      "config": {
+        "ssl": false,
+        "uri": "mongodb://localhost:27017"
+      },
+      "rules": {
+        "5888d4c3772e2e4a41158d64": {
+          "_id": "5888d4c3772e2e4a41158d64",
+          "fields": {
+            "_id": {},
+            "checked": {
+              "valid": {
+                "$$new": {
+                  "$type": "bool"
+                }
+              }
+            },
+            "text": {
+              "valid": {
+                "$$new": {
+                  "$ne": ""
+                }
+              }
+            },
+            "user": {
+              "valid": "$$auth.id"
+            }
+          },
+          "namespace": "todo.items",
+          "read": {
+            "$$root.user": "$$auth.id"
+          },
+          "write": {
+            "$or": [
+              {
+                "$$oldRoot.user": "$$auth.id"
+              },
+              {
+                "$$oldRoot": {
+                  "$exists": 0
+                }
+              }
+            ]
+          }
+        },
+        "5888d4c3772e2e4a41158d6b": {
+          "_id": "5888d4c3772e2e4a41158d6b",
+          "fields": {
+            "_id": {
+              "valid": "$$auth.id"
+            },
+            "number_status": {
+              "valid": {
+                "$$new": {
+                  "$in": [
+                    "pending",
+                    "unverified",
+                    "verified"
+                  ]
+                }
+              }
+            },
+            "phone_number": {
+              "valid": {
+                "$$new": {
+                  "$type": "string"
+                },
+                "$or": [
+                  {
+                    "$$new": {
+                      "$eq": ""
+                    },
+                    "$$newRoot.number_status": "unverified"
+                  },
+                  {
+                    "$$new": {
+                      "$ne": ""
+                    },
+                    "$$newRoot.number_status": {
+                      "$in": [
+                        "pending",
+                        "verified"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "verify_code": {
+              "valid": {
+                "$$newRoot.number_status": {
+                  "$in": [
+                    "pending",
+                    "verified"
+                  ]
+                }
+              }
+            }
+          },
+          "namespace": "todo.users",
+          "read": {
+            "$$root._id": "$$auth.id"
+          },
+          "write": {
+            "$or": [
+              {
+                "$$oldRoot.id": "$$auth.id"
+              },
+              {
+                "$$oldRoot": {
+                  "$exists": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "type": "mongodb"
+    },
+    "tw1": {
+      "config": {
+        "auth_token": "AUTH_TOKEN",
+        "sid": "SID"
+      },
+      "rules": {
+        "5888d4c3772e2e4a41158d5d": {
+          "_id": "5888d4c3772e2e4a41158d5d",
+          "actions": [
+            "send"
+          ]
+        }
+      },
+      "triggers": {
+        "5888d4c3772e2e4a41158d5f": {
+          "_id": "5888d4c3772e2e4a41158d5f",
+          "pipeline": [
+            {
+              "action": "expr",
+              "args": {
+                "expression": {
+                  "text": "$$trigger.Body",
+                  "user": "$$var.idFromPhone._id"
+                }
+              }
+            },
+            {
+              "action": "insert",
+              "args": {
+                "collection": "items",
+                "database": "todo"
+              },
+              "service": "mdb1"
+            }
+          ],
+          "output": "array"
+        }
+      },
+      "type": "twilio"
+    }
+  },
   "variables": {
+    "idFromPhone": {
+      "source": {
+        "output": "singleDoc",
+        "pipeline": [
+          {
+            "action": "find",
+            "args": {
+              "collection": "users",
+              "database": "todo",
+              "query": {
+                "phone_number": "$$trigger.From"
+              }
+            },
+            "service": "mdb1"
+          }
+        ]
+      },
+      "type": "pipeline"
+    },
     "ourNumber": {
-      "type": "literal",
+      "private": false,
       "source": "+12013992736",
-      "private": false
+      "type": "literal"
     }
   }
 }
