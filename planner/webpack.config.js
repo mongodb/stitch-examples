@@ -1,6 +1,16 @@
+webpack = require('webpack')
 module.exports = {
   entry: [
     './src/index.js'
+  ],
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'APP_NAME': JSON.stringify(process.env.APP_NAME),
+        'BAAS_URL': JSON.stringify(process.env.BAAS_URL)
+      }
+    })
   ],
   module: {
     loaders: [

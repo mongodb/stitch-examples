@@ -205,7 +205,6 @@
       "type": "pipeline"
     },
     "ourNumber": {
-      "private": false,
       "source": "+12013992736",
       "type": "literal"
     }

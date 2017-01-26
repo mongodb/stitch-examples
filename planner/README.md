@@ -9,36 +9,26 @@ It supports mentioning users when making comments on cards using @ followed by a
 
 ## Getting Started
 
-1. Run the combined BaaS server (See: [BaaS - Getting Started](../../README.md))
-2. Edit app_config.json and modify the clientId/clientSecret for either or both Google and Facebook auth providers.
+1. Log into BaaS and create an app with a name of your choice.
+2. Create an API Key in your profile settings and keep note of the secret key.
+2a. If you don't see the key, check your developer console for the network response
+3. Edit app_config.json and modify the clientId/clientSecret for either or both Google and Facebook auth providers.
 	1. See: [Setting up Google OAuth 2 Provider](../../auth/builtin/oauth2/google/README.md)
 	2. See: [Setting up Facebook OAuth 2 Provider](../../auth/builtin/oauth2/facebook/README.md)
-3. Create a **creds.json** file that reflects your user from your **users.json**. 
-	
-	Example
-	
-	```
-	{
-   	    "user": "unique_user@domain.com",
-	    "password": "password"
-	}
-	```
-	
-3. Bootstrap the app by running the import tool
-	
-	```
-	sudo pip install ../../clients/python/
-	python ../../tools/import_app.py "planner" ./creds.json ./app_config.json
-	```
+4. Also modify the mdb1 uri to your MongoDB instance accessible from BaaS.
+5. Bootstrap the app by running:
 
-4. Install dependencies for the sample app, and start it:
+	```
+	go run $GOPATH/src/github.com/10gen/baas/clients/golang/main/main.go app-replace -a <appName> app_config.json --api-key=<apiKey>
+	```
+6. Install dependencies for the sample app, and start it:
 
 	```
 	npm install
-	npm start
+	APP_NAME=<appName> npm start
 	```
 
-5. In a browser, open up http://localhost:8001.
+7. In a browser, open up http://localhost:8001.
 
 ## Extras
 

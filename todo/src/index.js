@@ -5,14 +5,14 @@ import {browserHistory, Router, Route , Link} from 'react-router'
 
 require("../static/todo.scss")
 
-let appName = 'todo'
+let appName = 'todo';
 if (process.env.APP_NAME) {
-  appName = process.env.APP_NAME
+  appName = process.env.APP_NAME;
 }
 
-let options = {}
+let options = {};
 if (process.env.BAAS_URL) {
-  options.baseUrl = process.env.BAAS_URL
+  options.baseUrl = process.env.BAAS_URL;
 }
 
 let baasClient = new BaasClient(appName, options);

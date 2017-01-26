@@ -1,82 +1,63 @@
 {
-  "name": "planner",
-  "authProviders": {
-    "oauth2/facebook": {
-      "metadataFields": [
-        "email",
-        "name"
-      ],
-      "clientId": "APP-ID",
-      "clientSecret": "APP-SECRET",
-      "redirectURIs": ["http://localhost:8001/"]
-    },
-    "oauth2/google": {
-      "metadataFields": [
-        "email",
-        "name"
-      ],
-      "clientId": "APP-SECRET",
-      "clientSecret": "APP-ID",
-      "redirectURIs": ["http://localhost:8001/"]
-    }
-  },
   "actions": {
     "sendEmail": {
+      "args": [
+        "userIds",
+        "comment"
+      ],
       "pipeline": [
         {
-          "service": "mdb1",
           "action": "find",
           "args": {
-            "database": "planner",
             "collection": "users",
+            "database": "planner",
             "query": {
               "_id": {
                 "$in": "$$action.userIds"
               }
             }
-          }
+          },
+          "service": "mdb1"
         },
         {
-          "service": "ses1",
           "action": "send",
           "args": {
+            "body": "$$action.comment",
             "fromAddress": "$$var.ourEmail",
-            "toAddress": "$$item.email",
             "subject": {
               "$concat": [
                 "$$auth.data.name",
                 " mentioned you in a comment."
               ]
             },
-            "body": "$$action.comment"
-          }
+            "toAddress": "$$item.email"
+          },
+          "service": "ses1"
         },
         {
           "action": "null"
         }
-      ],
-      "args": [
-        "userIds",
-        "comment"
       ]
     },
     "sendNotification": {
+      "args": [
+        "userIds"
+      ],
       "pipeline": [
         {
-          "service": "mdb1",
           "action": "find",
           "args": {
-            "database": "planner",
             "collection": "users",
+            "database": "planner",
             "query": {
               "_id": {
                 "$in": "$$action.userIds"
               }
             }
-          }
+          },
+          "service": "mdb1"
         },
         {
-          "service": "pn1",
           "action": "publish",
           "args": {
             "channel": "$$item.channel",
@@ -100,43 +81,64 @@
                 }
               }
             }
-          }
+          },
+          "service": "pn1"
         },
         {
           "action": "null"
         }
+      ]
+    }
+  },
+  "authProviders": {
+    "oauth2/facebook": {
+      "clientId": "APP-ID",
+      "clientSecret": "APP-SECRET",
+      "metadataFields": [
+        "email",
+        "name"
       ],
-      "args": [
-        "userIds"
+      "redirectURIs": [
+        "http://localhost:8001/"
+      ]
+    },
+    "oauth2/google": {
+      "clientId": "APP-SECRET",
+      "clientSecret": "APP-ID",
+      "metadataFields": [
+        "email",
+        "name"
+      ],
+      "redirectURIs": [
+        "http://localhost:8001/"
       ]
     }
   },
   "services": {
-    "s31" : {
-      "type":"aws-s3",
-      "config": {
-        "accessKeyId": "ACCESS-KEY-ID",
-        "secretAccessKey": "SECRET-ACCESS-KEY",
-        "region": "us-east-1"
-      },
-      "rules": [
-        {
-          "actions": [ "signPolicy" ],
-          "bucket": "$$var.s3bucket",
-          "key": {"$regex" : "^/planner-files/"},
-          "contentType": "text/plain",
-          "acl": "public-read",
-          "maxLength": 1048576
-        }
-      ]
-    },
     "mdb1": {
-      "type": "mongodb",
       "config": {
         "uri": "mongodb://localhost:27017"
       },
-      "rules": [
-        {
+      "rules": {
+        "5888d4c3772e2e4a41158d65": {
+          "_id": "5888d4c3772e2e4a41158d65",
+          "fields": {
+            "_id": {},
+            "lcount": {},
+            "lists": {
+              "otherFields": {}
+            },
+            "members": {},
+            "name": {
+              "required": true,
+              "valid": {
+                "$$new": {
+                  "$ne": ""
+                }
+              }
+            },
+            "owner_id": {}
+          },
           "namespace": "planner.boards",
           "read": {
             "$or": [
@@ -146,14 +148,6 @@
               {
                 "$$root.members": "$$auth.id"
               }
-            ]
-          },
-          "write": {
-            "$or": [
-              {
-                "$$oldRoot.owner_id": "$$auth.id"
-              },
-              { "$$oldRoot": { "$exists": false } }
             ]
           },
           "valid": {
@@ -170,29 +164,21 @@
               }
             ]
           },
-          "fields": {
-            "_id": {
-            },
-            "name": {
-              "required": true,
-              "valid": {
-                "$$new": {
-                  "$ne": ""
+          "write": {
+            "$or": [
+              {
+                "$$oldRoot.owner_id": "$$auth.id"
+              },
+              {
+                "$$oldRoot": {
+                  "$exists": false
                 }
               }
-            },
-            "owner_id": {
-              
-            },
-            "lists": {
-              "otherFields": {}
-            },
-            "lcount": {},
-            "members": {}
+            ]
           }
         },
-        {
-          "namespace": "planner.cards",
+        "5888d4c3772e2e4a41158d66": {
+          "_id": "5888d4c3772e2e4a41158d66",
           "fields": {
             "_id": {
               "write": {
@@ -202,19 +188,48 @@
               }
             },
             "author": {
+              "valid": {
+                "$$new": "$$auth.id"
+              },
               "write": {
                 "$$old": {
                   "$exists": false
                 }
-              },
-              "valid": {
-                "$$new": "$$auth.id"
+              }
+            },
+            "comments": {
+              "write": {
+                "$or": [
+                  {
+                    "$$oldRoot.author": "$$auth.id"
+                  }
+                ]
+              }
+            },
+            "description": {
+              "write": {
+                "$or": [
+                  {
+                    "$$old": {
+                      "$exists": false
+                    }
+                  },
+                  {
+                    "$$oldRoot.author": "$$auth.id"
+                  }
+                ]
+              }
+            },
+            "files": {
+              "write": {
+                "$or": [
+                  {
+                    "$$oldRoot.author": "$$auth.id"
+                  }
+                ]
               }
             },
             "summary": {
-              "write": {
-                "$or": [{"$$old": {"$exists": false}}, {"$$oldRoot.author": "$$auth.id"}]
-              },
               "valid": {
                 "$and": [
                   {
@@ -228,33 +243,25 @@
                     }
                   }
                 ]
-              }
-            },
-            "comments": {
+              },
               "write": {
-                "$or": [{"$$oldRoot.author": "$$auth.id"}]
+                "$or": [
+                  {
+                    "$$old": {
+                      "$exists": false
+                    }
+                  },
+                  {
+                    "$$oldRoot.author": "$$auth.id"
+                  }
+                ]
               }
-            },
-            "files": {
-              "write": {
-                "$or": [{"$$oldRoot.author": "$$auth.id"}]
-              }
-            },
-            "description": {
-              "write": {
-                "$or": [{"$$old": {"$exists": false}}, {"$$oldRoot.author": "$$auth.id"}]
-              }
-            }
-          }
-        },
-        {
-          "namespace": "planner.users",
-          "read": {"$$root.authId": "$$auth.id"},
-          "write": {
-            "$$old": {
-              "$exists": false
             }
           },
+          "namespace": "planner.cards"
+        },
+        "5888d4c3772e2e4a41158d68": {
+          "_id": "5888d4c3772e2e4a41158d68",
           "fields": {
             "_id": {},
             "authId": {
@@ -262,77 +269,110 @@
                 "$$new": "$$auth.id"
               }
             },
-            "email": {},
-            "name": {},
             "channel": {
               "read": {
                 "$$root.authId": "$$auth.id"
               }
+            },
+            "email": {},
+            "name": {}
+          },
+          "namespace": "planner.users",
+          "read": {
+            "$$root.authId": "$$auth.id"
+          },
+          "write": {
+            "$$old": {
+              "$exists": false
             }
           }
         }
-      ]
-    },
-    "ses1": {
-      "type": "aws-ses",
-      "config": {
-        "region": "us-east-1",
-        "accessKeyId": "ACCESS-KEY-ID",
-        "secretAccessKey": "SECRET-ACCESS-KEY"
       },
-      "rules": [
-        {
-          "actions": [
-            "send"
-          ]
-        }
-      ]
+      "type": "mongodb"
     },
     "pn1": {
-      "type": "pubnub",
       "config": {
-        "subscribeKey": "SUB-KEY",
-        "publishKey": "PUB-KEY"
+        "publishKey": "PUB-KEY",
+        "subscribeKey": "SUB-KEY"
       },
-      "rules": [
-        {
+      "rules": {
+        "5888d4c3772e2e4a41158d6a": {
+          "_id": "5888d4c3772e2e4a41158d6a",
           "actions": [
             "publish"
           ]
         }
-      ]
+      },
+      "type": "pubnub"
+    },
+    "s31": {
+      "config": {
+        "accessKeyId": "ACCESS-KEY-ID",
+        "region": "us-east-1",
+        "secretAccessKey": "SECRET-ACCESS-KEY"
+      },
+      "rules": {
+        "5888d4c3772e2e4a41158d64": {
+          "_id": "5888d4c3772e2e4a41158d64",
+          "acl": "public-read",
+          "actions": [
+            "signPolicy"
+          ],
+          "bucket": "$$var.s3bucket",
+          "contentType": "text/plain",
+          "maxLength": 1048576
+        }
+      },
+      "type": "aws-s3"
+    },
+    "ses1": {
+      "config": {
+        "accessKeyId": "ACCESS-KEY-ID",
+        "region": "us-east-1",
+        "secretAccessKey": "SECRET-ACCESS-KEY"
+      },
+      "rules": {
+        "5888d4c3772e2e4a41158d69": {
+          "_id": "5888d4c3772e2e4a41158d69",
+          "actions": [
+            "send"
+          ]
+        }
+      },
+      "type": "aws-ses"
     }
   },
   "variables": {
-    "s3bucket" : {
-      "type": "literal",
-      "source": "planner-files"
-    },
-    "ourEmail": {
-      "type": "literal",
-      "source": "email@domain.com"
-    },
     "myBoards": {
-      "type": "pipeline",
       "source": {
+        "output": "array",
         "pipeline": [
           {
-            "service": "mdb1",
             "action": "find",
             "args": {
-              "database": "planner",
               "collection": "boards",
-              "query": {
-                "owner_id": "$$auth.id"
-              },
+              "database": "planner",
               "project": {
                 "name": 1
+              },
+              "query": {
+                "owner_id": "$$auth.id"
               }
-            }
+            },
+            "service": "mdb1"
           }
-        ],
-        "output": "array"
-      }
+        ]
+      },
+      "type": "pipeline"
+    },
+    "ourEmail": {
+      "source": "email@domain.com",
+      "type": "literal"
+    },
+    "s3bucket": {
+      "private": true,
+      "source": "planner-files",
+      "type": "literal"
     }
   }
 }
