@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
     private Handler _handler;
     private Runnable _refresher;
 
+    private boolean _fbInitOnce;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +119,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     case FacebookAuthProviderInfo.FQ_NAME:
-                        LoginManager.getInstance().logOut();
+                        if (activity._fbInitOnce) {
+                            LoginManager.getInstance().logOut();
+                        }
                         break;
                 }
 
@@ -145,7 +149,11 @@ public class MainActivity extends AppCompatActivity {
             if (activity != null && activity._client.isAuthed()) {
                 activity.refreshList().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull final Task<Void> ignored) {
+                    public void onComplete(@NonNull final Task<Void> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e(TAG, "Error refreshing list. Stopping auto refresh", task.getException());
+                            return;
+                        }
                         activity._handler.postDelayed(ListRefresher.this, REFRESH_INTERVAL_MILLIS);
                     }
                 });
@@ -349,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
             FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                 @Override
                 public void onInitialized() {
+                    _fbInitOnce = true;
                     fbInitFuture.setResult(null);
                 }
             });
