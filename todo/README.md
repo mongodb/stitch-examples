@@ -19,15 +19,15 @@ It stores data for the app in MongoDB at localhost:27017 by default.
 	```
 	go run $GOPATH/src/github.com/10gen/baas/clients/golang/main/main.go app-replace -a <appName> app_config.json --api-key=<apiKey>
 	```
-
-6. Install dependencies for the sample app, and start it:
+6. Modify src/index.js where BaasClient is created and change the app name to your selected name.
+7. Install dependencies for the sample app, and start it:
 
 	```
 	npm install
 	npm start
 	```
 
-7. In a browser, open up http://localhost:8001.
+8. In a browser, open up http://localhost:8001.
 
 ## Extras
 
