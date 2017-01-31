@@ -9,7 +9,6 @@ It stores data for the app in MongoDB at localhost:27017 by default.
 
 1. Log into BaaS and create an app with a name of your choice.
 2. Create an API Key in your profile settings and keep note of the secret key.
-2a. If you don't see the key, check your developer console for the network response
 3. Edit app_config.json and modify the clientId/clientSecret for either or both Google and Facebook auth providers.
 	1. See: [Setting up Google OAuth 2 Provider](../../auth/builtin/oauth2/google/README.md)
 	2. See: [Setting up Facebook OAuth 2 Provider](../../auth/builtin/oauth2/facebook/README.md)
