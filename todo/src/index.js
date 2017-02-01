@@ -130,26 +130,15 @@ var TodoList = React.createClass({
       this.loadList();
     }, {"rule": "checked"})
   },
-  timerFunc(){
-    if(this.state.requestPending){
-      console.log("not fetching, request in progress")
-      return
-    }
-    this.loadList()
-  },
   componentDidMount(){
-    let intervalId = setInterval(this.timerFunc, 1000) 
-    this.setState({intervalId: intervalId})
-  },
-  componentWillUnmount(){
-    clearInterval(this.state.intervalId)
+    this.loadList()
   },
   addItem: function(event){
     if(event.keyCode != 13 ){
       return
     }
     this.setState({requestPending:true})
-    items.insert([{text:event.target.value, "user": {"$oid": baasClient.authedId()}}]).then(
+    items.insert([{text:event.target.value, "owner_id": {"$oid": baasClient.authedId()}}]).then(
       () => {
         this._newitem.value = ""
         this.loadList();
