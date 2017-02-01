@@ -26,7 +26,6 @@
   "services": {
     "mdb1": {
       "config": {
-        "ssl": false,
         "uri": "mongodb://localhost:27017"
       },
       "rules": {
