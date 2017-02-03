@@ -47,18 +47,18 @@
                 }
               }
             },
-            "user": {
+            "owner_id": {
               "valid": "$$auth.id"
             }
           },
           "namespace": "todo.items",
           "read": {
-            "$$root.user": "$$auth.id"
+            "$$root.owner_id": "$$auth.id"
           },
           "write": {
             "$or": [
               {
-                "$$oldRoot.user": "$$auth.id"
+                "$$oldRoot.owner_id": "$$auth.id"
               },
               {
                 "$$oldRoot": {
