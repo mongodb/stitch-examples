@@ -103,8 +103,8 @@
       ]
     },
     "oauth2/google": {
-      "clientId": "APP-SECRET",
-      "clientSecret": "APP-ID",
+      "clientId": "APP-ID",
+      "clientSecret": "APP-SECRET",
       "metadataFields": [
         "email",
         "name"
