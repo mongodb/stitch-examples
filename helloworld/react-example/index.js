@@ -27,7 +27,7 @@ const HelloWorld = React.createClass({
     if(!this.state.auth){
       return 
     }
-    this.state.collection.find({owner_id: {$oid:this.props.client.authedId()}}, {})
+    this.state.collection.find({owner_id: this.props.client.authedId()}, {})
       .then((data)=>{
         if(data.result.length !== 0){
           this.refs.note.value = data.result[0].note
@@ -36,8 +36,8 @@ const HelloWorld = React.createClass({
   },
   save(){
     this.state.collection.upsert(
-      {owner_id: {$oid:this.props.client.authedId()}}, // query
-      {$set:{"note":this.refs.note.value}}             // update modifier
+      {owner_id: this.props.client.authedId()}, // query
+      {$set:{"note":this.refs.note.value}}      // update modifier
     )
   },
   render(){
