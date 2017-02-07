@@ -1,14 +1,14 @@
 <html>
   <head>
-    <script src="https://s3.amazonaws.com/mciuploads/baas/library/baas_linux_64_client_tests_6e09a522e1f9157f3eab756bcc78338a54960149_17_02_07_03_56_08/baas.min.js" type="text/javascript"></script>
+    <script src="./baas.min.js" type="text/javascript"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
   </head>
   <body>
 
-
     <!--  Auth Links  -->
     <a href="#" class="login-link" id="facebook-login">log in with facebook</a>
     <a href="#" class="login-link" id="google-login">log in with google</a>
+    <a href="#" class="login-link" id="anonymous-login">log in anonymously</a>
     <a href="#" id="logout" >log out</a>
 
     <div class="content">
@@ -60,6 +60,11 @@
       })
       $("#google-login").show().click(function(){
         baasClient.authWithOAuth("google")
+      })
+      $("#anonymous-login").show().click(function(){
+        baasClient.authManager.anonymousAuth(true).then(()=>{
+          window.location.replace("/")
+        })
       })
     }
 
