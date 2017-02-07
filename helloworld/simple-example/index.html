@@ -40,7 +40,7 @@
 
         let db = new Baas.MongoClient(baasClient, "mdb1").getDb("my_db")
 
-        db.getCollection("items").find({owner_id: {$oid:baasClient.authedId()}}, {})
+        db.getCollection("items").find({owner_id: baasClient.authedId()}, {})
           .then(function(data){
               console.log(data);
               if(data.result.length !== 0){
@@ -48,7 +48,7 @@
               }
           })
         $("#save").click(function(){
-          db.getCollection("items").upsert({owner_id: {$oid:baasClient.authedId()}}, {$set:{"note":$("#note").val()}})
+          db.getCollection("items").upsert({owner_id: baasClient.authedId()}, {$set:{"note":$("#note").val()}})
         })
         return
       }
