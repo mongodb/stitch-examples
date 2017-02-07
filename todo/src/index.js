@@ -138,7 +138,7 @@ var TodoList = React.createClass({
       return
     }
     this.setState({requestPending:true})
-    items.insert([{text:event.target.value, "owner_id": {"$oid": baasClient.authedId()}}]).then(
+    items.insert([{text:event.target.value, "owner_id": baasClient.authedId()}]).then(
       () => {
         this._newitem.value = ""
         this.loadList();
@@ -189,9 +189,9 @@ var Home = function(){
   )
 }
 
-function initUserInfo(id){
+function initUserInfo(){
   users.upsert(
-    {'_id': {"$oid":baasClient.authedId()}},
+    {'_id': baasClient.authedId()},
     {$setOnInsert:{"phone_number":"", "number_status":"unverified"}},
     true, false).then(function(){});
 }
@@ -201,7 +201,7 @@ var AwaitVerifyCode = React.createClass({
     let obj = this
     if(e.keyCode == 13){
       users.updateOne(
-        {_id:{"$oid":baasClient.authedId()}, verify_code:this._code.value},
+        {_id:baasClient.authedId(), verify_code:this._code.value},
         {"$set":{"number_status":"verified"}}).then(
           (data)=>{ obj.props.onSubmit() }
         )
@@ -248,7 +248,7 @@ var NumberConfirm = React.createClass({
           }]).then(
           (data)=>{
             users.updateOne(
-              {"_id": {"$oid":baasClient.authedId()}, "number_status":"unverified"},
+              {"_id": baasClient.authedId(), "number_status":"unverified"},
               {$set:{
                 "phone_number":"+1" + this._number.value,
                 "number_status":"pending",
@@ -257,7 +257,9 @@ var NumberConfirm = React.createClass({
                 () => { this.props.onSubmit() }
               )
           }
-        )
+        ).catch((e) => {
+          console.log(e);
+        })
       }
     }
   },
@@ -283,7 +285,7 @@ var Settings = React.createClass({
     })
   },
   componentWillMount: function(){
-    initUserInfo(baasClient.authedId())
+    initUserInfo()
     this.loadUser()
   },
   render: function(){

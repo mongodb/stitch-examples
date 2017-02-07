@@ -129,7 +129,7 @@
           "write": {
             "$or": [
               {
-                "$$oldRoot.id": "$$auth.id"
+                "$$oldRoot._id": "$$auth.id"
               },
               {
                 "$$oldRoot": {
@@ -164,7 +164,7 @@
               "args": {
                 "expression": {
                   "text": "$$trigger.Body",
-                  "user": "$$var.idFromPhone._id"
+                  "owner_id": "$$var.idFromPhone._id"
                 }
               }
             },
@@ -204,7 +204,7 @@
       "type": "pipeline"
     },
     "ourNumber": {
-      "source": "+12013992736",
+      "source": "+16467981338",
       "type": "literal"
     }
   }
