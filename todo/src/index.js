@@ -79,6 +79,9 @@ var AuthControls = React.createClass({
               <div>
                 <a className="logout" href="#" onClick={() => logout()}>sign out</a>
               </div>
+              <div>
+                <a className="settings" href="/settings">settings</a>
+              </div>
             </div>
           ) : null
         }
