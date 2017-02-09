@@ -37,6 +37,7 @@ import com.mongodb.baas.sdk.AuthListener;
 import com.mongodb.baas.sdk.BaasClient;
 import com.mongodb.baas.sdk.auth.Auth;
 import com.mongodb.baas.sdk.auth.AuthProviderInfo;
+import com.mongodb.baas.sdk.auth.anonymous.AnonymousAuthProvider;
 import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProvider;
 import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProviderInfo;
 import com.mongodb.baas.sdk.auth.google.GoogleAuthProvider;
@@ -280,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addItem(final String text) {
         final Document doc = new Document();
-        doc.put("user", _client.getAuth().getUser().getId());
+        doc.put("owner_id", _client.getAuth().getUser().getId());
         doc.put("text", text);
 
         getItemsCollection().insertOne(doc).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -297,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearChecked() {
         final Document query = new Document();
-        query.put("user", _client.getAuth().getUser().getId());
+        query.put("owner_id", _client.getAuth().getUser().getId());
         query.put("checked", true);
 
         getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -325,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Task<Void> refreshList() {
-        return getItemsCollection().find(new Document("user", _client.getAuth().getUser().getId())).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
+        return getItemsCollection().find(new Document("owner_id", _client.getAuth().getUser().getId())).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
                 if (task.isSuccessful()) {
@@ -469,6 +470,25 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                     findViewById(R.id.google_login_button).setVisibility(View.VISIBLE);
+                }
+
+                if (info.hasAnonymous()) {
+                    findViewById(R.id.anonymous_login_button).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View ignored) {
+                            _client.logInWithProvider(new AnonymousAuthProvider()).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                                @Override
+                                public void onComplete(@NonNull final Task<Auth> task) {
+                                    if (task.isSuccessful()) {
+                                        initTodoView();
+                                    } else {
+                                        Log.e(TAG, "Error logging in anonymously", task.getException());
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    findViewById(R.id.anonymous_login_button).setVisibility(View.VISIBLE);
                 }
             }
         });

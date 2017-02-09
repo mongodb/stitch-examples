@@ -45,4 +45,13 @@
             android:elevation="1dp"/>
 
     </RelativeLayout>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/anonymous_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login Anonymously"
+        style="@style/Widget.AppCompat.Button.Colored"/>
+
 </LinearLayout>
