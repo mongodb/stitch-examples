@@ -26,6 +26,7 @@ var Home = React.createClass({
     this.load()
   },
   render:function(){
+    let logout = () => this.props.route.client.logout().then(() => location.reload());
     if(!this.state.authed){
       return (<AuthControls client={this.props.route.client}/>)
     }
@@ -40,7 +41,10 @@ var Home = React.createClass({
     }
     return (
       <div>
-        <div>Username: {this.state.username} | Channel: {this.state.channel}</div>
+        <div>
+          Username: {this.state.username} | Channel: {this.state.channel} |
+          <a className="logout" href="#" onClick={() => logout()}>Sign out</a>
+        </div>
         {this.state.authed ? (<BoardListing db={this.props.route.db}/>) : <AuthControls client={this.props.route.client}/> }
       </div>
     )
