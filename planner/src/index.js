@@ -392,7 +392,7 @@ let List = DragDropContext(HTML5Backend)(
       let listOid = this.props.data._id.$oid
       let oid = ObjectID().toHexString()
 
-      return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": {"$oid": this.props.db._client.authedId()}}]).then(()=>{
+      return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": this.props.db._client.authedId()}]).then(()=>{
         let setObj = {}
         setObj["lists."+listOid+".cards."+oid] = {_id:{$oid:oid}, summary:summary, idx:(this.props.data.cards||[]).length+1}
         return db.boards.updateOne(
@@ -458,7 +458,7 @@ let List = DragDropContext(HTML5Backend)(
                 : null
             }
           </div>
-          <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq}>
+          <Modal style={modalStyle} isOpen={this.state.modalOpen} onRequestClose={this.onCloseReq} contentLabel="Edit Card">
             <CardEditor db={this.props.db} boardId={this.props.boardId} listId={this.props.data._id} boardId={this.props.boardId} editingId={this.state.editingId} onUpdate={this.props.onUpdate}/>
           </Modal>
           <button className="task-list-add-card" onClick={this.quickAddCard}>Add card&hellip;</button>
