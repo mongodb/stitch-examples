@@ -258,6 +258,10 @@
               }
             }
           },
+          "read":{},
+          "write":{},
+          "valid":{},
+
           "namespace": "planner.cards"
         },
         "5888d4c3772e2e4a41158d68": {
