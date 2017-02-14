@@ -12,7 +12,7 @@ import (
 
 const (
 	appName    = "todo"
-	baasUrl    = "https://baas-dev.10gen.cc"
+	baasURL    = "https://baas-dev.10gen.cc"
 	checkBox   = "\xE2\x98\x90"
 	checkedBox = "\xE2\x98\x91"
 )
@@ -60,13 +60,13 @@ func promptLogin(c *client.Client) {
 	fmt.Printf("Supported auth methods:\n\n")
 	for k := range authInfo {
 		fmt.Println("\t", k)
-		fmt.Println("\t\t", fmt.Sprintf("%s/v1/app/%s/auth/%s?short=true\n", baasUrl, appName, k))
+		fmt.Println("\t\t", fmt.Sprintf("%s/v1/app/%s/auth/%s?short=true\n", baasURL, appName, k))
 	}
 
 }
 
 func getClient() (*client.Client, error) {
-	c := &client.Client{baasUrl, nil, nil}
+	c := &client.Client{baasURL, nil, nil}
 	home, err := homedir.Dir()
 	if err != nil {
 		return nil, err
