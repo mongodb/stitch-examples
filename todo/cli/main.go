@@ -58,7 +58,7 @@ func promptLogin(c *client.Client) {
 		return
 	}
 	fmt.Printf("Supported auth methods:\n\n")
-	for k, _ := range authInfo {
+	for k := range authInfo {
 		fmt.Println("\t", k)
 		fmt.Println("\t\t", fmt.Sprintf("%s/v1/app/%s/auth/%s?short=true\n", baasUrl, appName, k))
 	}
