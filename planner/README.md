@@ -15,7 +15,7 @@ It supports mentioning users when making comments on cards using @ followed by a
 	1. See: [Setting up Google OAuth 2 Provider](../../auth/builtin/oauth2/google/README.md)
 	2. See: [Setting up Facebook OAuth 2 Provider](../../auth/builtin/oauth2/facebook/README.md)
 4. Also modify the mdb1 uri to your MongoDB instance accessible from BaaS.
-5. Bootstrap the app by running (your appId is in the address bar after /apps):
+5. Bootstrap the app by running (your app ID is on the app's homepage):
 
 	```
 	go run $GOPATH/src/github.com/10gen/baas/clients/golang/main/main.go app-replace -a <appId> app_config.json --api-key=<apiKey>
@@ -24,7 +24,7 @@ It supports mentioning users when making comments on cards using @ followed by a
 
 	```
 	npm install
-	APP_NAME=<appName> npm start
+	APP_ID=<appId> npm start
 	```
 
 7. In a browser, open up http://localhost:8001.

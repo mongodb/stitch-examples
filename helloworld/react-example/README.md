@@ -16,16 +16,16 @@ Follow the instructions for at least one of the providers listed below:
 2. On your app dashboard, click Add Product.
 3. Add the Facebook Login product.
 4. Go to the settings for Facebook Login.
-5. Under "Valid OAuth redirect URIs" add the following entry with your app name substituted where appropriate:
-	`https://baas-dev.10gen.cc/v1/app/<your_app_name>/auth/oauth2/facebook/callback`
+5. Under "Valid OAuth redirect URIs" add the following entry:
+	`https://baas-dev.10gen.cc/v1/auth/callback`
 
 Return back to the BaaS authentication settings page, and enter your App ID and App Secret as client ID and client secret respectively from the Facebook app dashboard. Add `http://localhost:8000/` to the list of redirect URIs, and save it.
 
 ##### Google
 1. Get your client ID and client secret (See: [Google - Setting up OAuth 2.0](https://support.google.com/cloud/answer/6158849?hl=en))
 2. Click the edit button for your credentials on the Google API Manager.
-3. For Authorized redirect URIs, add the following entry with your app name substituted where appropriate:
-	`https://baas-dev.10gen.cc/v1/app/<your_app_name>/auth/oauth2/google/callback` 
+3. For Authorized redirect URIs, add the following entry:
+	`https://baas-dev.10gen.cc/v1/auth/callback`
 4. On the BaaS admin site
 
 Return back to the BaaS authentication settings page, and enter your client ID and client Secret in the Google auth settings panel. Add `http://localhost:8000/` to the list of redirect URIs, and save it.
@@ -43,7 +43,7 @@ Some default settings will be created for the namespace, which you can leave as-
 
 ### Serve the app
 
-Edit "index.js" and change the lines near the top of the file `const APP_NAME = "..."` so that it contains the name of the app you created earlier.
+Edit "index.js" and change the lines near the top of the file `const APP_ID = "..."` so that it contains the ID of the app you created earlier (app ID is on the app's home page).
 Then install the necessary dependencies and serve the app.
 ```
 npm install

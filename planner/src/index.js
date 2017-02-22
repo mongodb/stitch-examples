@@ -46,9 +46,9 @@ let modalStyle = {
   }
 }
 
-let appName = 'planner';
-if (process.env.APP_NAME) {
-  appName = process.env.APP_NAME;
+let appId = 'planner-iiqqs';
+if (process.env.APP_ID) {
+  appId = process.env.APP_ID;
 }
 
 let options = {};
@@ -56,7 +56,7 @@ if (process.env.BAAS_URL) {
   options.baseUrl = process.env.BAAS_URL;
 }
 
-let baasClient = new BaasClient(appName, options);
+let baasClient = new BaasClient(appId, options);
 let rootDb = new MongoClient(baasClient, "mdb1").getDb("planner")
 let db = {
   _client: baasClient,

@@ -56,7 +56,7 @@ import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TodoApp";
-    private static final String APP_NAME = "todo";
+    private static final String APP_ID = "todo-iiqqs";
     private static final long REFRESH_INTERVAL_MILLIS = 1000;
     private static final int RC_SIGN_IN = 421;
 
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         _handler = new Handler();
         _refresher = new ListRefresher(this);
 
-        _client = new BaasClient(this, APP_NAME);
+        _client = new BaasClient(this, APP_ID);
         _client.addAuthListener(new MyAuthListener(this));
         _mongoClient = new MongoClient(_client, "mdb1");
         initLogin();
@@ -283,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
         final Document doc = new Document();
         doc.put("owner_id", _client.getAuth().getUser().getId());
         doc.put("text", text);
+        doc.put("checked", false);
 
         getItemsCollection().insertOne(doc).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

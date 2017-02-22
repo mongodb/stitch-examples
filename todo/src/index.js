@@ -5,9 +5,9 @@ import {browserHistory, Router, Route , Link} from 'react-router'
 
 require("../static/todo.scss")
 
-let appName = 'todo';
-if (process.env.APP_NAME) {
-  appName = process.env.APP_NAME;
+let appId = 'todo-iiqqs';
+if (process.env.APP_ID) {
+  appId = process.env.APP_ID;
 }
 
 let options = {};
@@ -15,7 +15,7 @@ if (process.env.BAAS_URL) {
   options.baseUrl = process.env.BAAS_URL;
 }
 
-let baasClient = new BaasClient(appName, options);
+let baasClient = new BaasClient(appId, options);
 let db = new MongoClient(baasClient, "mdb1").getDb("todo")
 let items = db.getCollection("items")
 let users = db.getCollection("users")
