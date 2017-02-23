@@ -25,9 +25,9 @@ func main() {
 	}
 
 	msc := client.MongoServiceClient{
-		"todo", // App name
-		"mdb1", // Service name
-		*c,
+		AppName:     "todo",
+		ServiceName: "mdb1",
+		Client:      *c,
 	}
 
 	type item struct {
@@ -66,7 +66,7 @@ func promptLogin(c *client.Client) {
 }
 
 func getClient() (*client.Client, error) {
-	c := &client.Client{baasURL, nil, nil}
+	c := &client.Client{BaseURL: baasURL}
 	home, err := homedir.Dir()
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func getClient() (*client.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.Authenticator = &client.RefreshTokenAuth{creds.RefreshToken}
+	c.Authenticator = &client.RefreshTokenAuth{Token: creds.RefreshToken}
 	err = c.AuthenticateApp(appName)
 	if err != nil {
 		return nil, err
