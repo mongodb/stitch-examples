@@ -122,12 +122,19 @@
             },
             "verify_code": {
               "valid": {
-                "$$newRoot.number_status": {
-                  "$in": [
-                    "pending",
-                    "verified"
-                  ]
-                }
+                "$or": [
+                  {
+                    "$$old": {"$exists": false}
+                  },
+                  {
+                    "$$newRoot.number_status": {
+                      "$in": [
+                        "pending",
+                        "verified"
+                      ]
+                    }
+                  }
+                ]
               }
             }
           },
