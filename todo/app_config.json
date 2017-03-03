@@ -35,10 +35,22 @@
             "_id": {},
             "checked": {
               "valid": {
-                "$$new": {
-                  "$type": "bool"
-                }
+                "$or": [
+                  {
+                    "$$new": {
+                      "$type": "bool"
+                    }
+                  },
+                  {
+                    "$$old": {
+                      "$exists": false
+                    }
+                  }
+                ]
               }
+            },
+            "owner_id": {
+              "valid": "$$auth.id"
             },
             "text": {
               "valid": {
@@ -46,9 +58,6 @@
                   "$ne": ""
                 }
               }
-            },
-            "owner_id": {
-              "valid": "$$auth.id"
             }
           },
           "namespace": "todo.items",
@@ -158,13 +167,14 @@
       "triggers": {
         "5888d4c3772e2e4a41158d5f": {
           "_id": "5888d4c3772e2e4a41158d5f",
+          "output": "array",
           "pipeline": [
             {
               "action": "expr",
               "args": {
                 "expression": {
-                  "text": "$$trigger.Body",
-                  "owner_id": "$$var.idFromPhone._id"
+                  "owner_id": "$$var.idFromPhone._id",
+                  "text": "$$trigger.Body"
                 }
               }
             },
@@ -176,8 +186,7 @@
               },
               "service": "mdb1"
             }
-          ],
-          "output": "array"
+          ]
         }
       },
       "type": "twilio"
