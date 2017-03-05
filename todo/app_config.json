@@ -58,16 +58,22 @@
                   "$ne": ""
                 }
               }
+<<<<<<< HEAD
+=======
+            },
+            "owner_id": {
+              "valid": "$$user.id"
+>>>>>>> BAAS-52 - Work on renames - expansions
             }
           },
           "namespace": "todo.items",
           "read": {
-            "$$root.owner_id": "$$auth.id"
+            "$$root.owner_id": "$$user.id"
           },
           "write": {
             "$or": [
               {
-                "$$oldRoot.owner_id": "$$auth.id"
+                "$$oldRoot.owner_id": "$$user.id"
               },
               {
                 "$$oldRoot": {
@@ -81,7 +87,7 @@
           "_id": "5888d4c3772e2e4a41158d6b",
           "fields": {
             "_id": {
-              "valid": "$$auth.id"
+              "valid": "$$user.id"
             },
             "number_status": {
               "valid": {
@@ -140,12 +146,12 @@
           },
           "namespace": "todo.users",
           "read": {
-            "$$root._id": "$$auth.id"
+            "$$root._id": "$$user.id"
           },
           "write": {
             "$or": [
               {
-                "$$oldRoot._id": "$$auth.id"
+                "$$oldRoot._id": "$$user.id"
               },
               {
                 "$$oldRoot": {
@@ -180,8 +186,8 @@
               "action": "expr",
               "args": {
                 "expression": {
-                  "owner_id": "$$var.idFromPhone._id",
-                  "text": "$$trigger.Body"
+                  "text": "$$args.Body",
+                  "owner_id": "$$pipelines.idFromPhone._id"
                 }
               }
             },
@@ -210,7 +216,7 @@
               "collection": "users",
               "database": "todo",
               "query": {
-                "phone_number": "$$trigger.From"
+                "phone_number": "$$args.From"
               }
             },
             "service": "mdb1"

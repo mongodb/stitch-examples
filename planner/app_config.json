@@ -13,7 +13,7 @@
             "database": "planner",
             "query": {
               "_id": {
-                "$in": "$$action.userIds"
+                "$in": "$$args.userIds"
               }
             }
           },
@@ -22,11 +22,11 @@
         {
           "action": "send",
           "args": {
-            "body": "$$action.comment",
-            "fromAddress": "$$var.ourEmail",
+            "body": "$$args.comment",
+            "fromAddress": "$$values.ourEmail",
             "subject": {
               "$concat": [
-                "$$auth.data.name",
+                "$$user.data.name",
                 " mentioned you in a comment."
               ]
             },
@@ -51,7 +51,7 @@
             "database": "planner",
             "query": {
               "_id": {
-                "$in": "$$action.userIds"
+                "$in": "$$args.userIds"
               }
             }
           },
@@ -65,7 +65,7 @@
               "data": {
                 "message": {
                   "$concat": [
-                    "$$auth.data.name",
+                    "$$user.data.name",
                     " mentioned you in a comment"
                   ]
                 }
@@ -74,7 +74,7 @@
                 "data": {
                   "message": {
                     "$concat": [
-                      "$$auth.data.name",
+                      "$$user.data.name",
                       " mentioned you in a comment"
                     ]
                   }
@@ -143,10 +143,10 @@
           "read": {
             "$or": [
               {
-                "$$root.owner_id": "$$auth.id"
+                "$$root.owner_id": "$$user.id"
               },
               {
-                "$$root.members": "$$auth.id"
+                "$$root.members": "$$user.id"
               }
             ]
           },
@@ -159,7 +159,7 @@
               },
               {
                 "$$newRoot.name": {
-                  "$nin": "$$var.myBoards.name"
+                  "$nin": "$$pipelines.myBoards.name"
                 }
               }
             ]
@@ -167,7 +167,7 @@
           "write": {
             "$or": [
               {
-                "$$oldRoot.owner_id": "$$auth.id"
+                "$$oldRoot.owner_id": "$$user.id"
               },
               {
                 "$$oldRoot": {
@@ -189,7 +189,7 @@
             },
             "author": {
               "valid": {
-                "$$new": "$$auth.id"
+                "$$new": "$$user.id"
               },
               "write": {
                 "$$old": {
@@ -202,7 +202,7 @@
               "write": {
                 "$or": [
                   {
-                    "$$oldRoot.author": "$$auth.id"
+                    "$$oldRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -216,7 +216,7 @@
                     }
                   },
                   {
-                    "$$oldRoot.author": "$$auth.id"
+                    "$$oldRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -225,7 +225,7 @@
               "write": {
                 "$or": [
                   {
-                    "$$oldRoot.author": "$$auth.id"
+                    "$$oldRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -253,7 +253,7 @@
                     }
                   },
                   {
-                    "$$oldRoot.author": "$$auth.id"
+                    "$$oldRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -271,12 +271,12 @@
             "_id": {},
             "authId": {
               "valid": {
-                "$$new": "$$auth.id"
+                "$$new": "$$user.id"
               }
             },
             "channel": {
               "read": {
-                "$$root.authId": "$$auth.id"
+                "$$root.authId": "$$user.id"
               }
             },
             "email": {},
@@ -284,7 +284,7 @@
           },
           "namespace": "planner.users",
           "read": {
-            "$$root.authId": "$$auth.id"
+            "$$root.authId": "$$user.id"
           },
           "write": {
             "$$old": {
@@ -323,7 +323,7 @@
           "actions": [
             "signPolicy"
           ],
-          "bucket": "$$var.s3bucket",
+          "bucket": "$$values.s3bucket",
           "contentType": "text/plain",
           "maxLength": 1048576
         }
@@ -361,7 +361,7 @@
                 "name": 1
               },
               "query": {
-                "owner_id": "$$auth.id"
+                "owner_id": "$$user.id"
               }
             },
             "service": "mdb1"

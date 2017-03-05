@@ -245,7 +245,7 @@ var NumberConfirm = React.createClass({
             service:"tw1", action:"send", 
             args: {
               "to":"+1" + this._number.value,
-              "from":"$$var.ourNumber",
+              "from":"$$values.ourNumber",
               "body": "Your confirmation code is "+ code
             }
           }]).then(
