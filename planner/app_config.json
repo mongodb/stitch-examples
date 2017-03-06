@@ -1,9 +1,9 @@
 {
   "actions": {
     "sendEmail": {
-      "args": [
-        "userIds",
-        "comment"
+      "arguments": [
+        {"name": "userIds", "required": true},
+        {"name": "comment", "required": true}
       ],
       "pipeline": [
         {
@@ -24,6 +24,10 @@
           "args": {
             "body": "$$args.comment",
             "fromAddress": "$$values.ourEmail",
+            "subject": "$$vars.subject",
+            "toAddress": "$$vars.toAddress"
+          },
+          "let": {
             "subject": {
               "$concat": [
                 "$$user.data.name",
@@ -60,26 +64,25 @@
         {
           "action": "publish",
           "args": {
-            "channel": "$$item.channel",
+            "channel": "$$vars.channel",
             "message": {
               "data": {
-                "message": {
-                  "$concat": [
-                    "$$user.data.name",
-                    " mentioned you in a comment"
-                  ]
-                }
+                "message": "$$vars.message"
               },
               "pn_gcm": {
                 "data": {
-                  "message": {
-                    "$concat": [
-                      "$$user.data.name",
-                      " mentioned you in a comment"
-                    ]
-                  }
+                  "message": "$$vars.message"
                 }
               }
+            }
+          },
+          "let": {
+            "channel": "$$item.channel",
+            "message": {
+              "$concat": [
+                "$$user.data.name",
+                " mentioned you in a comment"
+              ]
             }
           },
           "service": "pn1"
@@ -132,7 +135,7 @@
             "name": {
               "required": true,
               "valid": {
-                "$$new": {
+                "$$this": {
                   "$ne": ""
                 }
               }
@@ -153,12 +156,12 @@
           "valid": {
             "$or": [
               {
-                "$$oldRoot": {
+                "$$prevRoot": {
                   "$exists": 1
                 }
               },
               {
-                "$$newRoot.name": {
+                "$$root.name": {
                   "$nin": "$$pipelines.myBoards.name"
                 }
               }
@@ -167,10 +170,10 @@
           "write": {
             "$or": [
               {
-                "$$oldRoot.owner_id": "$$user.id"
+                "$$prevRoot.owner_id": "$$user.id"
               },
               {
-                "$$oldRoot": {
+                "$$prevRoot": {
                   "$exists": false
                 }
               }
@@ -182,17 +185,17 @@
           "fields": {
             "_id": {
               "write": {
-                "$$old": {
+                "$$prev": {
                   "$exists": false
                 }
               }
             },
             "author": {
               "valid": {
-                "$$new": "$$user.id"
+                "$$this": "$$user.id"
               },
               "write": {
-                "$$old": {
+                "$$prev": {
                   "$exists": false
                 }
               }
@@ -202,7 +205,7 @@
               "write": {
                 "$or": [
                   {
-                    "$$oldRoot.author": "$$user.id"
+                    "$$prevRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -211,12 +214,12 @@
               "write": {
                 "$or": [
                   {
-                    "$$old": {
+                    "$$prev": {
                       "$exists": false
                     }
                   },
                   {
-                    "$$oldRoot.author": "$$user.id"
+                    "$$prevRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -225,7 +228,7 @@
               "write": {
                 "$or": [
                   {
-                    "$$oldRoot.author": "$$user.id"
+                    "$$prevRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -234,12 +237,12 @@
               "valid": {
                 "$and": [
                   {
-                    "$$new": {
+                    "$$this": {
                       "$type": "string"
                     }
                   },
                   {
-                    "$$new": {
+                    "$$this": {
                       "$ne": ""
                     }
                   }
@@ -248,12 +251,12 @@
               "write": {
                 "$or": [
                   {
-                    "$$old": {
+                    "$$prev": {
                       "$exists": false
                     }
                   },
                   {
-                    "$$oldRoot.author": "$$user.id"
+                    "$$prevRoot.author": "$$user.id"
                   }
                 ]
               }
@@ -271,7 +274,7 @@
             "_id": {},
             "authId": {
               "valid": {
-                "$$new": "$$user.id"
+                "$$this": "$$user.id"
               }
             },
             "channel": {
@@ -287,7 +290,7 @@
             "$$root.authId": "$$user.id"
           },
           "write": {
-            "$$old": {
+            "$$prev": {
               "$exists": false
             }
           }
@@ -347,37 +350,34 @@
       "type": "aws-ses"
     }
   },
-  "variables": {
+  "pipelines": {
     "myBoards": {
-      "source": {
-        "output": "array",
-        "pipeline": [
-          {
-            "action": "find",
-            "args": {
-              "collection": "boards",
-              "database": "planner",
-              "project": {
-                "name": 1
-              },
-              "query": {
-                "owner_id": "$$user.id"
-              }
+      "output": "array",
+      "pipeline": [
+        {
+          "action": "find",
+          "args": {
+            "collection": "boards",
+            "database": "planner",
+            "project": {
+              "name": 1
             },
-            "service": "mdb1"
-          }
-        ]
-      },
-      "type": "pipeline"
+            "query": {
+              "owner_id": "$$user.id"
+            }
+          },
+          "service": "mdb1"
+        }
+      ]
     },
+  },
+  "values": {
     "ourEmail": {
-      "source": "email@domain.com",
-      "type": "literal"
+      "value": "email@domain.com"
     },
     "s3bucket": {
       "private": true,
-      "source": "planner-files",
-      "type": "literal"
+      "value": "planner-files"
     }
   }
 }

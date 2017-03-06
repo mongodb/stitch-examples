@@ -35,18 +35,9 @@
             "_id": {},
             "checked": {
               "valid": {
-                "$or": [
-                  {
-                    "$$new": {
-                      "$type": "bool"
-                    }
-                  },
-                  {
-                    "$$old": {
-                      "$exists": false
-                    }
-                  }
-                ]
+                "$$this": {
+                  "$type": "bool"
+                }
               }
             },
             "owner_id": {
@@ -54,16 +45,13 @@
             },
             "text": {
               "valid": {
-                "$$new": {
+                "$$this": {
                   "$ne": ""
                 }
               }
-<<<<<<< HEAD
-=======
             },
             "owner_id": {
               "valid": "$$user.id"
->>>>>>> BAAS-52 - Work on renames - expansions
             }
           },
           "namespace": "todo.items",
@@ -73,10 +61,10 @@
           "write": {
             "$or": [
               {
-                "$$oldRoot.owner_id": "$$user.id"
+                "$$prevRoot.owner_id": "$$user.id"
               },
               {
-                "$$oldRoot": {
+                "$$prevRoot": {
                   "$exists": 0
                 }
               }
@@ -91,7 +79,7 @@
             },
             "number_status": {
               "valid": {
-                "$$new": {
+                "$$this": {
                   "$in": [
                     "pending",
                     "unverified",
@@ -102,21 +90,21 @@
             },
             "phone_number": {
               "valid": {
-                "$$new": {
+                "$$this": {
                   "$type": "string"
                 },
                 "$or": [
                   {
-                    "$$new": {
+                    "$$this": {
                       "$eq": ""
                     },
-                    "$$newRoot.number_status": "unverified"
+                    "$$root.number_status": "unverified"
                   },
                   {
-                    "$$new": {
+                    "$$this": {
                       "$ne": ""
                     },
-                    "$$newRoot.number_status": {
+                    "$$root.number_status": {
                       "$in": [
                         "pending",
                         "verified"
@@ -128,19 +116,12 @@
             },
             "verify_code": {
               "valid": {
-                "$or": [
-                  {
-                    "$$old": {"$exists": false}
-                  },
-                  {
-                    "$$newRoot.number_status": {
-                      "$in": [
-                        "pending",
-                        "verified"
-                      ]
-                    }
-                  }
-                ]
+                "$$root.number_status": {
+                  "$in": [
+                    "pending",
+                    "verified"
+                  ]
+                }
               }
             }
           },
@@ -151,10 +132,10 @@
           "write": {
             "$or": [
               {
-                "$$oldRoot._id": "$$user.id"
+                "$$prevRoot._id": "$$user.id"
               },
               {
-                "$$oldRoot": {
+                "$$prevRoot": {
                   "$exists": 0
                 }
               }
@@ -187,8 +168,16 @@
               "args": {
                 "expression": {
                   "text": "$$args.Body",
-                  "owner_id": "$$pipelines.idFromPhone._id"
+                  "owner_id": "$$vars.ownerId._id"
                 }
+              },
+              "let": {
+                "ownerId": {"$pipeline": {
+                  "name": "idFromPhone",
+                  "args": {
+                    "phoneNumber": "$$args.From"
+                  }
+                }}
               }
             },
             {
@@ -205,29 +194,28 @@
       "type": "twilio"
     }
   },
-  "variables": {
+  "pipelines": {
     "idFromPhone": {
-      "source": {
-        "output": "singleDoc",
-        "pipeline": [
-          {
-            "action": "find",
-            "args": {
-              "collection": "users",
-              "database": "todo",
-              "query": {
-                "phone_number": "$$args.From"
-              }
-            },
-            "service": "mdb1"
-          }
-        ]
-      },
-      "type": "pipeline"
-    },
+      "output": "singleDoc",
+      "pipeline": [
+        {
+          "action": "find",
+          "args": {
+            "collection": "users",
+            "database": "todo",
+            "query": {
+              "phone_number": "$$args.phoneNumber"
+            }
+          },
+          "service": "mdb1"
+        }
+      ],
+      "arguments": [{"name": "phoneNumber", "required": true}]
+    }
+  },
+  "values": {
     "ourNumber": {
-      "source": "+16467981338",
-      "type": "literal"
+      "value": "+16467981338"
     }
   }
 }
