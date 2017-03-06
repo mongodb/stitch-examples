@@ -1,7 +1,7 @@
 {
   "actions": {
     "sendEmail": {
-      "arguments": [
+      "parameters": [
         {"name": "userIds", "required": true},
         {"name": "comment", "required": true}
       ],
@@ -13,21 +13,25 @@
             "database": "planner",
             "query": {
               "_id": {
-                "$in": "$$args.userIds"
+                "$in": "$$vars.userIds"
               }
             }
+          },
+          "let": {
+            "userIds": "$$args.userIds"
           },
           "service": "mdb1"
         },
         {
           "action": "send",
           "args": {
-            "body": "$$args.comment",
+            "body": "$$vars.comment",
             "fromAddress": "$$values.ourEmail",
             "subject": "$$vars.subject",
             "toAddress": "$$vars.toAddress"
           },
           "let": {
+            "comment": "$$args.comment",
             "subject": {
               "$concat": [
                 "$$user.data.name",
@@ -45,7 +49,7 @@
     },
     "sendNotification": {
       "args": [
-        "userIds"
+        {"name": "userIds", "required": true}
       ],
       "pipeline": [
         {
@@ -55,9 +59,12 @@
             "database": "planner",
             "query": {
               "_id": {
-                "$in": "$$args.userIds"
+                "$in": "$$vars.userIds"
               }
             }
+          },
+          "let": {
+            "userIds": "$$args.userIds"
           },
           "service": "mdb1"
         },

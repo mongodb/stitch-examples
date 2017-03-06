@@ -167,11 +167,12 @@
               "action": "expr",
               "args": {
                 "expression": {
-                  "text": "$$args.Body",
+                  "text": "$$vars.text",
                   "owner_id": "$$vars.ownerId._id"
                 }
               },
               "let": {
+                "text": "$$args.Body",
                 "ownerId": {"$pipeline": {
                   "name": "idFromPhone",
                   "args": {
@@ -204,13 +205,16 @@
             "collection": "users",
             "database": "todo",
             "query": {
-              "phone_number": "$$args.phoneNumber"
+              "phone_number": "$$vars.phoneNumber"
             }
+          },
+          "let": {
+            "phoneNumber": "$$args.phoneNumber"
           },
           "service": "mdb1"
         }
       ],
-      "arguments": [{"name": "phoneNumber", "required": true}]
+      "parameters": [{"name": "phoneNumber", "required": true}]
     }
   },
   "values": {
