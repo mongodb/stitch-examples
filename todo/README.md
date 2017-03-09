@@ -29,9 +29,9 @@ It stores data for the app in MongoDB at localhost:27017 by default.
 
 ## Extras
 
-### Twilio Trigger
+### Twilio Incoming Webhook
 
-This app supports Twilio triggers where a user can message a number you set up on Twilio and it will create a todo item with that message.
+This app supports Twilio incoming webhooks where a user can message a number you set up on Twilio and it will create a todo item with that message.
 
 To set it up, make the following changes in the UI:
 
