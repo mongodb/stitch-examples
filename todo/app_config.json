@@ -35,13 +35,22 @@
             "_id": {},
             "checked": {
               "valid": {
-                "$$this": {
-                  "$type": "bool"
-                }
+                "$or": [
+                  {
+                    "$$this": {
+                      "$type": "bool"
+                    }
+                  },
+                  {
+                    "$$this": {
+                      "$exists": false
+                    }
+                  }
+                ]
               }
             },
             "owner_id": {
-              "valid": "$$auth.id"
+              "valid": "$$user.id"
             },
             "text": {
               "valid": {
@@ -49,9 +58,6 @@
                   "$ne": ""
                 }
               }
-            },
-            "owner_id": {
-              "valid": "$$user.id"
             }
           },
           "namespace": "todo.items",
@@ -116,12 +122,21 @@
             },
             "verify_code": {
               "valid": {
-                "$$root.number_status": {
-                  "$in": [
-                    "pending",
-                    "verified"
-                  ]
-                }
+                "$or": [
+                  {
+                    "$$root.number_status": {
+                      "$in": [
+                        "pending",
+                        "verified"
+                      ]
+                    }
+                  },
+                  {
+                    "$$this": {
+                      "$exists": false
+                    }
+                  }
+                ]
               }
             }
           },
@@ -158,7 +173,7 @@
           ]
         }
       },
-      "triggers": {
+      "incomingWebhooks": {
         "5888d4c3772e2e4a41158d5f": {
           "_id": "5888d4c3772e2e4a41158d5f",
           "output": "array",
@@ -173,12 +188,14 @@
               },
               "let": {
                 "text": "$$args.Body",
-                "ownerId": {"$pipeline": {
-                  "name": "idFromPhone",
-                  "args": {
-                    "phoneNumber": "$$args.From"
+                "ownerId": {
+                  "$pipeline": {
+                    "name": "idFromPhone",
+                    "args": {
+                      "phoneNumber": "$$args.From"
+                    }
                   }
-                }}
+                }
               }
             },
             {
@@ -214,7 +231,17 @@
           "service": "mdb1"
         }
       ],
-      "parameters": [{"name": "phoneNumber", "required": true}]
+      "parameters": [
+        {
+          "name": "phoneNumber",
+          "required": true
+        }
+      ],
+      "skipRules": true,
+      "canEvaluate": {
+        "$$true": true
+      },
+      "private": true
     }
   },
   "values": {
