@@ -1,105 +1,4 @@
 {
-  "actions": {
-    "sendEmail": {
-      "parameters": [
-        {"name": "userIds", "required": true},
-        {"name": "comment", "required": true}
-      ],
-      "pipeline": [
-        {
-          "action": "find",
-          "args": {
-            "collection": "users",
-            "database": "planner",
-            "query": {
-              "_id": {
-                "$in": "$$vars.userIds"
-              }
-            }
-          },
-          "let": {
-            "userIds": "$$args.userIds"
-          },
-          "service": "mdb1"
-        },
-        {
-          "action": "send",
-          "args": {
-            "body": "$$vars.comment",
-            "fromAddress": "$$values.ourEmail",
-            "subject": "$$vars.subject",
-            "toAddress": "$$vars.toAddress"
-          },
-          "let": {
-            "comment": "$$args.comment",
-            "subject": {
-              "$concat": [
-                "$$user.data.name",
-                " mentioned you in a comment."
-              ]
-            },
-            "toAddress": "$$item.email"
-          },
-          "service": "ses1"
-        },
-        {
-          "action": "null"
-        }
-      ]
-    },
-    "sendNotification": {
-      "args": [
-        {"name": "userIds", "required": true}
-      ],
-      "pipeline": [
-        {
-          "action": "find",
-          "args": {
-            "collection": "users",
-            "database": "planner",
-            "query": {
-              "_id": {
-                "$in": "$$vars.userIds"
-              }
-            }
-          },
-          "let": {
-            "userIds": "$$args.userIds"
-          },
-          "service": "mdb1"
-        },
-        {
-          "action": "publish",
-          "args": {
-            "channel": "$$vars.channel",
-            "message": {
-              "data": {
-                "message": "$$vars.message"
-              },
-              "pn_gcm": {
-                "data": {
-                  "message": "$$vars.message"
-                }
-              }
-            }
-          },
-          "let": {
-            "channel": "$$item.channel",
-            "message": {
-              "$concat": [
-                "$$user.data.name",
-                " mentioned you in a comment"
-              ]
-            }
-          },
-          "service": "pn1"
-        },
-        {
-          "action": "null"
-        }
-      ]
-    }
-  },
   "authProviders": {
     "oauth2/facebook": {
       "clientId": "APP-ID",
@@ -269,10 +168,9 @@
               }
             }
           },
-          "read":{},
-          "write":{},
-          "valid":{},
-
+          "read": {},
+          "write": {},
+          "valid": {},
           "namespace": "planner.cards"
         },
         "5888d4c3772e2e4a41158d68": {
@@ -377,6 +275,116 @@
         }
       ]
     },
+    "sendEmail": {
+      "output": "array",
+      "parameters": [
+        {
+          "name": "userIds",
+          "required": true
+        },
+        {
+          "name": "comment",
+          "required": true
+        }
+      ],
+      "pipeline": [
+        {
+          "action": "find",
+          "args": {
+            "collection": "users",
+            "database": "planner",
+            "query": {
+              "_id": {
+                "$in": "$$vars.userIds"
+              }
+            }
+          },
+          "let": {
+            "userIds": "$$args.userIds"
+          },
+          "service": "mdb1"
+        },
+        {
+          "action": "send",
+          "args": {
+            "body": "$$vars.comment",
+            "fromAddress": "$$values.ourEmail",
+            "subject": "$$vars.subject",
+            "toAddress": "$$vars.toAddress"
+          },
+          "let": {
+            "comment": "$$args.comment",
+            "subject": {
+              "$concat": [
+                "$$user.data.name",
+                " mentioned you in a comment."
+              ]
+            },
+            "toAddress": "$$item.email"
+          },
+          "service": "ses1"
+        },
+        {
+          "action": "null"
+        }
+      ]
+    },
+    "sendNotification": {
+      "output": "array",
+      "parameters": [
+        {
+          "name": "userIds",
+          "required": true
+        }
+      ],
+      "pipeline": [
+        {
+          "action": "find",
+          "args": {
+            "collection": "users",
+            "database": "planner",
+            "query": {
+              "_id": {
+                "$in": "$$vars.userIds"
+              }
+            }
+          },
+          "let": {
+            "userIds": "$$args.userIds"
+          },
+          "service": "mdb1"
+        },
+        {
+          "action": "publish",
+          "args": {
+            "channel": "$$vars.channel",
+            "message": {
+              "data": {
+                "message": "$$vars.message"
+              },
+              "pn_gcm": {
+                "data": {
+                  "message": "$$vars.message"
+                }
+              }
+            }
+          },
+          "let": {
+            "channel": "$$item.channel",
+            "message": {
+              "$concat": [
+                "$$user.data.name",
+                " mentioned you in a comment"
+              ]
+            }
+          },
+          "service": "pn1"
+        },
+        {
+          "action": "null"
+        }
+      ]
+    }
   },
   "values": {
     "ourEmail": {
