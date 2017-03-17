@@ -23,7 +23,7 @@
     // Set this value to match the ID of the app you create in the baas admin site.
     var MY_APP_ID = "helloworld-iiqqs";
 
-    var baasClient = new Baas.BaasClient(MY_APP_ID);
+    var baasClient = new baas.BaasClient(MY_APP_ID);
     function setupPage(){
       var userInfo = baasClient.auth()
       console.log("user info is", userInfo)
