@@ -143,10 +143,10 @@ let Board = React.createClass({
   },
   moveCard(from, to){
     let board = this.state.board;
-    let fromList = board.lists.find((x)=>(x._id.$oid==from.listId.$oid))
-    let fromCard = fromList.cards.find((x)=>(x._id.$oid == from._id.$oid))
-    let toList = board.lists.find((x)=>(x._id.$oid==to.listId.$oid))
-    if(fromList._id.$oid == toList._id.$oid){
+    let fromList = board.lists.find((x)=>(x._id.toHexString()==from.listId.toHexString()))
+    let fromCard = fromList.cards.find((x)=>(x._id.toHexString() == from._id.toHexString()))
+    let toList = board.lists.find((x)=>(x._id.toHexString()==to.listId.toHexString()))
+    if(fromList._id.toHexString() == toList._id.toHexString()){
       fromList.cards.splice(from.index, 1)
       fromList.cards.splice(to.index, 0, fromCard)
       board.lists[fromList.index] = fromList
@@ -161,12 +161,12 @@ let Board = React.createClass({
   },
   moveCardSave(from, to){
     let board = this.state.board
-    let fromList = board.lists.find((x)=>(x._id.$oid==from.originalListId.$oid))
-    let toList = board.lists.find((x)=>(x._id.$oid==to.listId.$oid))
+    let fromList = board.lists.find((x)=>(x._id.toHexString()==from.originalListId.toHexString()))
+    let toList = board.lists.find((x)=>(x._id.toHexString()==to.listId.toHexString()))
     // the data for the "from" card is 
     // actually in the "to" list because it's moved there temporarily,
     // client-side, by the drag/drop UI code.
-    let fromCard = toList.cards.find((x)=>(x._id.$oid == from._id.$oid))
+    let fromCard = toList.cards.find((x)=>(x._id.toHexString() == from._id.toHexString()))
     let lowerBound = -1 * Number.MAX_VALUE
     let upperBound = Number.MAX_VALUE
 
@@ -182,19 +182,19 @@ let Board = React.createClass({
     let newIdx = randomFloat(lowerBound, upperBound)
 
     let updateSpec = {}
-    if(fromList._id.$oid == toList._id.$oid){
+    if(fromList._id.toHexString() == toList._id.toHexString()){
       let modifier = {}
-      modifier[`lists.${from.listId.$oid}.cards.${from._id.$oid}.idx`] = newIdx
+      modifier[`lists.${from.listId.toHexString()}.cards.${from._id.toHexString()}.idx`] = newIdx
       updateSpec = {"$set":modifier}
     }else{
       // Remove card from the "from" list
       let unsetModifier = {}
-      unsetModifier[`lists.${fromList._id.$oid}.cards.${from._id.$oid}`] = 1
+      unsetModifier[`lists.${fromList._id.toHexString()}.cards.${from._id.toHexString()}`] = 1
 
       // Insert it in the "to" list
       let setModifier = {}
       fromCard.idx = newIdx
-      setModifier[`lists.${toList._id.$oid}.cards.${to.data._id.$oid}`] = fromCard
+      setModifier[`lists.${toList._id.toHexString()}.cards.${to.data._id.toHexString()}`] = fromCard
       updateSpec = {"$set":setModifier, "$unset": unsetModifier}
     }
     this.props.route.db.boards.updateOne({_id:{$oid:this.props.routeParams.id}}, updateSpec).then(this.load) 
@@ -240,11 +240,11 @@ let Board = React.createClass({
               (x)=>
                 <List 
                   onUpdate={this.load} 
-                  boardId={this.state.board._id.$oid} 
+                  boardId={this.state.board._id.toHexString()} 
                   moveCard={this.moveCard} 
                   moveCardSave={this.moveCardSave} 
                   db={this.props.route.db} 
-                  key={x._id.$oid} 
+                  key={x._id.toHexString()} 
                   data={x}
                 />
               )
@@ -292,7 +292,7 @@ const cardTarget = {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
 
-    let sameList = (props.listId.$oid == monitor.getItem().listId.$oid)
+    let sameList = (props.listId.toHexString() == monitor.getItem().listId.toHexString())
     // Don't replace items with themselves
     if (sameList && dragIndex === hoverIndex) {
       return;
@@ -389,7 +389,7 @@ let List = DragDropContext(HTML5Backend)(
     createNewCard(summary){
       let db = this.props.db
       let boardId = this.props.boardId
-      let listOid = this.props.data._id.$oid
+      let listOid = this.props.data._id.toHexString()
       let oid = ObjectID().toHexString()
 
       return db.cards.insert([{_id:{$oid:oid}, summary:summary, "author": this.props.db._client.authedId()}]).then(()=>{
@@ -417,7 +417,7 @@ let List = DragDropContext(HTML5Backend)(
     },
     delete(){
       let unsetObj = {}
-      unsetObj["lists." + this.props.data._id.$oid] = 1;
+      unsetObj["lists." + this.props.data._id.toHexString()] = 1;
       this.props.db.boards.updateOne(
         {_id:{$oid:this.props.boardId}},
         {$unset:unsetObj})
@@ -441,7 +441,7 @@ let List = DragDropContext(HTML5Backend)(
                 return (
                   <Card
                     data={c} 
-                    key={c._id.$oid} 
+                    key={c._id.toHexString()} 
                     index={i} 
                     listId={this.props.data._id}
                     originalListId={this.props.data._id}
@@ -475,7 +475,7 @@ let CardEditor = React.createClass({
       {$set:{summary:newSummary, description:this._desc.value}})
     .then(()=>{
       let setObj = {}
-      setObj[`lists.${this.props.listId.$oid}.cards.${this.props.editingId.$oid}.summary`] = newSummary;
+      setObj[`lists.${this.props.listId.toHexString()}.cards.${this.props.editingId.toHexString()}.summary`] = newSummary;
       return this.props.db.boards.updateOne({_id:{$oid:this.props.boardId}}, {$set:setObj})
     })
     .then(this.props.onUpdate)
@@ -606,7 +606,7 @@ let CardComments = React.createClass({
     .then( ()=>{
       let newNumComments = this.props.comments.length-1
       let modifier = {}
-      modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
+      modifier[`lists.${this.props.listId.toHexString()}.cards.${this.props.cardId.toHexString()}.numComments`] = newNumComments;
       return this.props.db.boards.updateOne(
         {_id:{$oid:this.props.boardId}},
         {$set:modifier})
@@ -671,7 +671,7 @@ let PostCommentForm = React.createClass({
       // TODO this is only a guess at the correct # of comments.
       // Consistency issue if another client adds a comment concurrently.
       let modifier = {}
-      modifier[`lists.${this.props.listId.$oid}.cards.${this.props.cardId.$oid}.numComments`] = newNumComments;
+      modifier[`lists.${this.props.listId.toHexString()}.cards.${this.props.cardId.toHexString()}.numComments`] = newNumComments;
       return this.props.db.boards.updateOne(
         {_id:this.props.boardId},
         {$set:modifier})

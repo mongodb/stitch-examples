@@ -149,7 +149,7 @@ let BoardListing = React.createClass({
           { 
             this.state.boards.map(
               (x)=>{
-                return <BoardItem db={this.props.db} data={x} key={x._id["$oid"]} onUpdate={this.loadBoards}/>
+                return <BoardItem db={this.props.db} data={x} key={x._id.toHexString()} onUpdate={this.loadBoards}/>
               }
             )
           }
@@ -170,7 +170,7 @@ let BoardItem = React.createClass({
     return (
       <div className="board">
         <span className="board-name">
-          <Link className="board-name-link" to={"/boards/" + this.props.data._id.$oid}>{this.props.data.name}</Link>
+          <Link className="board-name-link" to={"/boards/" + this.props.data._id.toHexString()}>{this.props.data.name}</Link>
         </span>
         <button className="board-delete-button" onClick={this.remove}>&times;</button>
       </div>

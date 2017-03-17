@@ -176,10 +176,15 @@
         "5888d4c3772e2e4a41158d68": {
           "_id": "5888d4c3772e2e4a41158d68",
           "fields": {
-            "_id": {},
+            "_id": {
+              "read": {}
+            },
             "authId": {
               "valid": {
                 "$$this": "$$user.id"
+              },
+              "read": {
+                "$$root.authId": "$$user.id"
               }
             },
             "channel": {
@@ -187,13 +192,18 @@
                 "$$root.authId": "$$user.id"
               }
             },
-            "email": {},
-            "name": {}
+            "email": {
+              "read": {
+                "$$root.authId": "$$user.id"
+              }
+            },
+            "name": {
+              "read": {
+                "$$root.authId": "$$user.id"
+              }
+            }
           },
           "namespace": "planner.users",
-          "read": {
-            "$$root.authId": "$$user.id"
-          },
           "write": {
             "$$prev": {
               "$exists": false
