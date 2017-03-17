@@ -18,7 +18,7 @@ It supports mentioning users when making comments on cards using @ followed by a
 5. Bootstrap the app by running (your app ID is on the app's homepage):
 
 	```
-	go run $GOPATH/src/github.com/10gen/baas/clients/golang/main/main.go app-replace -a <appId> app_config.json --api-key=<apiKey>
+	go run $GOPATH/src/github.com/10gen/baas/clients/golang/main/main.go app-replace --appId <appId> app_config.json --api-key=<apiKey>
 	```
 6. Install dependencies for the sample app, and start it:
 

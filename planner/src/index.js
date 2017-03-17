@@ -46,7 +46,7 @@ let modalStyle = {
   }
 }
 
-let appId = 'planner-iiqqs';
+let appId = 'planner-npuxy';
 if (process.env.APP_ID) {
   appId = process.env.APP_ID;
 }
