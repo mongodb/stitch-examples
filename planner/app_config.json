@@ -37,6 +37,13 @@
             "lists": {
               "otherFields": {}
             },
+            "stuff": {
+              "fields":{
+                "x":{},
+                "y":{},
+                "z":{}
+              }
+            },
             "members": {},
             "name": {
               "required": true,
