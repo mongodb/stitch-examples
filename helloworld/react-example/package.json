@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "baas": "https://s3.amazonaws.com/mciuploads/baas/npm/baas_linux_64_client_tests_6e09a522e1f9157f3eab756bcc78338a54960149_17_02_07_03_56_08/baas.tgz",
+    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/master/baas.tgz",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
