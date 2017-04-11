@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Planner Notifications</string>
-    <string name="sub_key">SUB_KEY</string>
-    <string name="sender_id">SENDER_ID</string>
-    <string name="channel">CHANNEL_NAME</string>
-    <string name="channel_name_label">Channel</string>
-</resources>
