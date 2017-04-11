@@ -1,6 +1,6 @@
 import React from 'react';
 import {render, findDOMNode} from 'react-dom';
-import {BaasClient, MongoClient} from 'baas';
+import {BaasClient} from 'baas';
 import {browserHistory, Router, Route, Link} from 'react-router'
 import AuthControls from "./auth.js"
 import {Home} from "./home.js"
@@ -57,7 +57,7 @@ if (process.env.BAAS_URL) {
 }
 
 let baasClient = new BaasClient(appId, options);
-let rootDb = new MongoClient(baasClient, "mdb1").getDb("planner")
+let rootDb = baasClient.service("mongodb", "mdb1").db("planner")
 let db = {
   _client: baasClient,
   users: rootDb.getCollection("users"),
