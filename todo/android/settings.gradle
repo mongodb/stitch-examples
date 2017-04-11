@@ -1,4 +1,2 @@
 include ':todo'
-include ':baas-sdk'
-project(':baas-sdk').projectDir=new File('../../../clients/android/sdk/sdk')
 
