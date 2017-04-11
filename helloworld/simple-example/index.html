@@ -38,7 +38,7 @@
         var userName = (userInfo.user.data && userInfo.user.data.name)  ? userInfo.user.data.name : "(unknown)"
         $("#greeting").text("Hello " + userName + ",  you are logged in!")
 
-        let db = new Baas.MongoClient(baasClient, "mdb1").getDb("my_db")
+        let db = baasClient.service("mongodb", "mongodb1").db("my_db")
 
         db.getCollection("items").find({owner_id: baasClient.authedId()}, {})
           .then(function(data){
