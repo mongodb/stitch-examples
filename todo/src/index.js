@@ -1,6 +1,6 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {BaasClient, MongoClient} from 'baas';
+import {BaasClient} from 'baas';
 import {browserHistory, Router, Route , Link} from 'react-router'
 
 require("../static/todo.scss")
@@ -16,7 +16,7 @@ if (process.env.BAAS_URL) {
 }
 
 let baasClient = new BaasClient(appId, options);
-let db = new MongoClient(baasClient, "mdb1").getDb("todo")
+let db = baasClient.service("mongodb", "mdb1").getDb("todo")
 let items = db.getCollection("items")
 let users = db.getCollection("users")
 let TodoItem = React.createClass({
