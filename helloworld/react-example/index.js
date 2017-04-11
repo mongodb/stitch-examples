@@ -1,6 +1,6 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {BaasClient, MongoClient} from 'baas';
+import {BaasClient} from 'baas';
 
 // These settings should match the ones you've configured in the BaaS admin app.
 const APP_ID = "helloworld-iiqqs"
@@ -13,7 +13,7 @@ const HelloWorld = React.createClass({
   getInitialState(){
     return {
       auth: this.props.client.auth(),
-      collection: new MongoClient(this.props.client, MONGO_SERVICE_NAME).getDb(DB_NAME).getCollection(ITEMS_COLLECTION)
+      collection: this.props.client.service("mongodb", MONGO_SERVICE_NAME).db(DB_NAME).collection(ITEMS_COLLECTION)
     }
   },
   logout(){
