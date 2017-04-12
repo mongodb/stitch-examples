@@ -3,10 +3,10 @@ package com.mongodb.baas.sdk.examples.todo;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,16 +33,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
-import com.mongodb.baas.sdk.AuthListener;
-import com.mongodb.baas.sdk.BaasClient;
-import com.mongodb.baas.sdk.auth.Auth;
-import com.mongodb.baas.sdk.auth.AuthProviderInfo;
-import com.mongodb.baas.sdk.auth.anonymous.AnonymousAuthProvider;
-import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProvider;
-import com.mongodb.baas.sdk.auth.facebook.FacebookAuthProviderInfo;
-import com.mongodb.baas.sdk.auth.google.GoogleAuthProvider;
-import com.mongodb.baas.sdk.auth.google.GoogleAuthProviderInfo;
-import com.mongodb.baas.sdk.services.mongodb.MongoClient;
+import com.mongodb.baas.android.AuthListener;
+import com.mongodb.baas.android.BaasClient;
+import com.mongodb.baas.android.auth.Auth;
+import com.mongodb.baas.android.auth.AvailableAuthProviders;
+import com.mongodb.baas.android.auth.anonymous.AnonymousAuthProvider;
+import com.mongodb.baas.android.auth.oauth2.facebook.FacebookAuthProvider;
+import com.mongodb.baas.android.auth.oauth2.facebook.FacebookAuthProviderInfo;
+import com.mongodb.baas.android.auth.oauth2.google.GoogleAuthProvider;
+import com.mongodb.baas.android.auth.oauth2.google.GoogleAuthProviderInfo;
+import com.mongodb.baas.android.services.mongodb.MongoClient;
 
 import org.bson.Document;
 
@@ -50,13 +50,13 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.android.gms.auth.api.Auth.*;
-import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
+import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
+import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
+import static com.mongodb.baas.android.services.mongodb.MongoClient.Collection;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TodoApp";
-    private static final String APP_ID = "todo-iiqqs";
     private static final long REFRESH_INTERVAL_MILLIS = 1000;
     private static final int RC_SIGN_IN = 421;
 
@@ -78,13 +78,13 @@ public class MainActivity extends AppCompatActivity {
         _handler = new Handler();
         _refresher = new ListRefresher(this);
 
-        _client = new BaasClient(this, APP_ID);
+        _client = BaasClient.fromProperties(this);
         _client.addAuthListener(new MyAuthListener(this));
-        _mongoClient = new MongoClient(_client, "mdb1");
+        _mongoClient = new MongoClient(_client, "mongodb1");
         initLogin();
     }
 
-    private static class MyAuthListener extends AuthListener {
+    private static class MyAuthListener implements AuthListener {
 
         private WeakReference<MainActivity> _main;
 
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             final MainActivity activity = _main.get();
-            if (activity != null && activity._client.isAuthed()) {
+            if (activity != null && activity._client.isAuthenticated()) {
                 activity.refreshList().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull final Task<Void> task) {
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "handleGooglSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             final GoogleAuthProvider googleProvider =
-                    GoogleAuthProvider.fromIdToken(result.getSignInAccount().getServerAuthCode());
+                    GoogleAuthProvider.fromAuthCode(result.getSignInAccount().getServerAuthCode());
             _client.logInWithProvider(googleProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
                 @Override
                 public void onComplete(@NonNull final Task<Auth> task) {
@@ -203,9 +203,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initLogin() {
-        _client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AuthProviderInfo>() {
+        _client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
             @Override
-            public void onComplete(@NonNull final Task<AuthProviderInfo> task) {
+            public void onComplete(@NonNull final Task<AvailableAuthProviders> task) {
                 if (task.isSuccessful()) {
                     setupLogin(task.getResult());
                 } else {
@@ -344,9 +344,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupLogin(final AuthProviderInfo info) {
+    private void setupLogin(final AvailableAuthProviders info) {
 
-        if (_client.isAuthed()) {
+        if (_client.isAuthenticated()) {
             initTodoView();
             return;
         }

@@ -25,13 +25,18 @@ android {
 repositories {
     mavenCentral() // For Facebook Log  in
     maven {
-        url "https://s3.amazonaws.com/baas-clients/android/maven/snapshots"
+        url "https://s3.amazonaws.com/baas-sdks/android/maven/snapshots"
+    }
+
+    // TODO: Remove once BSON 3.5.0 is released
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.mongodb.baas:baas-sdk:0.1-SNAPSHOT'){
+    compile('com.mongodb.baas:android-sdk:0.1.1-SNAPSHOT'){
         changing = true
     }
     compile 'com.google.android.gms:play-services-auth:10.2.1'

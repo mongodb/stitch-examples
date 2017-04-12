@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.mongodb.baas.sdk.services.mongodb.MongoClient.*;
+import static com.mongodb.baas.android.services.mongodb.MongoClient.Collection;
 
 public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
