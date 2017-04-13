@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <title>MongoRestaurant</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <script src="https://s3.amazonaws.com/baas-sdks/js/library/master/baas.min.js"></script>
+        <script defer type="text/javascript" src="app.js"></script>
+        <div> 
+            <input id="restaurantName" type="text" > </input>
+            <button id="button-search">Search</button>
+        </div>
+        <div>
+            <p id="resultFound"></p>
+            <p id="location"></p>
+            <p id="cuisine"></p>
+        </div>
+        <div>
+            <button id="button-write">Write Comment</button>
+            <button id="button-refresh">Refresh Comments</button>
+        </div>
+        <div id="commentFeed">
+        </div>
+    </body>
+</html>
