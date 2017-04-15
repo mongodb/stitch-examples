@@ -53,7 +53,7 @@ export default class Uploader {
     const insertData = {
       ...feedItem.toJSON(),
       groups: groups.keys(),
-      owner_id: '$$auth.id',
+      owner_id: '$$user.id',
     };
 
     const db = this.baas.getDb();
