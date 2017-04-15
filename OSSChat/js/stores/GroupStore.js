@@ -7,7 +7,7 @@ class Group {
 
   static createFromDb(resp) {
     const instance = new Group();
-    instance.id = resp._id.$oid; // eslint-disable-line
+    instance.id = resp._id; // eslint-disable-line
     instance.name = resp.name;
     return instance;
   }
@@ -39,7 +39,9 @@ export default class GroupStore {
     this.groups = groupInstanceArray.map(group => {
       // eslint-disable-next-line no-param-reassign
       group.feedItems = this.feedItems.filter(
-        feedItem => feedItem.groups.includes(group.id),
+        feedItem => {
+          return feedItem.groups.includes(group.id.toString())
+        }
       );
 
       return group;

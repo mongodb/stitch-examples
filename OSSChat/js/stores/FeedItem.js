@@ -70,8 +70,8 @@ export default class FeedItem {
 
     feedItem.dateCreated = dbValue.dateCreated;
     feedItem.groups = dbValue.groups;
-    feedItem.id = dbValue._id.$oid; // eslint-disable-line
-    feedItem.ownerId = dbValue.owner_id.$oid;
+    feedItem.id = dbValue._id; // eslint-disable-line
+    feedItem.ownerId = dbValue.owner_id;
 
     return feedItem;
   }
