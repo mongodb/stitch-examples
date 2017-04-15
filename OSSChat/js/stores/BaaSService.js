@@ -1,8 +1,8 @@
 export default class BaaSService {
-  static async create({ BaasClient, MongoClient, loadLocalStorage }) {
+  static async create({ BaasClient, loadLocalStorage }) {
     await loadLocalStorage();
-    const baasClient = new BaasClient('OSSChat');
-    const mongoClient = new MongoClient(baasClient, 'mdb1');
+    const baasClient = new BaasClient('osschat-hvyky');
+    const mongoClient = baasClient.service('mongodb', 'mdb1');
 
     const instance = new BaaSService();
     instance.baasClient = baasClient;

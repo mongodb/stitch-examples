@@ -6,12 +6,11 @@ import './index.css';
 import Stores from '../../js/stores';
 import {
   BaasClient,
-  MongoClient,
-} from '../../js/vendor/baas';
+} from 'baas';
 import App from './App';
 
 const storesInstance = new Stores();
-storesInstance.initialize({ BaasClient, MongoClient });
+storesInstance.initialize({ BaasClient });
 window.stores = storesInstance;
 
 const Root = () => (

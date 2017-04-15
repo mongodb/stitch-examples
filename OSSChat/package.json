@@ -8,6 +8,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/master/baas.tgz",
     "base-64": "^0.1.0",
     "lodash": "^4.17.4",
     "mobx": "^3.1.0",
