@@ -1,0 +1,54 @@
+{
+    "authProviders": {
+        "anon/user": {}
+    },
+    "services": {
+        "mdb1": {
+            "config": {
+                "uri": "mongodb://put-in-your-db-url-here"
+            },
+            "rules": {
+                "5888d4c3772e2e4a41158d64": {
+                    "_id": "5888d4c3772e2e4a41158d64",
+                    "fields": {
+                        "owner_id": {}
+                    },
+                    "namespace": "osschat.items",
+                    "otherFields": {},
+                    "read": {},
+                    "valid": {},
+                    "write": {
+                        "$$root.owner_id": "$$user.id"
+                    }
+                },
+                "5888d4c3772e2e4a41158d6b": {
+                    "_id": "5888d4c3772e2e4a41158d6b",
+                    "fields": {
+                        "owner_id": {}
+                    },
+                    "namespace": "osschat.groups",
+                    "read": {},
+                    "valid": {},
+                    "write": {}
+                }
+            },
+            "type": "mongodb"
+        },
+        "s31": {
+            "config": {
+                "accessKeyId": "access key id",
+                "region": "us-west-1",
+                "secretAccessKey": "secret access key"
+            },
+            "rules": {
+                "5888d4c3772e2e4a41158d5d": {
+                    "_id": "5888d4c3772e2e4a41158d5d",
+                    "actions": [
+                        "signPolicy"
+                    ]
+                }
+            },
+            "type": "aws-s3"
+        }
+    }
+}
