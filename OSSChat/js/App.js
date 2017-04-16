@@ -11,11 +11,7 @@ import CameraScreen from './CameraScreen';
 import GroupListScreen from './GroupListScreen';
 import CreateFeedItemFlow from './CreateFeedItem/CreateFeedItemFlow';
 import Stores from './stores/index-native';
-import {
-  BaasClient,
-  MongoClient,
-  loadLocalStorage,
-} from './vendor/baas-native';
+import { BaasClient } from 'baas'//'./vendor/baas/client';
 
 const storesInstance = new Stores();
 
@@ -23,7 +19,7 @@ const storesInstance = new Stores();
 @observer
 class App extends Component {
   componentDidMount() {
-    storesInstance.initialize({ BaasClient, MongoClient, loadLocalStorage });
+    storesInstance.initialize({ BaasClient });
   }
 
   render() {

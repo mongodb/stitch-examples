@@ -28,10 +28,10 @@ export default class Uploader {
   }
 
   @action toggleGroup({ id }) {
-    if (this.localAsset.groups.has(id)) {
-      this.localAsset.groups.delete(id);
+    if (this.localAsset.groups.has(id.toString())) {
+      this.localAsset.groups.delete(id.toString());
     } else {
-      this.localAsset.groups.set(id, true);
+      this.localAsset.groups.set(id.toString(), true);
     }
   }
 
@@ -66,7 +66,7 @@ export default class Uploader {
       throw e;
     }
 
-    feedItem.ownerId = response.result[0].owner_id;
+    feedItem.ownerId = this.baas.baasClient.auth()._id
 
     this.clearLocalAsset();
     this.uploading = false;

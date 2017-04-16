@@ -1,6 +1,5 @@
 export default class BaaSService {
-  static async create({ BaasClient, loadLocalStorage }) {
-    await loadLocalStorage();
+  static async create({ BaasClient }) {
     const baasClient = new BaasClient('osschat-hvyky');
     const mongoClient = baasClient.service('mongodb', 'mdb1');
 
@@ -8,7 +7,7 @@ export default class BaaSService {
     instance.baasClient = baasClient;
     instance.mongoClient = mongoClient;
 
-    instance.createViewer();
+    await instance.createViewer();
 
     return instance;
   }
@@ -16,9 +15,13 @@ export default class BaaSService {
   createViewer() {
     this.viewer = this.baasClient.auth();
     if (!this.viewer) {
-      this.baasClient.authManager.anonymousAuth(true);
+      return this.baasClient.authManager.anonymousAuth().then(
+        ()=> {
+          console.log("got auth", this.baasClient.auth())
+          this.viewer = this.baasClient.auth();
+        }
+      );
     }
-    this.viewer = this.baasClient.auth();
   }
 
   getDb() {

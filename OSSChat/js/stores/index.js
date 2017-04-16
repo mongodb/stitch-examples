@@ -23,11 +23,9 @@ export default class Store {
     });
   }
 
-  async initialize({ BaasClient, MongoClient, loadLocalStorage = _.noop }) {
+  async initialize({ BaasClient }) {
     this.baas = await BaaSService.create({
       BaasClient,
-      MongoClient,
-      loadLocalStorage,
     });
     this.groupStore.baas = this.baas;
     this.uploader.baas = this.baas;

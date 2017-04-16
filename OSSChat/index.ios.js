@@ -3,14 +3,14 @@
  */
 
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, View } from 'react-native';
+import { AppRegistry, View, StyleSheet} from 'react-native';
 import App from './js/App';
 
 export default class OSSChat extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <App />
+        <App/>
       </View>
     );
   }
