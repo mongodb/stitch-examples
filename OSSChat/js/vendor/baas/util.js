@@ -3,7 +3,7 @@ export function deprecate(fn, msg) {
   function deprecated() {
     if (!alreadyWarned) {
       alreadyWarned = true;
-      console.warn('DeprecationWarning: ' + msg);
+      //console.warn('DeprecationWarning: ' + msg);
     }
 
     return fn.apply(this, arguments);
