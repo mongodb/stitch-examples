@@ -1,5 +1,18 @@
 # OSSChat (Open Source SnapChat)
 
+## Setup
+
+1. Create an app on baas-dev.
+2. Import the app:
+
+    cli --api-key <your-api-key> app-replace ./app_config.json --appId <app ID>
+
+3. Use the UI to change the MongoDB URL for the mdb1 service to your own atlas URL.
+4. Use the UI to set the Access Key ID and Secret Access Key for your S3 account.
+5. Change `BucketName` in js/stores/uploadAsset.js to be a bucket that your AWS account owns.
+6. Change `APP_ID` in js/stores/BaaSService.js to be the app ID of your app.
+
+
 ## Development
 
 1. Have XCode installed (from App Store)

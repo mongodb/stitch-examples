@@ -1,6 +1,7 @@
+const APP_ID = 'osschat-hvyky'
 export default class BaaSService {
   static async create({ BaasClient }) {
-    const baasClient = new BaasClient('osschat-hvyky');
+    const baasClient = new BaasClient(APP_ID);
     const mongoClient = baasClient.service('mongodb', 'mdb1');
 
     const instance = new BaaSService();

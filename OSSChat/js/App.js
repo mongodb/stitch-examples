@@ -11,7 +11,7 @@ import CameraScreen from './CameraScreen';
 import GroupListScreen from './GroupListScreen';
 import CreateFeedItemFlow from './CreateFeedItem/CreateFeedItemFlow';
 import Stores from './stores/index-native';
-import { BaasClient } from 'baas'//'./vendor/baas/client';
+import { BaasClient } from './vendor/baas/client';
 
 const storesInstance = new Stores();
 

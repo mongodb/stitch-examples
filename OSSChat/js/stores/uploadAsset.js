@@ -1,3 +1,4 @@
+// Change this to be your bucket name.
 const BucketName = 'osschat';
 
 function createAssetInformation({ isVideo }) {
