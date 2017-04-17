@@ -55,6 +55,9 @@ export default class Auth {
       // than a browser - so handling a redirect makes no sense here.
       return;
     }
+    if(!window.location || !window.location.hash){
+      return
+    }
 
     let ourState = this.authDataStorage.get(common.STATE_KEY);
     let redirectFragment = window.location.hash.substring(1);

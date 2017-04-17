@@ -1,7 +1,7 @@
 /* global window, fetch */
 /* eslint no-labels: ['error', { 'allowLoop': true }] */
-require('es6-promise').polyfill();
-require('fetch-everywhere');
+//require('es6-promise').polyfill();
+//require('fetch-everywhere');
 import Auth from './auth';
 import MongoDBService from './services/mongodb/mongodb_service';
 import { BaasError } from './errors';
@@ -149,8 +149,20 @@ class BaasClient {
     }
 
     return this._do('/pipeline', 'POST', { body: responseEncoder(stages) })
-      .then(response => (response.arrayBuffer) ? response.arrayBuffer() : response.buffer())
-      .then(buf => UTF8Decoder.decode(buf))
+      .then(response => {
+        if(response.arrayBuffer){
+          return response.arrayBuffer()
+        }else if(response.buffer){
+          return response.buffer()
+        }
+        return response.text()
+      })
+      .then(buf => {
+        if(typeof buf === 'string'){
+          return buf
+        }
+        return UTF8Decoder.decode(buf)
+      })
       .then(body => responseDecoder(body));
   }
 
