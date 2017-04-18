@@ -1,0 +1,40 @@
+   <!doctype html>
+   <html>
+       <head>
+           <title>SendGrid API emailer</title>
+           <meta charset="utf-8">
+           <script src="https://s3.amazonaws.com/baas-sdks/js/library/master/baas.min.js"></script>
+           <script defer type="text/javascript" src="app.js"></script>
+           <style>
+               body { 
+                   font-family: "Helvetica"; 
+                   margin-top: 50px;
+                   margin-left: 50px;
+               }
+           </style>
+       </head>
+       <body>
+           <h2>SendGrid API emailer</h2>
+           <table>
+             <tr> 
+               <td>To:</td>
+               <td><input id="toEmail" type="text" size="30" maxlength="40"> </input></td>
+             </tr>
+             <tr>
+               <td>Subject:</td>
+               <td><input id="subject" type="text" size="30" maxlength="50"> </input></td>
+             </tr>
+             <tr>
+               <td>Message:</td>
+               <td><textarea id="messageBody" rows="4" cols="50" maxlength="300"> </textarea></td>
+             </tr>
+             <tr>
+               <td></td>
+               <td><button id="sendButton">Send email</button></td>
+             </tr>
+           </table>
+           <div>
+               <p id="jsonResponse"></p>
+           </div>        
+       </body>
+   </html>
