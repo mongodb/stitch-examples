@@ -23,18 +23,18 @@ export default class GroupStore {
   @action.bound async load() {
     this.loading = true;
     const db = this.baas.getDb();
-    const response = await db.getCollection('items').find();
-    this.feedItems = response.result.map(FeedItem.createFromDb);
+    const response = await db.collection('items').find();
+    this.feedItems = response.map(FeedItem.createFromDb);
 
-    this.loadGroups();
+    await this.loadGroups();
 
     this.loading = false;
   }
 
   async loadGroups() {
     const db = this.baas.getDb();
-    const groupsResponse = await db.getCollection('groups').find();
-    const groupInstanceArray = groupsResponse.result.map(Group.createFromDb);
+    const groupsResponse = await db.collection('groups').find();
+    const groupInstanceArray = groupsResponse.map(Group.createFromDb);
 
     this.groups = groupInstanceArray.map(group => {
       // eslint-disable-next-line no-param-reassign
@@ -55,7 +55,7 @@ export default class GroupStore {
       name,
     };
 
-    await db.getCollection('groups').insert([doc]);
+    await db.collection('groups').insert([doc]);
     await this.loadGroups();
   }
 }

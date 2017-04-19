@@ -60,7 +60,7 @@ export default class Uploader {
 
     let response;
     try {
-      response = await db.getCollection('items').insert([insertData]);
+      response = await db.collection('items').insert([insertData]);
     } catch (e) {
       this.uploading = false;
       throw e;

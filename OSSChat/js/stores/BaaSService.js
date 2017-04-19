@@ -18,7 +18,6 @@ export default class BaaSService {
     if (!this.viewer) {
       return this.baasClient.authManager.anonymousAuth().then(
         ()=> {
-          console.log("got auth", this.baasClient.auth())
           this.viewer = this.baasClient.auth();
         }
       );
@@ -26,6 +25,6 @@ export default class BaaSService {
   }
 
   getDb() {
-    return this.mongoClient.getDb('osschat');
+    return this.mongoClient.db('osschat');
   }
 }
