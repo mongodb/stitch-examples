@@ -16,9 +16,9 @@ if (process.env.BAAS_URL) {
 }
 
 let baasClient = new BaasClient(appId, options);
-let db = baasClient.service("mongodb", "mdb1").getDb("todo")
-let items = db.getCollection("items")
-let users = db.getCollection("users")
+let db = baasClient.service("mongodb", "mdb1").db("todo")
+let items = db.collection("items")
+let users = db.collection("users")
 let TodoItem = React.createClass({
 	clicked(){
     this.props.onStartChange();
@@ -122,7 +122,7 @@ var TodoList = React.createClass({
     }
     let obj = this;
     items.find(null, null).then(function(data){
-      obj.setState({items:data.result, requestPending:false})
+      obj.setState({items:data, requestPending:false})
     })
   },
 
@@ -282,8 +282,8 @@ var Settings = React.createClass({
   },
   loadUser: function(){
     users.find({}, null).then((data)=>{
-      if(data.result.length>0){
-        this.setState({user:data.result[0]})
+      if(data.length>0){
+        this.setState({user:data[0]})
       }
     })
   },
