@@ -173,7 +173,7 @@ var TodoList = React.createClass({
           this.state.items.length == 0
           ?  <div className="list-empty-label">empty list.</div>
            : this.state.items.map((item) => {
-            return <TodoItem key={item._id.$oid} item={item} onChange={this.loadList} onStartChange={this.setPending}/>;
+            return <TodoItem key={item._id.toString()} item={item} onChange={this.loadList} onStartChange={this.setPending}/>;
           }) 
         }
         </ul>
