@@ -1,14 +1,16 @@
 # HelloWorld sample app.
 
 ### Create a new app
-* Go to https://baas-dev.10gen.cc/ and log in.
-* Click on "Create New App" and give it a name. Your name must be globally unique, so you'll probably need to pick something other than `helloworld`.
+1. Go to https://baas-dev.10gen.cc/ and log in.
+2. Click on "Create a new app" and give it a name.
+3. Go to "Clients" on the left side nav and take note of the App ID for your app.
 
 ### Set up authentication providers
 
 Now that the app exists, you need to set up a way for new users to log in. 
-Go to the **Authentication** link in the left-side panel.
-Follow the instructions for at least one of the providers listed below:
+Go to the **Authentication** link in the left-side panel. Anonymous login is
+already supported so if this good enough, you can skip past Facebook and Google
+setup. Otherwise, follow the instructions for at least one of the providers listed below:
 
 ##### Facebook
 
@@ -32,18 +34,17 @@ Return back to the BaaS authentication settings page, and enter your client ID a
 
 ### Set up a MongoDB service
 
-1. In the BaaS admin UI, go to "Add service..." in the left nav panel.
-2. Choose "MongoDB" and name it `mdb1`, then save it.
-3. Under the "Config" tab for the `mdb1` service, put in the URL for your MongoDB cluster (you need to also enable SSL if connecting to an Atlas instance) then save it.
+1. Choose the `mongodb1` service on the left nav panel.
+2. Under the "Config" tab for the `mongodb1` service, put in the URI for your MongoDB cluster found by clicking connect on your cluster in Atlas.
+3. Click save.
 
-### Create a namespace.
+### Find your default namespace
 
-In the "Rules" tab of the MongoDB service, click on "Add namespace" and give it the name `my_db.items`.
-Some default settings will be created for the namespace, which you can leave as-is for now.
+In the "Rules" tab of the MongoDB service, look for a rule that corresponds to a MongoDB database and collection. It should look like app-<characters>.items. Take note of this as this is the MongoDB namespace you'll use for this example.
 
 ### Serve the app
 
-Edit "index.js" and change the lines near the top of the file `const APP_ID = "..."` so that it contains the ID of the app you created earlier (app ID is on the app's home page).
+Edit "index.js" and change the lines near the top of the file `const APP_ID = "..."` and `const DB_NAME = "..."` so that they contain the ID of the app you took note of earlier on the Clients page and the DB portion of the namespace of the rule you found.
 Then install the necessary dependencies and serve the app.
 ```
 npm install

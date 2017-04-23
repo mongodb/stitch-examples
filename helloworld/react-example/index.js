@@ -3,69 +3,78 @@ import {render} from 'react-dom';
 import {BaasClient} from 'baas';
 
 // These settings should match the ones you've configured in the BaaS admin app.
-const APP_ID = "helloworld-iiqqs"
-const MONGO_SERVICE_NAME = "mdb1"
-const DB_NAME = "my_db"
+const APP_ID = "helloworld-fgyjb"
+const MONGO_SERVICE_NAME = "mongodb1"
+const DB_NAME = "app-fgyjb"
 const ITEMS_COLLECTION = "items"
 const client = new BaasClient(APP_ID)
 
-const HelloWorld = React.createClass({
-  getInitialState(){
-    return {
+const HelloWorld = class extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
       auth: this.props.client.auth(),
       collection: this.props.client.service("mongodb", MONGO_SERVICE_NAME).db(DB_NAME).collection(ITEMS_COLLECTION)
     }
-  },
-  logout(){
+  }
+
+  logout() {
     let x = this.props.client.logout()
     x.then(()=>{
       this.setState({auth: this.props.client.auth()})
     })
-  },
-  componentDidMount(){
+  }
+
+  componentDidMount() {
     // After the app loads, get the user's note and put it in the textarea, if they are logged in.
     if(!this.state.auth){
       return 
     }
-    this.state.collection.find({owner_id: this.props.client.authedId()}, {})
-      .then((data)=>{
-        if(data.result.length !== 0){
-          this.refs.note.value = data.result[0].note
+    this.state.collection.find({owner_id: this.props.client.authedId()})
+      .then((data) => {
+        if(data.length !== 0){
+          this.refs.note.value = data[0].note;
         }
       })
-  },
-  save(){
-    this.state.collection.upsert(
+  }
+
+  save() {
+    console.log(this);
+    this.state.collection.updateOne(
       {owner_id: this.props.client.authedId()}, // query
-      {$set:{"note":this.refs.note.value}}      // update modifier
+      {$set:{"note":this.refs.note.value}},     // update modifier
+      {upsert: true}                            // perform upsert
     )
-  },
-  render(){
+  }
+
+  render() {
     if(!this.state.auth){
-      // User is not authenticated: display login flow
+      // User is not authenticated; display login flow
       return (
         <div>
-          <button onClick={()=>{this.props.client.authWithOAuth("facebook")}}>Log in with Facebook</button>
-          <button onClick={()=>{this.props.client.authWithOAuth("google")}}>Log in with Google</button>
+          <button onClick={() => this.props.client.authWithOAuth("facebook")}>Log in with Facebook</button>
+          <button onClick={() => this.props.client.authWithOAuth("google")}>Log in with Google</button>
+          <button onClick={() => this.props.client.anonymousAuth(true).then(()=>{window.location.replace("/")})}>Log in anonymously</button>
         </div>
       )
     }
 
-    // User is logged in - display the form.
-    const username = (this.state.auth.user.data && this.state.auth.user.data.name)  ? this.state.auth.user.data.name : "(unknown)"
+    // User is logged in; display the form.
+    const username = (this.state.auth.user.data && this.state.auth.user.data.name) ? this.state.auth.user.data.name : "(unknown)";
     return (
       <div>
         <div>
-          <button onClick={this.logout}>log out</button>
+          <button onClick={() => this.logout()}>log out</button>
         </div>
         <div>Hello, {username}, you are logged in!</div>
         <textarea ref="note" id="note" placeholder="you can save some data here."></textarea>
-        <button onClick={this.save}>save</button>
+        <button onClick={() => this.save()}>save</button>
       </div>
     )
 
   }
-})
+}
 
 render((
   <div>
