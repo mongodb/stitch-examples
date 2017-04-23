@@ -1,6 +1,6 @@
 <html>
   <head>
-    <script src="https://s3.amazonaws.com/baas-sdks/js/library/master/baas.min.js" type="text/javascript"></script>
+    <script src="https://s3.amazonaws.com/baas-sdks/js/library/f998976b76fe39b3f6d2804338b82a66fa1268d1/baas.min.js" type="text/javascript"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
   </head>
   <body>
@@ -20,54 +20,54 @@
   </body>
 
   <script type="text/javascript">
-    // Set this value to match the ID of the app you create in the baas admin site.
-    var MY_APP_ID = "helloworld-iiqqs";
+    // Set these values to match the ID of the app you created in the BaaS admin site (Clients page) and
+    // the DB of the default rule created in the mongodb1 service (Rules tab).
+    var MY_APP_ID = "helloworld-fgyjb";
+    var MY_DB = "app-fgyjb";
 
     var baasClient = new baas.BaasClient(MY_APP_ID);
-    function setupPage(){
-      var userInfo = baasClient.auth()
-      console.log("user info is", userInfo)
+    function setupPage() {
+      var userInfo = baasClient.auth();
 
       if(userInfo){
         $(".login-link").hide()
         $("#logout").show().click(function(){
           baasClient.logout().then(function(){
-            setupPage()
-          })
-        })
-        var userName = (userInfo.user.data && userInfo.user.data.name)  ? userInfo.user.data.name : "(unknown)"
-        $("#greeting").text("Hello " + userName + ",  you are logged in!")
+            setupPage();
+          });
+        });
+        var userName = (userInfo.user.data && userInfo.user.data.name)  ? userInfo.user.data.name : "(unknown)";
+        $("#greeting").text("Hello " + userName + ",  you are logged in!");
 
-        let db = baasClient.service("mongodb", "mongodb1").db("my_db")
+        var db = baasClient.service("mongodb", "mongodb1").db(MY_DB);
 
-        db.getCollection("items").find({owner_id: baasClient.authedId()}, {})
+        db.collection("items").find({owner_id: baasClient.authedId()}, {})
           .then(function(data){
-              console.log(data);
-              if(data.result.length !== 0){
-                $('#note').val(data.result[0].note)
+              if(data.length !== 0){
+                $('#note').val(data[0].note);
               }
-          })
+          });
         $("#save").click(function(){
-          db.getCollection("items").upsert({owner_id: baasClient.authedId()}, {$set:{"note":$("#note").val()}})
+          db.collection("items").updateOne({owner_id: baasClient.authedId()}, {$set:{"note":$("#note").val()}}, {upsert: true});
         })
-        return
+        return;
       }
 
-      $(".content").hide()
-      $("#logout").hide()
+      $(".content").hide();
+      $("#logout").hide();
       $("#facebook-login").show().click(function(){
         baasClient.authWithOAuth("facebook")
-      })
+      });
       $("#google-login").show().click(function(){
         baasClient.authWithOAuth("google")
-      })
+      });
       $("#anonymous-login").show().click(function(){
-        baasClient.authManager.anonymousAuth(true).then(()=>{
+        baasClient.anonymousAuth(true).then(()=>{
           window.location.replace("/")
-        })
-      })
+        });
+      });
     }
 
-    $(document).ready(setupPage)
+    $(document).ready(setupPage);
   </script>
 </html>
