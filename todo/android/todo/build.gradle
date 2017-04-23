@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.mongodb.baas.sdk.examples.todo"
         minSdkVersion 19
@@ -42,8 +42,4 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:10.2.1'
     compile 'com.facebook.android:facebook-android-sdk:4.21.1'
     compile 'com.android.support:design:25.0.0'
-}
-
-configurations {
-    all*.exclude group: 'com.google.firebase', module: 'firebase-common'
 }
