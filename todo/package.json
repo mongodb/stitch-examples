@@ -23,7 +23,7 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/master/baas.tgz",
+    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/ea2ed50d9c283a13249aba6a398292872b48e44c/baas.tgz",
     "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.9.0",
@@ -32,7 +32,8 @@
     "cookie_js": "^1.2.0",
     "react-dom": "^15.2.1",
     "react-hot-loader": "^1.3.0",
-    "react-router": "^2.0.0",
+    "react-router": "^4.0.0",
+    "react-router-dom": "^4.0.0",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },

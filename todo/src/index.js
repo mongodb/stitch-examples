@@ -1,7 +1,8 @@
 import React from 'react';
-import {render} from 'react-dom';
-import {BaasClient} from 'baas';
-import {browserHistory, Router, Route , Link} from 'react-router'
+import { render } from 'react-dom';
+import { BaasClient } from 'baas';
+import { browserHistory, Route } from 'react-router'
+import { BrowserRouter, Link } from 'react-router-dom'
 
 require("../static/todo.scss")
 
@@ -16,20 +17,22 @@ if (process.env.BAAS_URL) {
 }
 
 let baasClient = new BaasClient(appId, options);
-let db = baasClient.service("mongodb", "mdb1").db("todo")
+let db = baasClient.service("mongodb", "mongodb1").db("todo")
 let items = db.collection("items")
 let users = db.collection("users")
-let TodoItem = React.createClass({
-	clicked(){
+let TodoItem = class extends React.Component {
+
+	clicked() {
     this.props.onStartChange();
     items.updateOne({"_id":this.props.item._id}, {$set:{"checked":!this.props.item.checked}})
-		.then(this.props.onChange)
-	},
-	render(){
+      .then(() => this.props.onChange());
+	}
+
+	render() {
 		let itemClass = this.props.item.checked ? "done" : "";
 		return (
 			<div className="todo-item-root">
-				<label className="todo-item-container" onClick={this.clicked}>
+				<label className="todo-item-container" onClick={() => this.clicked()}>
           { this.props.item.checked ? 
             (
               <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" height="24" viewBox="0 0 24 24" width="24">
@@ -50,14 +53,11 @@ let TodoItem = React.createClass({
 			</div>
 		)
 	}
-})
-/*
-function TodoItem({item=null, checkHandler=null}){
 }
-*/
 
-var AuthControls = React.createClass({
-  render: function(){
+var AuthControls = class extends React.Component {
+
+  render() {
     let authed = this.props.client.auth() != null
     let logout = () => this.props.client.logout().then(() => location.reload());
     let userData = null
@@ -111,11 +111,12 @@ var AuthControls = React.createClass({
     )
 		//<button disabled={authed} onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
 		//<button disabled={authed} onClick={() => this.props.client.linkWithOAuth("facebook")}>Link with Facebook</button>
-  },
-})
+  }
+}
 
-var TodoList = React.createClass({
-  loadList: function(){
+var TodoList = class extends React.Component {
+
+  loadList() {
     let authed = baasClient.auth() != null
     if(!authed){
       return
@@ -124,19 +125,31 @@ var TodoList = React.createClass({
     items.find(null, null).then(function(data){
       obj.setState({items:data, requestPending:false})
     })
-  },
+  }
 
-  getInitialState: () => {return {items:[]}},
-  componentWillMount: function(){this.loadList()},
-  checkHandler: function(id, status){
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      items: []
+    };
+  }
+
+  componentWillMount() {
+    this.loadList();
+  }
+
+  checkHandler(id, status) {
     items.updateOne({"_id":id}, {$set:{"checked":status}}).then(() => {
       this.loadList();
     }, {"rule": "checked"})
-  },
+  }
+
   componentDidMount(){
     this.loadList()
-  },
-  addItem: function(event){
+  }
+
+  addItem(event) {
     if(event.keyCode != 13 ){
       return
     }
@@ -147,24 +160,26 @@ var TodoList = React.createClass({
         this.loadList();
       }
     )
-  },
+  }
 
-  clear: function(){
+  clear() {
     this.setState({requestPending:true})
     items.deleteMany({checked:true}).then(() => {
       this.loadList();
     })
-  },
+  }
+
   setPending(){
     this.setState({requestPending:true})
-  },
-  render: function(){
+  }
+
+  render() {
     let loggedInResult = 
       (<div>
 				<div className="controls">
-        	<input type="text" className="new-item" placeholder="add a new item..." ref={ (n)=>{this._newitem=n} } onKeyDown={this.addItem}/>
+        	<input type="text" className="new-item" placeholder="add a new item..." ref={ (n) => { this._newitem = n;} } onKeyDown={(e) => this.addItem(e)}/>
 					{this.state.items.filter((x)=>x.checked).length > 0 ? 
-						<div  href="" className="cleanup-button" onClick={this.clear}>clean up</div>
+						<div  href="" className="cleanup-button" onClick={() => this.clear()}>clean up</div>
 						: null 
 					}
 				</div>
@@ -173,14 +188,14 @@ var TodoList = React.createClass({
           this.state.items.length == 0
           ?  <div className="list-empty-label">empty list.</div>
            : this.state.items.map((item) => {
-            return <TodoItem key={item._id.toString()} item={item} onChange={this.loadList} onStartChange={this.setPending}/>;
+            return <TodoItem key={item._id.toString()} item={item} onChange={() => this.loadList()} onStartChange={() => this.setPending()}/>;
           }) 
         }
         </ul>
       </div>);
     return baasClient.auth() == null ? null : loggedInResult;
   }
-})
+}
 
 var Home = function(){
   let authed = baasClient.auth() != null
@@ -193,14 +208,15 @@ var Home = function(){
 }
 
 function initUserInfo(){
-  users.upsert(
+  users.updateOne(
     {'_id': baasClient.authedId()},
     {$setOnInsert:{"phone_number":"", "number_status":"unverified"}},
-    true, false).then(function(){});
+    {upsert: true}
+  ).then(function(){});
 }
 
-var AwaitVerifyCode = React.createClass({
-  checkCode: function(e){
+var AwaitVerifyCode = class extends React.Component {
+  checkCode(e) {
     let obj = this
     if(e.keyCode == 13){
       users.updateOne(
@@ -209,16 +225,17 @@ var AwaitVerifyCode = React.createClass({
           (data)=>{ obj.props.onSubmit() }
         )
     }
-  },
-  render: function(){
+  }
+
+  render() {
     return (
       <div>
         <h3>Enter the code that you received via text:</h3>
-        <input type="textbox" name="code" ref={(n)=>{this._code=n}} placeholder="verify code" onKeyDown={this.checkCode}/>
+        <input type="textbox" name="code" ref={(n) => { this._code = n; }} placeholder="verify code" onKeyDown={(e) => this.checkCode(e)}/>
       </div>
     )
   }
-})
+}
 
 let formatPhoneNum  = (raw)=>{
   return raw.replace(/\D/g, "")
@@ -233,8 +250,9 @@ let generateCode = (len) => {
     return text
 }
 
-var NumberConfirm = React.createClass({
-  saveNumber: function(e){
+var NumberConfirm = class extends React.Component {
+
+  saveNumber(e) {
     if(e.keyCode == 13){
       if(formatPhoneNum(this._number.value).length == 10){
         // TODO: generate this code on the server-side.
@@ -265,33 +283,40 @@ var NumberConfirm = React.createClass({
         })
       }
     }
-  },
-  render: function(){
+  }
+
+  render() {
     return (
       <div>
         <div>Enter your phone number. We'll send you a text to confirm.</div>
-        <input type="textbox" name="number" ref={(n)=>{this._number=n}} placeholder="number" onKeyDown={this.saveNumber}/>
+        <input type="textbox" name="number" ref={(n)=>{this._number=n}} placeholder="number" onKeyDown={(e) => this.saveNumber(e)}/>
       </div>
     )
   }
-})
+}
 
-var Settings = React.createClass({
-  getInitialState: function(){
-    return {user:null}
-  },
-  loadUser: function(){
+var Settings = class extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: null
+    };
+  }
+
+  loadUser() {
     users.find({}, null).then((data)=>{
       if(data.length>0){
         this.setState({user:data[0]})
       }
     })
-  },
-  componentWillMount: function(){
-    initUserInfo()
-    this.loadUser()
-  },
-  render: function(){
+  }
+
+  componentWillMount() {
+    initUserInfo();
+    this.loadUser();
+  }
+
+  render() {
     return (
       <div>
         <Link to="/">Lists</Link>
@@ -299,9 +324,9 @@ var Settings = React.createClass({
          ((u) => {
               if(u != null){
                 if(u.number_status==="pending"){
-                  return <AwaitVerifyCode onSubmit={this.loadUser}/>
+                  return <AwaitVerifyCode onSubmit={() => this.loadUser()}/>
                 }else if(u.number_status==="unverified"){
-                  return <NumberConfirm onSubmit={this.loadUser}/>
+                  return <NumberConfirm onSubmit={() => this.loadUser()}/>
                 } else if(u.number_status==="verified"){
                   return (<div>{`Your number is verified, and it's ${u.phone_number}`}</div>)
                 }
@@ -311,13 +336,13 @@ var Settings = React.createClass({
       </div>
     )
   }
-})
+}
 
 render((
-  <div>
-    <Router history={browserHistory}>
-      <Route path="/" component={Home}/>
+  <BrowserRouter>
+    <div>
+      <Route exact path="/" component={Home}/>
       <Route path="/settings" component={Settings}/>
-    </Router>
-  </div>
+    </div>
+  </BrowserRouter>
 ), document.getElementById('app'))

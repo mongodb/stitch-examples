@@ -24,7 +24,7 @@
     }
   },
   "services": {
-    "mdb1": {
+    "mongodb1": {
       "config": {
         "uri": "mongodb://localhost:27017"
       },
