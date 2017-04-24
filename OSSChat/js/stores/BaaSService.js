@@ -1,4 +1,4 @@
-const APP_ID = 'osschat-hvyky'
+const APP_ID = 'snapdemo-olnby'
 export default class BaaSService {
   static async create({ BaasClient }) {
     const baasClient = new BaasClient(APP_ID);
