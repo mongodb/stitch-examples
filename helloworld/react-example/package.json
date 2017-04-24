@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/f998976b76fe39b3f6d2804338b82a66fa1268d1/baas.tgz",
+    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/ea2ed50d9c283a13249aba6a398292872b48e44c/baas.tgz",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
