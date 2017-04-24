@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded',() => {
     
     // Replace the BAAS-APP-ID with your BaaS Application ID
     // Replace the MONGODB-SERVICE-NAME with the name of the BaaS MongoDB Service
-    const baasClient = new baas.BaasClient("BAAS-APP-ID");
-    const mongoClient = baasClient.service("mongodb", "MONGODB-SERVICE-NAME");
+    const baasClient = new baas.BaasClient("rest1-vvoul");
+    const mongoClient = baasClient.service("mongodb", "mongodb1");
     
     const db = mongoClient.db("guidebook");
     const coll = db.collection("restaurants");
@@ -29,18 +29,18 @@ document.addEventListener('DOMContentLoaded',() => {
         clearComments()
         
         coll.find({"name" : text }).then( payload => {
-            console.log(payload.result);
+            console.log(payload);
             
-            if (payload.result.length == 0){
+            if (payload.length == 0){
                 document.getElementById("resultFound").innerHTML = "Result not found";
             } else {
                 console.log("result returned");
                 document.getElementById("resultFound").innerText = "Found Restaurant";
-                document.getElementById("cuisine").innerText = payload.result[0].cuisine;
-                document.getElementById("location").innerText = payload.result[0].location;
+                document.getElementById("cuisine").innerText = payload[0].cuisine;
+                document.getElementById("location").innerText = payload[0].location;
                 restaurantName = document.getElementById("restaurantName").value;
                 
-                const comments = payload.result[0].comments;
+                const comments = payload[0].comments;
                 for (var i = 0; i < comments.length; i++){
                     writeComment(comments[i].comment, comments[i].user_id);
                 }
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded',() => {
         clearComments()
         
         coll.find({"name" : restaurantName}).then( payload => {
-            const comments = payload.result[0].comments;
+            const comments = payload[0].comments;
             for (var i = 0; i < comments.length; i++){
                 writeComment(comments[i].comment, comments[i].user_id);
             }
