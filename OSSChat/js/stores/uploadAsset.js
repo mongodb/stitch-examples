@@ -54,6 +54,10 @@ export default (async function uploadAsset(
     body: data,
   });
 
+  if (!fetchResponse.ok) {
+    throw new Error(await fetchResponse.text());
+  }
+
   const assetUrl = fetchResponse.headers.map.location[0];
 
   return assetUrl;

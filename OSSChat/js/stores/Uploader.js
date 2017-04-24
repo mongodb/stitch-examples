@@ -40,11 +40,17 @@ export default class Uploader {
 
     const { path, isVideo, groups } = this.localAsset;
 
-    const remoteUrl = await uploadAsset({
-      baasClient: this.baas.baasClient,
-      localPath: path,
-      isVideo,
-    });
+    let remoteUrl;
+    try {
+      remoteUrl = await uploadAsset({
+        baasClient: this.baas.baasClient,
+        localPath: path,
+        isVideo,
+      });
+    } catch (e) {
+      this.uploading = false;
+      throw e;
+    }
 
     const feedItem = FeedItem.createLocal({ path, isVideo, baas: this.baas });
 

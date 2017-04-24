@@ -8,7 +8,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/f998976b76fe39b3f6d2804338b82a66fa1268d1/baas.tgz",
+    "baas": "https://s3.amazonaws.com/baas-sdks/js/npm/ea2ed50d9c283a13249aba6a398292872b48e44c/baas.tgz",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",

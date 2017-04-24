@@ -1,23 +1,50 @@
 # OSSChat (Open Source SnapChat)
 
+This example will show you how to create a SnapChat like app in react native using BaaS. Before you get started, you should create an API key in AWS that will let you put to a bucket of your choice (s3:PutObject and s3:PutObjectAcl). Make sure the bucket is created.
+
 ## Setup
 
-1. Create an app on baas-dev.
-2. Import the app:
+### Create a new app
+1. Go to https://baas-dev.10gen.cc/ and log in.
+2. Click on "Create a new app" and give it a name.
+3. Go to "Clients" on the left side nav and take note of the App ID for your app.
 
-    cli --api-key <your-api-key> app-replace ./app_config.json --appId <app ID>
+### Create an API Key
+1. Go to your profile settings by clicking your name in the top right.
+2. Create an API Key in your profile settings and keep note of the secret key.
 
-3. Use the UI to change the MongoDB URL for the mdb1 service to your own atlas URL.
-4. Use the UI to set the Access Key ID and Secret Access Key for your S3 account.
-5. Change `BucketName` in js/stores/uploadAsset.js to be a bucket that your AWS account owns.
-6. Change `APP_ID` in js/stores/BaaSService.js to be the app ID of your app.
+### Download the BaaS CLI
+1. Go to your profile settings by clicking your name in the top right.
+2. Download the CLI that matches your platform.
+3. Make sure the CLI is executable.
+	1. Linux: `chmod +x ./cli`
 
+### Configure your app_config.json
+1. Modify the `mongodb1` URI to your MongoDB cluster found by clicking connect on your cluster in Atlas.
+2. Modify the `s31` "accessKeyId" and "secretAccessKey" to match the credentials you want to use to access S3.
+3. Modify the `buckets` value to specify the S3 bucket you want to use for this app.
+4. Import the app by running
+
+	```
+	./cli app-replace --appId=<appId> app_config.json --api-key=<apiKey>
+	```
+
+5. Change `APP_ID` in js/stores/BaaSService.js to be the app ID of your app.
+6. Change `BucketName` in js/stores/uploadAsset.js to be a bucket that your AWS account owns.
+
+### Run the app
+1. Install dependencies for the sample app, and start it:
+
+	```
+	npm install
+	react-native run-ios
+	```
 
 ## Development
 
 1. Have XCode installed (from App Store)
-1. Have node >= v6 installed.
-1. `npm install -g react-native-cli`
+2. Have node >= v6 installed.
+3. `npm install -g react-native-cli`
 
 ## Libraries Used
 

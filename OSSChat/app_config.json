@@ -3,7 +3,7 @@
         "anon/user": {}
     },
     "services": {
-        "mdb1": {
+        "mongodb1": {
             "config": {
                 "uri": "mongodb://put-in-your-db-url-here"
             },
@@ -27,28 +27,37 @@
                         "owner_id": {}
                     },
                     "namespace": "osschat.groups",
+                    "otherFields": {},
                     "read": {},
                     "valid": {},
-                    "write": {}
+                    "write": {},
                 }
             },
             "type": "mongodb"
         },
         "s31": {
             "config": {
-                "accessKeyId": "access key id",
-                "region": "us-west-1",
-                "secretAccessKey": "secret access key"
+                "region": "us-east-1",
+                "accessKeyId": "ACCESS-KEY",
+                "secretAccessKey": "SECRET-KEY"
             },
             "rules": {
                 "5888d4c3772e2e4a41158d5d": {
                     "_id": "5888d4c3772e2e4a41158d5d",
                     "actions": [
                         "signPolicy"
-                    ]
+                    ],
+                    "when": {
+                        "$$args.bucket": {
+                            "$in": "$$values.buckets"
+                        }
+                    }
                 }
             },
             "type": "aws-s3"
         }
+    },
+    "values": {
+        "buckets": {"value": ["osschat"]}
     }
 }
