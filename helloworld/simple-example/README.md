@@ -1,7 +1,7 @@
 # HelloWorld sample app.
 
 ### Create a new app
-1. Go to https://baas-master.10gen.cc/ and log in.
+1. Go to https://master.baas-dev.10gen.cc/ and log in.
 2. Click on "Create a new app" and give it a name.
 3. Go to "Clients" on the left side nav and take note of the App ID for your app.
 
@@ -19,7 +19,7 @@ setup. Otherwise, follow the instructions for at least one of the providers list
 3. Add the Facebook Login product.
 4. Go to the settings for Facebook Login.
 5. Under "Valid OAuth redirect URIs" add the following entry:
-	`https://baas-master.10gen.cc/api/client/v1.0/auth/callback`
+	`https://master.baas-dev.10gen.cc/api/client/v1.0/auth/callback`
 
 Return back to the BaaS authentication settings page, and enter your App ID and App Secret as client ID and client secret respectively from the Facebook app dashboard. Add `http://localhost:8000/` to the list of redirect URIs, and save it.
 
@@ -27,7 +27,7 @@ Return back to the BaaS authentication settings page, and enter your App ID and 
 1. Get your client ID and client secret (See: [Google - Setting up OAuth 2.0](https://support.google.com/cloud/answer/6158849?hl=en))
 2. Click the edit button for your credentials on the Google API Manager.
 3. For Authorized redirect URIs, add the following entry:
-	`https://baas-master.10gen.cc/api/client/v1.0/auth/callback` 
+	`https://master.baas-dev.10gen.cc/api/client/v1.0/auth/callback` 
 4. On the BaaS admin site
 
 Return back to the BaaS authentication settings page, and enter your client ID and client Secret in the Google auth settings panel. Add `http://localhost:8000/` to the list of redirect URIs, and save it.
