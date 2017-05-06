@@ -6,7 +6,7 @@ This app demonstrates how to build a web application that serves a single user w
 ## Getting Started
 
 ### Create a new app
-1. Go to https://baas-dev.10gen.cc/ and log in.
+1. Go to https://baas-master.10gen.cc/ and log in.
 2. Click on "Create a new app" and give it a name.
 3. Go to "Clients" on the left side nav and take note of the App ID for your app.
 
