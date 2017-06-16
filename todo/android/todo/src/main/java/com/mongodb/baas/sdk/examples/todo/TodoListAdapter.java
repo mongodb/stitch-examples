@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -20,11 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.mongodb.baas.android.services.mongodb.MongoClient.Collection;
 
 public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
-    private final Collection _itemSource;
+    private final MongoClient.Collection _itemSource;
 
     // Store the expected state of the items based off the users intentions. This is to handle this
     // series of events:
@@ -41,7 +41,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             final Context context,
             final int resource,
             final List<TodoItem> items,
-            final Collection itemSource
+            final MongoClient.Collection itemSource
     ) {
         super(context, resource, items);
         _itemSource = itemSource;

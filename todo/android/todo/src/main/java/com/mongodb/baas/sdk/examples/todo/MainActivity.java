@@ -33,16 +33,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
-import com.mongodb.baas.android.AuthListener;
-import com.mongodb.baas.android.BaasClient;
-import com.mongodb.baas.android.auth.Auth;
-import com.mongodb.baas.android.auth.AvailableAuthProviders;
-import com.mongodb.baas.android.auth.anonymous.AnonymousAuthProvider;
-import com.mongodb.baas.android.auth.oauth2.facebook.FacebookAuthProvider;
-import com.mongodb.baas.android.auth.oauth2.facebook.FacebookAuthProviderInfo;
-import com.mongodb.baas.android.auth.oauth2.google.GoogleAuthProvider;
-import com.mongodb.baas.android.auth.oauth2.google.GoogleAuthProviderInfo;
-import com.mongodb.baas.android.services.mongodb.MongoClient;
+import com.mongodb.stitch.android.AuthListener;
+import com.mongodb.stitch.android.StitchClient;
+import com.mongodb.stitch.android.auth.Auth;
+import com.mongodb.stitch.android.auth.AvailableAuthProviders;
+import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
+import com.mongodb.stitch.android.auth.oauth2.facebook.FacebookAuthProvider;
+import com.mongodb.stitch.android.auth.oauth2.facebook.FacebookAuthProviderInfo;
+import com.mongodb.stitch.android.auth.oauth2.google.GoogleAuthProvider;
+import com.mongodb.stitch.android.auth.oauth2.google.GoogleAuthProviderInfo;
+import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
 import org.bson.Document;
 
@@ -52,7 +52,6 @@ import java.util.List;
 
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
 import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
-import static com.mongodb.baas.android.services.mongodb.MongoClient.Collection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CallbackManager _callbackManager;
     private GoogleApiClient _googleApiClient;
-    private BaasClient _client;
+    private StitchClient _client;
     private MongoClient _mongoClient;
 
     private TodoListAdapter _itemAdapter;
@@ -78,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         _handler = new Handler();
         _refresher = new ListRefresher(this);
 
-        _client = BaasClient.fromProperties(this);
+        _client = StitchClient.fromProperties(this);
         _client.addAuthListener(new MyAuthListener(this));
         _mongoClient = new MongoClient(_client, "mongodb1");
         initLogin();
@@ -314,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private Collection getItemsCollection() {
+    private MongoClient.Collection getItemsCollection() {
         return _mongoClient.getDatabase("todo").getCollection("items");
     }
 
