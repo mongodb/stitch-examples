@@ -1,0 +1,53 @@
+@font-face {
+    font-family: Montserrat-Regular;
+    src: local("Montserrat-Regular"),
+    url(./Montserrat-Regular.otf);
+}
+
+@font-face {
+    font-family: Montserrat-Bold;
+    src: local("Montserrat-Bold"),
+    url(./Montserrat-Bold.otf);
+}
+
+@font-face {
+    font-family: Montserrat-Medium;
+    src: local("Montserrat-Medium"),
+    url(./Montserrat-Medium.otf);
+}
+
+@font-face {
+    font-family: Montserrat-Light;
+    src: local("Montserrat-Light"),
+    url(./Montserrat-Light.otf);
+}
+
+@font-face {
+    font-family: Montserrat-Thin;
+    src: local("Montserrat-Thin"),
+    url(./Montserrat-Thin.otf);
+}
+
+@font-face {
+    font-family: Montserrat-Black;
+    src: local("Montserrat-Black"),
+    url(./Montserrat-Black.otf);
+}
+
+@font-face {
+    font-family: Montserrat-SemiBold;
+    src: local("Montserrat-SemiBold"),
+    url(./Montserrat-SemiBold.otf);
+}
+
+@font-face {
+    font-family: Sfns-Display-Bold;
+    src: local("Sfns-Display-Bold"),
+    url(./Sfns-Display-Bold.ttf);
+}
+
+@font-face {
+    font-family: Sfns-Display-Regular;
+    src: local("Sfns-Display-Regular"),
+    url(./Sfns-Display-Regular.ttf);
+}

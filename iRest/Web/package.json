@@ -1,0 +1,35 @@
+{
+  "name": "restaurant-sample",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "date-fns": "^1.28.5",
+    "geolib": "^2.0.22",
+    "google-map-react": "^0.23.0",
+    "material-ui": "^0.18.2",
+    "mongodb-extjson": "^1.0.4",
+    "query-string": "^4.3.4",
+    "radium": "^0.18.2",
+    "rc-rate": "^2.1.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-router": "3.0.1",
+    "react-router-dom": "^4.0.0",
+    "react-scroll-pagination": "^0.1.9",
+    "react-tap-event-plugin": "^2.0.1",
+    "stitch": "https://s3.amazonaws.com/stitch-sdks/js/npm/298a2b586d91d462099e5d9f66fba0a687837abe/stitch.tgz",
+    "storybook-addon-material-ui": "^0.7.7"
+  },
+  "devDependencies": {
+    "@kadira/storybook": "^2.21.0",
+    "react-scripts": "0.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
+  }
+}
