@@ -1,0 +1,45 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="activity_sign_in_margin">22dp</dimen>
+    <dimen name="activity_sign_in_title_size">40sp</dimen>
+    <dimen name="sign_int_edit_text_size">18sp</dimen>
+    <dimen name="sign_in_space">40dp</dimen>
+
+    <dimen name="big_screen_padding">17dp</dimen>
+    <dimen name="small_screen_padding">15dp</dimen>
+    <dimen name="list_item_title_text_size">16sp</dimen>
+    <dimen name="list_item_msg_text_size">14sp</dimen>
+
+    <dimen name="list_item_bg_left_right_padding">10dp</dimen>
+    <dimen name="list_item_bg_top_bottom_padding">2dp</dimen>
+
+    <dimen name="review_text_size">14sp</dimen>
+    <dimen name="review_text_size_big">16sp</dimen>
+    <dimen name="review_star_margin">3dp</dimen>
+    <dimen name="review_details_margin">20dp</dimen>
+
+    <dimen name="restaurant_name_text_size">22sp</dimen>
+    <dimen name="restaurant_opening_times_text_size">10sp</dimen>
+
+    <dimen name="rate_now_padding">22dp</dimen>
+
+    <dimen name="list_item_review_padding">16dp</dimen>
+
+    <dimen name="rate_small_star_size">15dp</dimen>
+    <dimen name="rate_small_star_separation">7dp</dimen>
+    <dimen name="rate_big_star_size">22dp</dimen>
+    <dimen name="rate_big_star_separation">21dp</dimen>
+
+    <dimen name="review_header_text_size">17sp</dimen>
+    <dimen name="review_header_padding_top_bottom">6dp</dimen>
+
+    <integer name="max_review_chars">140</integer>
+
+    <dimen name="facebook_button_text_size">17sp</dimen>
+    <dimen name="facebook_button_logo_margin">8dp</dimen>
+    <dimen name="facebook_button_div_margin_top_bottom">5dp</dimen>
+    <dimen name="facebook_button_div_margin_left_right">16dp</dimen>
+</resources>

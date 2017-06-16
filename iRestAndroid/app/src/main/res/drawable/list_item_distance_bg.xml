@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="100dp"/>
+    <padding android:bottom="@dimen/list_item_bg_top_bottom_padding"
+             android:left="@dimen/list_item_bg_left_right_padding"
+             android:right="@dimen/list_item_bg_left_right_padding"
+             android:top="@dimen/list_item_bg_top_bottom_padding"/>
+
+    <solid android:color="@color/list_item_distance_bg"/>
+</shape>

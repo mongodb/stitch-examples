@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/btn_fb_login"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@drawable/facebook_button"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="25dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/facebook_button_logo_margin"
+        android:src="@drawable/ic_facebook_logo"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/facebook_button_div_margin_left_right"
+        android:layout_marginRight="@dimen/facebook_button_div_margin_left_right"
+        android:layout_marginTop="@dimen/facebook_button_div_margin_top_bottom"
+        android:layout_marginBottom="@dimen/facebook_button_div_margin_top_bottom"
+        android:alpha="0.2"
+        android:background="@color/white"/>
+
+    <me.grantland.widget.AutofitTextView
+        app:fontPath="@string/font_bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/connect_with_facebook"
+        android:textAllCaps="true"
+        android:lines="1"
+        android:textSize="@dimen/facebook_button_text_size"
+        android:textColor="@color/white"/>
+</LinearLayout>
