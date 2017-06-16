@@ -36,7 +36,10 @@ var restSchema = mongoose.Schema({
   image_url: String,
   website: String,
   attributes: Object,
-  location: Object,
+  location: {
+    type: Object,
+    index: '2dsphere'
+  },
   openingHours: Object,
   averageRating: Number,
   numberOfRates: Number
