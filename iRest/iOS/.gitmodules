@@ -1,0 +1,3 @@
+[submodule "SoLoMoSample/MongoSdk/mongo-baas-core-ios"]
+	path = SoLoMoSample/MongoSdk/mongo-baas-core-ios
+	url = https://git.zemingo.com/MongoBaaS/mongo-baas-core-ios.git

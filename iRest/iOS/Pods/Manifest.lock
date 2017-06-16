@@ -1,0 +1,27 @@
+PODS:
+  - Bolts (1.8.4):
+    - Bolts/AppLinks (= 1.8.4)
+    - Bolts/Tasks (= 1.8.4)
+  - Bolts/AppLinks (1.8.4):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.8.4)
+  - Cosmos (8.0.2)
+  - FBSDKCoreKit (4.20.1):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.20.1):
+    - FBSDKCoreKit
+
+DEPENDENCIES:
+  - Cosmos (~> 8.0)
+  - FBSDKCoreKit
+  - FBSDKLoginKit
+
+SPEC CHECKSUMS:
+  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  Cosmos: 007c0b8e33a85e5363911bdd933571bbe221f7ef
+  FBSDKCoreKit: 39a3569652983bf8666620dd334804c9057ae9b2
+  FBSDKLoginKit: 17092ff61a18c54ca423aebc18c5acc2e5a4a728
+
+PODFILE CHECKSUM: d10af0462779103762772ab2167eaf0e08cdce17
+
+COCOAPODS: 1.1.1
