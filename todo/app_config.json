@@ -1,0 +1,252 @@
+{
+  "authProviders": {
+    "oauth2/facebook": {
+      "clientId": "APP-ID",
+      "clientSecret": "APP-SECRET",
+      "metadataFields": [
+        "name",
+        "email"
+      ],
+      "redirectURIs": [
+        "http://localhost:8001/"
+      ]
+    },
+    "oauth2/google": {
+      "clientId": "APP-ID",
+      "clientSecret": "APP-SECRET",
+      "metadataFields": [
+        "name",
+        "email"
+      ],
+      "redirectURIs": [
+        "http://localhost:8001/"
+      ]
+    }
+  },
+  "services": {
+    "mongodb1": {
+      "config": {
+        "uri": "mongodb://localhost:27017"
+      },
+      "rules": {
+        "5888d4c3772e2e4a41158d64": {
+          "_id": "5888d4c3772e2e4a41158d64",
+          "fields": {
+            "_id": {},
+            "checked": {
+              "valid": {
+                "%or": [
+                  {
+                    "%%this": {
+                      "%type": "bool"
+                    }
+                  },
+                  {
+                    "%%this": {
+                      "%exists": false
+                    }
+                  }
+                ]
+              }
+            },
+            "owner_id": {
+              "valid": "%%user.id"
+            },
+            "text": {
+              "valid": {
+                "%%this": {
+                  "%ne": ""
+                }
+              }
+            }
+          },
+          "namespace": "todo.items",
+          "read": {
+            "%%root.owner_id": "%%user.id"
+          },
+          "write": {
+            "%or": [
+              {
+                "%%prevRoot.owner_id": "%%user.id"
+              },
+              {
+                "%%prevRoot": {
+                  "%exists": 0
+                }
+              }
+            ]
+          }
+        },
+        "5888d4c3772e2e4a41158d6b": {
+          "_id": "5888d4c3772e2e4a41158d6b",
+          "fields": {
+            "_id": {
+              "valid": "%%user.id"
+            },
+            "number_status": {
+              "valid": {
+                "%%this": {
+                  "%in": [
+                    "pending",
+                    "unverified",
+                    "verified"
+                  ]
+                }
+              }
+            },
+            "phone_number": {
+              "valid": {
+                "%%this": {
+                  "%type": "string"
+                },
+                "%or": [
+                  {
+                    "%%this": {
+                      "%eq": ""
+                    },
+                    "%%root.number_status": "unverified"
+                  },
+                  {
+                    "%%this": {
+                      "%ne": ""
+                    },
+                    "%%root.number_status": {
+                      "%in": [
+                        "pending",
+                        "verified"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "verify_code": {
+              "valid": {
+                "%or": [
+                  {
+                    "%%root.number_status": {
+                      "%in": [
+                        "pending",
+                        "verified"
+                      ]
+                    }
+                  },
+                  {
+                    "%%this": {
+                      "%exists": false
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "namespace": "todo.users",
+          "read": {
+            "%%root._id": "%%user.id"
+          },
+          "write": {
+            "%or": [
+              {
+                "%%prevRoot._id": "%%user.id"
+              },
+              {
+                "%%prevRoot": {
+                  "%exists": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "type": "mongodb"
+    },
+    "tw1": {
+      "config": {
+        "auth_token": "AUTH_TOKEN",
+        "sid": "SID"
+      },
+      "rules": {
+        "5888d4c3772e2e4a41158d5d": {
+          "_id": "5888d4c3772e2e4a41158d5d",
+          "actions": [
+            "send"
+          ]
+        }
+      },
+      "incomingWebhooks": {
+        "5888d4c3772e2e4a41158d5f": {
+          "_id": "5888d4c3772e2e4a41158d5f",
+          "output": "array",
+          "pipeline": [
+            {
+              "action": "expr",
+              "args": {
+                "expression": {
+                  "text": "%%vars.text",
+                  "owner_id": "%%vars.ownerId._id"
+                }
+              },
+              "let": {
+                "text": "%%args.Body",
+                "ownerId": {
+                  "%pipeline": {
+                    "name": "idFromPhone",
+                    "args": {
+                      "phoneNumber": "%%args.From"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "action": "insert",
+              "args": {
+                "collection": "items",
+                "database": "todo"
+              },
+              "service": "mongodb1"
+            }
+          ]
+        }
+      },
+      "type": "twilio"
+    }
+  },
+  "pipelines": {
+    "idFromPhone": {
+      "output": "singleDoc",
+      "pipeline": [
+        {
+          "action": "find",
+          "args": {
+            "collection": "users",
+            "database": "todo",
+            "query": {
+              "phone_number": "%%vars.phoneNumber"
+            }
+          },
+          "let": {
+            "phoneNumber": "%%args.phoneNumber"
+          },
+          "service": "mongodb1"
+        }
+      ],
+      "parameters": [
+        {
+          "name": "phoneNumber",
+          "required": true
+        }
+      ],
+      "skipRules": true,
+      "canEvaluate": {
+        "%%true": true
+      },
+      "private": true
+    }
+  },
+  "values": {
+    "ourNumber": {
+      "value": "+16467981338"
+    }
+  }
+}
