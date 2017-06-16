@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "async": "^2.3.0",
+    "axios": "^0.16.0",
+    "lodash.flatten": "^4.4.0",
+    "mongodb": "^2.2.25",
+    "mongoose": "^4.9.3",
+    "mongoose-geojson-schema": "^2.1.2"
+  }
+}
