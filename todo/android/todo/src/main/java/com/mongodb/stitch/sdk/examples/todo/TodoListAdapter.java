@@ -1,4 +1,4 @@
-package com.mongodb.baas.sdk.examples.todo;
+package com.mongodb.stitch.sdk.examples.todo;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

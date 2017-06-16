@@ -1,4 +1,4 @@
-package com.mongodb.baas.sdk.examples.todo;
+package com.mongodb.stitch.sdk.examples.todo;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         _client = StitchClient.fromProperties(this);
         _client.addAuthListener(new MyAuthListener(this));
-        _mongoClient = new MongoClient(_client, "mongodb1");
+        _mongoClient = new MongoClient(_client, "mongodb-atlas");
         initLogin();
     }
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLogin() {
-            Log.d(TAG, "Logged into BaaS");
+            Log.d(TAG, "Logged into Stitch");
         }
 
         @Override

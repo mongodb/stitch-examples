@@ -1,4 +1,4 @@
-package com.mongodb.baas.sdk.examples.todo;
+package com.mongodb.stitch.sdk.examples.todo;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

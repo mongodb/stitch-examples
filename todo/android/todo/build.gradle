@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.mongodb.baas.sdk.examples.todo"
+        applicationId "com.mongodb.stitch.sdk.examples.todo"
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
@@ -24,9 +24,6 @@ android {
 
 repositories {
     mavenCentral() // For Facebook Log  in
-    maven {
-        url "https://s3.amazonaws.com/baas-sdks/android/maven/snapshots"
-    }
 
     // TODO: Remove once BSON 3.5.0 is released
     maven {
