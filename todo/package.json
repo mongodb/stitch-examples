@@ -23,7 +23,6 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "stitch": "https://s3.amazonaws.com/stitch-sdks/js/npm/c46b2a483207940d99167286f7bea12928c50f77/stitch.tgz",
     "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.9.0",
@@ -39,6 +38,7 @@
   },
   "dependencies": {
     "css-loader": "^0.26.1",
+    "mongodb-stitch": "0.0.12",
     "node-sass": "^3.13.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
