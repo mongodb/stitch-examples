@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "stitch": "https://s3.amazonaws.com/stitch-sdks/js/npm/c46b2a483207940d99167286f7bea12928c50f77/stitch.tgz",
+    "mongodb-stitch": "0.0.15",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },

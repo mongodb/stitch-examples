@@ -17,7 +17,7 @@
     "react-router-dom": "^4.0.0",
     "react-scroll-pagination": "^0.1.9",
     "react-tap-event-plugin": "^2.0.1",
-    "stitch": "https://s3.amazonaws.com/stitch-sdks/js/npm/298a2b586d91d462099e5d9f66fba0a687837abe/stitch.tgz",
+    "mongodb-stitch": "0.0.15",
     "storybook-addon-material-ui": "^0.7.7"
   },
   "devDependencies": {
