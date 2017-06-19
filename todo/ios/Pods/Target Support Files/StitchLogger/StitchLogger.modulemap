@@ -1,0 +1,6 @@
+framework module StitchLogger {
+  umbrella header "StitchLogger-umbrella.h"
+
+  export *
+  module * { export * }
+}

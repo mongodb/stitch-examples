@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DE7419511D4D007840B55DC7143EAFEF5BB4E86E",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "67620B5EFA902936DF04070AF595B76AB0333747" : 9223372036854775807,
+    "073D4B066A6E41BC228569F8D51E374ECB715C85" : 9223372036854775807,
+    "DE7419511D4D007840B55DC7143EAFEF5BB4E86E" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "88366296-E53A-4672-B6EB-4B42E54DD0DA",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "67620B5EFA902936DF04070AF595B76AB0333747" : "MongoDBSample\/MongoDBSample\/MongoSDK\/mongo-baas-core-ios\/MongoCore\/Frameworks\/Alamofire\/",
+    "073D4B066A6E41BC228569F8D51E374ECB715C85" : "MongoDBSample\/MongoDBSample\/MongoSDK\/mongo-baas-core-ios\/",
+    "DE7419511D4D007840B55DC7143EAFEF5BB4E86E" : "MongoDBSample\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "MongoDBSample",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "MongoDBSample.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/git.zemingo.com\/MongoBaaS\/mongo-baas-core-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "073D4B066A6E41BC228569F8D51E374ECB715C85"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Alamofire\/Alamofire.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "67620B5EFA902936DF04070AF595B76AB0333747"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/git.zemingo.com\/MongoBaaS\/MongoDBSample-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DE7419511D4D007840B55DC7143EAFEF5BB4E86E"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+platform :ios, '9.0'
+
+target 'MongoDBSample' do
+  use_frameworks!
+
+  pod 'Google/SignIn'
+  pod 'FacebookLogin'
+  
+  pod 'StitchLogger'
+  pod 'ExtendedJson'
+  pod 'StitchCore'
+  pod 'MongoDBService'
+end
