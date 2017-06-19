@@ -109,7 +109,7 @@ public class MongoDBManager
      */
     public String getUserId()
     {
-        return mStitchClient.getAuth().getUser().getId();
+        return mStitchClient.getAuth().getUserId();
     }
 
 
@@ -173,7 +173,7 @@ public class MongoDBManager
                                 {
                                     //we are logged in anonymously
 
-                                    Log.i(TAG, "User Authenticated as " + mStitchClient.getAuth().getUser().getId());
+                                    Log.i(TAG, "User Authenticated as " + mStitchClient.getAuth().getUserId());
                                     if (loginListener != null)
                                     {
                                         loginListener.onSuccess(null);
@@ -251,7 +251,7 @@ public class MongoDBManager
                                 {
                                     //we are logged in with Facebook
 
-                                    Log.i(TAG, "User Authenticated as " + mStitchClient.getAuth().getUser().getId());
+                                    Log.i(TAG, "User Authenticated as " + mStitchClient.getAuth().getUserId());
 
                                     //try to get the user name from Facebook SDK
                                     if (Profile.getCurrentProfile() == null)

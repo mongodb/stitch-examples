@@ -28,15 +28,10 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
     testCompile 'junit:junit:4.12'
 
-    compile('com.mongodb.stitch:android-sdk:0.1.2-SNAPSHOT'){
-        changing = true
-    }
+    compile 'org.mongodb:stitch:0.1.0-SNAPSHOT'
 }
 
 repositories {
-    maven {
-        url "https://s3.amazonaws.com/stitch-sdks/android/maven/snapshots"
-    }
 
     // TODO: Remove once BSON 3.5.0 is released
     maven {

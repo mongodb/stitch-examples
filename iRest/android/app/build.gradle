@@ -45,9 +45,6 @@ android {
 repositories {
     mavenCentral()
 
-    maven {
-        url "https://s3.amazonaws.com/stitch-sdks/android/maven/snapshots"
-    }
 }
 
 
@@ -64,7 +61,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:10.2.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.markomilos:paginate:0.5.1'
-    compile('com.mongodb.stitch:android-sdk:0.1.2-SNAPSHOT'){
-        changing = true
-    }
+    compile 'org.mongodb:stitch:0.1.0-SNAPSHOT'
 }

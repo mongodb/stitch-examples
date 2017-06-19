@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public Object then(@NonNull final Task<Auth> task) throws Exception {
                                 if (task.isSuccessful()) {
-                                    Log.i(TAG,"User Authenticated as " + _client.getAuth().getUser().getId());
+                                    Log.i(TAG,"User Authenticated as " + _client.getAuth().getUserId());
                                 } else {
                                     Log.e(TAG, "Error logging in anonymously: ", task.getException());
                                 }

@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.mongodb.stitch.android.StitchClient;
 import com.mongodb.stitch.android.auth.Auth;
 import com.mongodb.stitch.android.auth.AvailableAuthProviders;
+import com.mongodb.stitch.android.auth.UserProfile;
 import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
 import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public Object then(@NonNull final Task<Auth> task) throws Exception {
                                 if (task.isSuccessful()) {
-                                    Log.i(TAG,"User Authenticated as " + _client.getAuth().getUser().getId());
+                                    Log.i(TAG,"User Authenticated as " + _client.getAuth().getUserId());
                                 } else {
                                     Log.e(TAG, "Error logging in anonymously", task.getException());
                                 }
@@ -186,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // This is specific to anonymous authentication.
                 // For facebook or google, you can check for a username using _client.getAuth().getUser.getData().get("name")
-                final Document newComment = new Document("user_id", _client.getAuth().getUser().getId());
+                final Document newComment = new Document("user_id", _client.getAuth().getUserId());
                 newComment.put("comment" , input.getText().toString());
 
                 // The $push update operator adds the "newComment" document to the "comment" array.

@@ -37,6 +37,7 @@ import com.mongodb.stitch.android.StitchClient;
 import com.mongodb.stitch.android.PipelineStage;
 import com.mongodb.stitch.android.auth.Auth;
 import com.mongodb.stitch.android.auth.AvailableAuthProviders;
+import com.mongodb.stitch.android.auth.UserProfile;
 import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
@@ -96,7 +97,13 @@ public class MainActivity extends AppCompatActivity {
             }}).addOnSuccessListener(new OnSuccessListener<Auth>() {
             @Override
             public void onSuccess(@NonNull Auth auth) {
-                Log.i(TAG, "User Authenticated as " + _client.getAuth().getUser().getId());
+                _client.getUserProfile().addOnCompleteListener(new OnCompleteListener<UserProfile>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UserProfile> task) {
+                        Log.i(TAG, "User Authenticated as " + task.getResult().getId());
+                    }
+                });
+
                 _refreshButton.setEnabled(true);
                 _saveButton.setEnabled(true);
                 _textWidget.setEnabled(true);
