@@ -7,13 +7,13 @@
 //
 
 import Foundation
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
 class RestaurantLocationMetaDataImp: EntityTypeMetaData {
     /// default behavior of root entity
-    func create(document: Document) -> EmbeddedMongoEntity? {
+    func create(document: Document) -> EmbeddedEntity? {
         let location = RestaurantLocation(document: document)
         return location
     }

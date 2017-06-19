@@ -1,11 +1,11 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
-EMBEDDED_CONTENT_CONTAINS_SWIFT = YES
-FRAMEWORK_SEARCH_PATHS = $(inherited) "$PODS_CONFIGURATION_BUILD_DIR/Bolts" "$PODS_CONFIGURATION_BUILD_DIR/Cosmos" "$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit" "$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "$PODS_CONFIGURATION_BUILD_DIR/Alamofire" "$PODS_CONFIGURATION_BUILD_DIR/Bolts" "$PODS_CONFIGURATION_BUILD_DIR/Cosmos" "$PODS_CONFIGURATION_BUILD_DIR/ExtendedJson" "$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit" "$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit" "$PODS_CONFIGURATION_BUILD_DIR/MongoDBODM" "$PODS_CONFIGURATION_BUILD_DIR/MongoDBService" "$PODS_CONFIGURATION_BUILD_DIR/StitchCore" "$PODS_CONFIGURATION_BUILD_DIR/StitchLogger"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
-OTHER_CFLAGS = $(inherited) -iquote "$PODS_CONFIGURATION_BUILD_DIR/Bolts/Bolts.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/Cosmos/Cosmos.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit/FBSDKCoreKit.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit/FBSDKLoginKit.framework/Headers"
-OTHER_LDFLAGS = $(inherited) -framework "Bolts" -framework "Cosmos" -framework "FBSDKCoreKit" -framework "FBSDKLoginKit"
+OTHER_CFLAGS = $(inherited) -iquote "$PODS_CONFIGURATION_BUILD_DIR/Alamofire/Alamofire.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/Bolts/Bolts.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/Cosmos/Cosmos.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/ExtendedJson/ExtendedJson.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/FBSDKCoreKit/FBSDKCoreKit.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/FBSDKLoginKit/FBSDKLoginKit.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/MongoDBODM/MongoDBODM.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/MongoDBService/MongoDBService.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/StitchCore/StitchCore.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/StitchLogger/StitchLogger.framework/Headers"
+OTHER_LDFLAGS = $(inherited) -framework "Alamofire" -framework "Bolts" -framework "Cosmos" -framework "ExtendedJson" -framework "FBSDKCoreKit" -framework "FBSDKLoginKit" -framework "MongoDBODM" -framework "MongoDBService" -framework "StitchCore" -framework "StitchLogger"
 OTHER_SWIFT_FLAGS = $(inherited) "-D" "COCOAPODS"
 PODS_BUILD_DIR = $BUILD_DIR
 PODS_CONFIGURATION_BUILD_DIR = $PODS_BUILD_DIR/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
 PODS_ROOT = ${SRCROOT}/Pods

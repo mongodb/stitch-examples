@@ -13,18 +13,6 @@
 		06A9BD891EC0973C00370FF4 /* RestaurantLocationMetaDataImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A9BD881EC0973C00370FF4 /* RestaurantLocationMetaDataImp.swift */; };
 		06A9BD951EC1C1DB00370FF4 /* UIViewController+AlertPresentor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A9BD941EC1C1DB00370FF4 /* UIViewController+AlertPresentor.swift */; };
 		06AF6ABD1ED444AB00A74D73 /* ReviewsFlowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AF6ABC1ED444AB00A74D73 /* ReviewsFlowManager.swift */; };
-		06CAAB411EBF717700037726 /* MongoBaasSDKLogger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 223EA3F41EB7160800664319 /* MongoBaasSDKLogger.framework */; };
-		06CAAB421EBF717700037726 /* MongoBaasSDKLogger.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 223EA3F41EB7160800664319 /* MongoBaasSDKLogger.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06CAAB4E1EBF717D00037726 /* MongoExtendedJson.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79BD1E7EA185006FE69E /* MongoExtendedJson.framework */; };
-		06CAAB4F1EBF717D00037726 /* MongoExtendedJson.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79BD1E7EA185006FE69E /* MongoExtendedJson.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06CAAB521EBF718400037726 /* MongoCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79B41E7EA17E006FE69E /* MongoCore.framework */; };
-		06CAAB531EBF718400037726 /* MongoCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79B41E7EA17E006FE69E /* MongoCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06CAAB571EBF719000037726 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06CAAB561EBF719000037726 /* Alamofire.framework */; };
-		06CAAB581EBF719000037726 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 06CAAB561EBF719000037726 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06CAAB591EBF719700037726 /* MongoDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79A81E7EA157006FE69E /* MongoDB.framework */; };
-		06CAAB5A1EBF719700037726 /* MongoDB.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79A81E7EA157006FE69E /* MongoDB.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		06CAAB5D1EBF719F00037726 /* MongoBaasODM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79901E7EA0E1006FE69E /* MongoBaasODM.framework */; };
-		06CAAB5E1EBF719F00037726 /* MongoBaasODM.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 220E79901E7EA0E1006FE69E /* MongoBaasODM.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		06CAAB621EC03CB900037726 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAAB611EC03CB800037726 /* SplashViewController.swift */; };
 		06CAAB661EC06A3B00037726 /* RestaurantMetaDataImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAAB651EC06A3B00037726 /* RestaurantMetaDataImp.swift */; };
 		06CAAB681EC06D8E00037726 /* OpeningHours.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAAB671EC06D8E00037726 /* OpeningHours.swift */; };
@@ -64,107 +52,6 @@
 		77200394B0E2D8CDC742C09C /* Pods_SoLoMoSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20BA0686F959ADFA7939635E /* Pods_SoLoMoSample.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		06CAAB431EBF717700037726 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 223EA3ED1EB7160800664319 /* MongoBaasSDKLogger.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 3685F3C61E82FD23001DFDD7;
-			remoteInfo = MongoBaasSDKLogger;
-		};
-		06CAAB501EBF717D00037726 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79B71E7EA185006FE69E /* MongoExtendedJson.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 36FA27621E56278300909825;
-			remoteInfo = MongoExtendedJson;
-		};
-		06CAAB541EBF718400037726 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79AE1E7EA17E006FE69E /* MongoCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 367E0B0E1E43419500EE2C00;
-			remoteInfo = MongoCore;
-		};
-		06CAAB5B1EBF719700037726 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E799E1E7EA157006FE69E /* MongoDB.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 36DA09AF1E4CE78200875C3C;
-			remoteInfo = MongoDB;
-		};
-		06CAAB5F1EBF719F00037726 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79851E7EA0E1006FE69E /* MongoBaasODM.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 36DD05151E79807600E9A764;
-			remoteInfo = MongoBaasODM;
-		};
-		220E798F1E7EA0E1006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79851E7EA0E1006FE69E /* MongoBaasODM.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DD05161E79807600E9A764;
-			remoteInfo = MongoBaasODM;
-		};
-		220E79911E7EA0E1006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79851E7EA0E1006FE69E /* MongoBaasODM.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DD051F1E79807700E9A764;
-			remoteInfo = MongoBaasODMTests;
-		};
-		220E79A71E7EA157006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E799E1E7EA157006FE69E /* MongoDB.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DA09B01E4CE78200875C3C;
-			remoteInfo = MongoDB;
-		};
-		220E79A91E7EA157006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E799E1E7EA157006FE69E /* MongoDB.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DA09B91E4CE78300875C3C;
-			remoteInfo = MongoDBTests;
-		};
-		220E79B31E7EA17E006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79AE1E7EA17E006FE69E /* MongoCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 367E0B0F1E43419500EE2C00;
-			remoteInfo = MongoCore;
-		};
-		220E79B51E7EA17E006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79AE1E7EA17E006FE69E /* MongoCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DD05571E7C412100E9A764;
-			remoteInfo = MongoCoreTests;
-		};
-		220E79BC1E7EA185006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79B71E7EA185006FE69E /* MongoExtendedJson.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36FA27631E56278300909825;
-			remoteInfo = MongoExtendedJson;
-		};
-		220E79BE1E7EA185006FE69E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220E79B71E7EA185006FE69E /* MongoExtendedJson.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36FA276C1E56278300909825;
-			remoteInfo = MongoExtendedJsonTests;
-		};
-		223EA3F31EB7160800664319 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 223EA3ED1EB7160800664319 /* MongoBaasSDKLogger.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3685F3C71E82FD23001DFDD7;
-			remoteInfo = MongoBaasSDKLogger;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		06CAAB4D1EBF717700037726 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -172,12 +59,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				06CAAB4F1EBF717D00037726 /* MongoExtendedJson.framework in Embed Frameworks */,
-				06CAAB5E1EBF719F00037726 /* MongoBaasODM.framework in Embed Frameworks */,
-				06CAAB421EBF717700037726 /* MongoBaasSDKLogger.framework in Embed Frameworks */,
-				06CAAB5A1EBF719700037726 /* MongoDB.framework in Embed Frameworks */,
-				06CAAB531EBF718400037726 /* MongoCore.framework in Embed Frameworks */,
-				06CAAB581EBF719000037726 /* Alamofire.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -191,7 +72,6 @@
 		06A9BD881EC0973C00370FF4 /* RestaurantLocationMetaDataImp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RestaurantLocationMetaDataImp.swift; path = Classes/Models/RestaurantLocationMetaDataImp.swift; sourceTree = "<group>"; };
 		06A9BD941EC1C1DB00370FF4 /* UIViewController+AlertPresentor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+AlertPresentor.swift"; path = "Classes/Extensions/UIViewController+AlertPresentor.swift"; sourceTree = "<group>"; };
 		06AF6ABC1ED444AB00A74D73 /* ReviewsFlowManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReviewsFlowManager.swift; path = Classes/Managers/ReviewsFlowManager.swift; sourceTree = "<group>"; };
-		06CAAB561EBF719000037726 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06CAAB611EC03CB800037726 /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SplashViewController.swift; path = Classes/Controllers/SplashViewController.swift; sourceTree = "<group>"; };
 		06CAAB651EC06A3B00037726 /* RestaurantMetaDataImp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RestaurantMetaDataImp.swift; path = Classes/Models/RestaurantMetaDataImp.swift; sourceTree = "<group>"; };
 		06CAAB671EC06D8E00037726 /* OpeningHours.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OpeningHours.swift; path = Classes/Models/OpeningHours.swift; sourceTree = "<group>"; };
@@ -202,14 +82,9 @@
 		06DED2BD1EC1DE68004F8F69 /* ReviewMetaDataImp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReviewMetaDataImp.swift; path = Classes/Models/ReviewMetaDataImp.swift; sourceTree = "<group>"; };
 		20BA0686F959ADFA7939635E /* Pods_SoLoMoSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SoLoMoSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2203CDA51E754FC0008E49AE /* RestaurantMainInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RestaurantMainInfoTableViewCell.swift; path = Classes/Controllers/SingleRestaurantViewController/RestaurantMainInfoTableViewCell.swift; sourceTree = "<group>"; };
-		220E79851E7EA0E1006FE69E /* MongoBaasODM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MongoBaasODM.xcodeproj; path = "MongoSdk/mongo-baas-core-ios/MongoBaasODM/MongoBaasODM.xcodeproj"; sourceTree = "<group>"; };
-		220E799E1E7EA157006FE69E /* MongoDB.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MongoDB.xcodeproj; path = "MongoSdk/mongo-baas-core-ios/MongoDB/MongoDB.xcodeproj"; sourceTree = "<group>"; };
-		220E79AE1E7EA17E006FE69E /* MongoCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MongoCore.xcodeproj; path = "MongoSdk/mongo-baas-core-ios/MongoCore/MongoCore.xcodeproj"; sourceTree = "<group>"; };
-		220E79B71E7EA185006FE69E /* MongoExtendedJson.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MongoExtendedJson.xcodeproj; path = "MongoSdk/mongo-baas-core-ios/MongoExtendedJson/MongoExtendedJson.xcodeproj"; sourceTree = "<group>"; };
 		2233C5B41E6D8E2500148041 /* RestaurantTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RestaurantTableViewCell.swift; path = Classes/Controllers/RestaurantListViewController/RestaurantTableViewCell.swift; sourceTree = "<group>"; };
 		2233C5B81E6D95B700148041 /* NSObject+StringFromClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "NSObject+StringFromClass.swift"; path = "Classes/Extensions/NSObject+StringFromClass.swift"; sourceTree = "<group>"; };
 		223B9FCC1E77F2A600D17034 /* UIViewController+LoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+LoadingView.swift"; path = "Classes/Extensions/UIViewController+LoadingView.swift"; sourceTree = "<group>"; };
-		223EA3ED1EB7160800664319 /* MongoBaasSDKLogger.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MongoBaasSDKLogger.xcodeproj; path = "MongoSdk/mongo-baas-core-ios/MongoBaasSDKLogger/MongoBaasSDKLogger.xcodeproj"; sourceTree = "<group>"; };
 		2242A1721E683CEF00138678 /* platespace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = platespace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2242A1751E683CEF00138678 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Classes/AppDelegate/AppDelegate.swift; sourceTree = "<group>"; };
 		2242A17A1E683CEF00138678 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -245,13 +120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06CAAB521EBF718400037726 /* MongoCore.framework in Frameworks */,
-				06CAAB591EBF719700037726 /* MongoDB.framework in Frameworks */,
 				77200394B0E2D8CDC742C09C /* Pods_SoLoMoSample.framework in Frameworks */,
-				06CAAB411EBF717700037726 /* MongoBaasSDKLogger.framework in Frameworks */,
-				06CAAB571EBF719000037726 /* Alamofire.framework in Frameworks */,
-				06CAAB5D1EBF719F00037726 /* MongoBaasODM.framework in Frameworks */,
-				06CAAB4E1EBF717D00037726 /* MongoExtendedJson.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,54 +134,6 @@
 				22EE01181E7059FE0048E8B5 /* ActionsTableViewCell.swift */,
 			);
 			name = "UITableView cells";
-			sourceTree = "<group>";
-		};
-		220E79761E7E9E93006FE69E /* Mongo Sdk */ = {
-			isa = PBXGroup;
-			children = (
-				223EA3ED1EB7160800664319 /* MongoBaasSDKLogger.xcodeproj */,
-				220E79B71E7EA185006FE69E /* MongoExtendedJson.xcodeproj */,
-				220E79AE1E7EA17E006FE69E /* MongoCore.xcodeproj */,
-				220E799E1E7EA157006FE69E /* MongoDB.xcodeproj */,
-				220E79851E7EA0E1006FE69E /* MongoBaasODM.xcodeproj */,
-			);
-			name = "Mongo Sdk";
-			sourceTree = "<group>";
-		};
-		220E79861E7EA0E1006FE69E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				220E79901E7EA0E1006FE69E /* MongoBaasODM.framework */,
-				220E79921E7EA0E1006FE69E /* MongoBaasODMTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		220E799F1E7EA157006FE69E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				220E79A81E7EA157006FE69E /* MongoDB.framework */,
-				220E79AA1E7EA157006FE69E /* MongoDBTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		220E79AF1E7EA17E006FE69E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				220E79B41E7EA17E006FE69E /* MongoCore.framework */,
-				220E79B61E7EA17E006FE69E /* MongoCoreTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		220E79B81E7EA185006FE69E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				220E79BD1E7EA185006FE69E /* MongoExtendedJson.framework */,
-				220E79BF1E7EA185006FE69E /* MongoExtendedJsonTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		2233C5B11E6D8D6F00148041 /* RestaurantListViewController */ = {
@@ -337,18 +158,9 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
-		223EA3EE1EB7160800664319 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				223EA3F41EB7160800664319 /* MongoBaasSDKLogger.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		2242A1691E683CEF00138678 = {
 			isa = PBXGroup;
 			children = (
-				06CAAB561EBF719000037726 /* Alamofire.framework */,
 				2242A1741E683CEF00138678 /* SoLoMoSample */,
 				2242A1731E683CEF00138678 /* Products */,
 				5009A6185C5C61512DD5FE17 /* Pods */,
@@ -367,7 +179,6 @@
 		2242A1741E683CEF00138678 /* SoLoMoSample */ = {
 			isa = PBXGroup;
 			children = (
-				220E79761E7E9E93006FE69E /* Mongo Sdk */,
 				2242A1911E683D5700138678 /* Recources */,
 				2242A1901E683D4800138678 /* Classes */,
 			);
@@ -523,11 +334,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				06CAAB441EBF717700037726 /* PBXTargetDependency */,
-				06CAAB511EBF717D00037726 /* PBXTargetDependency */,
-				06CAAB551EBF718400037726 /* PBXTargetDependency */,
-				06CAAB5C1EBF719700037726 /* PBXTargetDependency */,
-				06CAAB601EBF719F00037726 /* PBXTargetDependency */,
 			);
 			name = SoLoMoSample;
 			productName = SoLoMoSample;
@@ -562,100 +368,12 @@
 			mainGroup = 2242A1691E683CEF00138678;
 			productRefGroup = 2242A1731E683CEF00138678 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 220E79861E7EA0E1006FE69E /* Products */;
-					ProjectRef = 220E79851E7EA0E1006FE69E /* MongoBaasODM.xcodeproj */;
-				},
-				{
-					ProductGroup = 223EA3EE1EB7160800664319 /* Products */;
-					ProjectRef = 223EA3ED1EB7160800664319 /* MongoBaasSDKLogger.xcodeproj */;
-				},
-				{
-					ProductGroup = 220E79AF1E7EA17E006FE69E /* Products */;
-					ProjectRef = 220E79AE1E7EA17E006FE69E /* MongoCore.xcodeproj */;
-				},
-				{
-					ProductGroup = 220E799F1E7EA157006FE69E /* Products */;
-					ProjectRef = 220E799E1E7EA157006FE69E /* MongoDB.xcodeproj */;
-				},
-				{
-					ProductGroup = 220E79B81E7EA185006FE69E /* Products */;
-					ProjectRef = 220E79B71E7EA185006FE69E /* MongoExtendedJson.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				2242A1711E683CEF00138678 /* SoLoMoSample */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		220E79901E7EA0E1006FE69E /* MongoBaasODM.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MongoBaasODM.framework;
-			remoteRef = 220E798F1E7EA0E1006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79921E7EA0E1006FE69E /* MongoBaasODMTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MongoBaasODMTests.xctest;
-			remoteRef = 220E79911E7EA0E1006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79A81E7EA157006FE69E /* MongoDB.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MongoDB.framework;
-			remoteRef = 220E79A71E7EA157006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79AA1E7EA157006FE69E /* MongoDBTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MongoDBTests.xctest;
-			remoteRef = 220E79A91E7EA157006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79B41E7EA17E006FE69E /* MongoCore.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MongoCore.framework;
-			remoteRef = 220E79B31E7EA17E006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79B61E7EA17E006FE69E /* MongoCoreTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MongoCoreTests.xctest;
-			remoteRef = 220E79B51E7EA17E006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79BD1E7EA185006FE69E /* MongoExtendedJson.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MongoExtendedJson.framework;
-			remoteRef = 220E79BC1E7EA185006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		220E79BF1E7EA185006FE69E /* MongoExtendedJsonTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MongoExtendedJsonTests.xctest;
-			remoteRef = 220E79BE1E7EA185006FE69E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		223EA3F41EB7160800664319 /* MongoBaasSDKLogger.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MongoBaasSDKLogger.framework;
-			remoteRef = 223EA3F31EB7160800664319 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2242A1701E683CEF00138678 /* Resources */ = {
@@ -714,7 +432,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -766,34 +484,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		06CAAB441EBF717700037726 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MongoBaasSDKLogger;
-			targetProxy = 06CAAB431EBF717700037726 /* PBXContainerItemProxy */;
-		};
-		06CAAB511EBF717D00037726 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MongoExtendedJson;
-			targetProxy = 06CAAB501EBF717D00037726 /* PBXContainerItemProxy */;
-		};
-		06CAAB551EBF718400037726 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MongoCore;
-			targetProxy = 06CAAB541EBF718400037726 /* PBXContainerItemProxy */;
-		};
-		06CAAB5C1EBF719700037726 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MongoDB;
-			targetProxy = 06CAAB5B1EBF719700037726 /* PBXContainerItemProxy */;
-		};
-		06CAAB601EBF719F00037726 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MongoBaasODM;
-			targetProxy = 06CAAB5F1EBF719F00037726 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2242A1791E683CEF00138678 /* Main.storyboard */ = {
@@ -916,7 +606,7 @@
 				INFOPLIST_FILE = SoLoMoSample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Zem.SoLoMoSample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mongodb.SoLoMoSample;
 				PRODUCT_NAME = platespace;
 				SWIFT_VERSION = 3.0;
 			};
@@ -932,7 +622,7 @@
 				INFOPLIST_FILE = SoLoMoSample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Zem.SoLoMoSample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mongodb.SoLoMoSample;
 				PRODUCT_NAME = platespace;
 				SWIFT_VERSION = 3.0;
 			};

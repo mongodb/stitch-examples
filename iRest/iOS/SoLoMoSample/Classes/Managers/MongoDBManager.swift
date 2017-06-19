@@ -8,10 +8,8 @@
 
 import Foundation
 
-
-import Foundation
-import MongoCore
-import MongoDB
+import StitchCore
+import MongoDBService
 
 class MongoDBManager {
     
@@ -21,7 +19,7 @@ class MongoDBManager {
     static let shared = MongoDBManager()
     
     let stitchClient: StitchClient
-    let mongoClient: MongoClient
+    let mongoClient: MongoDBClient
 
     
     // MARK: - Private Constants, Please change your app id in Stitch-Info.plist
@@ -59,29 +57,40 @@ class MongoDBManager {
     init() {
         
         /// Init a Stitch client
-        stitchClient = StitchClientImpl(appId: MongoDBManager.appId)
+        stitchClient = StitchClient(appId: MongoDBManager.appId)
         
         /// Init a mongo client
-        mongoClient = MongoClientImpl(stitchClient: stitchClient, serviceName: MongoDBManager.serviceName)
+        mongoClient = MongoDBClient(stitchClient: stitchClient,
+                                    serviceName: MongoDBManager.serviceName)
     }
     
     /// Get the logged in user name
-    func userName() -> String? {
-        return (stitchClient.authUser?.data[MongoDBManager.userNameKey] as? String) ?? userNameFromEmail()
+    func userName(completionHandler: @escaping (String?) -> Void) -> Void {
+        self.stitchClient.fetchUserProfile().response(completionHandler: { (userProfile) in
+            if let userProfile = userProfile.value {
+                if let userName = userProfile.data[MongoDBManager.userNameKey] as? String {
+                    completionHandler(userName)
+                } else {
+                    self.userNameFromEmail(completionHandler: completionHandler)
+                }
+            }
+        })
     }
     
     /// If we log in using email, we do not have a username - extract it from the email address
-    func userNameFromEmail() -> String? {
-        if let email = stitchClient.authUser?.data[MongoDBManager.userEmailKey] as? String {
-            let emailComponents = email.components(separatedBy: "@")
-            
-            /// Extract the first component of the email and use it as the username
-            if !emailComponents.isEmpty {
-                return emailComponents.first
+    func userNameFromEmail(completionHandler: @escaping (String?) -> Void) -> Void {
+        self.stitchClient.fetchUserProfile().response(completionHandler: { (userProfile) in
+            if let userProfile = userProfile.value {
+                if let email = userProfile.data[MongoDBManager.userEmailKey] as? String {
+                    let emailComponents = email.components(separatedBy: "@")
+                    
+                    /// Extract the first component of the email and use it as the username
+                    if !emailComponents.isEmpty {
+                        completionHandler(emailComponents.first)
+                    }
+                }
             }
-        }
-        
-        return nil
+        })
     }
 
 }

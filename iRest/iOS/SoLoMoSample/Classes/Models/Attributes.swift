@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
-class Attributes: EmbeddedMongoEntity {
+class Attributes: EmbeddedEntity {
     
     static let hasParkingKey     = "hasParking"
     static let veganFriendlyKey  = "veganFriendly"

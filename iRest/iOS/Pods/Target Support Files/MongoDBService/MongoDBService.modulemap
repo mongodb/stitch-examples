@@ -1,0 +1,6 @@
+framework module MongoDBService {
+  umbrella header "MongoDBService-umbrella.h"
+
+  export *
+  module * { export * }
+}

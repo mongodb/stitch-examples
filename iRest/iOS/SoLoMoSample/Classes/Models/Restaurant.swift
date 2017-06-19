@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
-class Restaurant : RootMongoEntity, Equatable {
+class Restaurant : RootEntity, Equatable {
     
     static let nameKey          = "name"
     static let addressKey       = "address"

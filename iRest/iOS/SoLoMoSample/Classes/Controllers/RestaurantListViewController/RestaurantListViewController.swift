@@ -8,10 +8,10 @@
 
 import UIKit
 import CoreLocation
-import MongoCore
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import StitchCore
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 import FBSDKLoginKit
 
 class RestaurantListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, LocationUpdateDelegate, LocationAuthorizationDelegate, UISearchBarDelegate, RestaurantFilterViewControllerDelegate, SingleRestaurantViewControllerDelegate, ReviewsFlowManagerDelegate {
@@ -181,7 +181,7 @@ class RestaurantListViewController: UIViewController, UITableViewDelegate, UITab
                 if let document = element as? Document {
                     
                     /// Create a Restaurant object from the document
-                    let restaurant = Restaurant(document: document, mongoClient: MongoDBManager.shared.mongoClient)
+                    let restaurant = Restaurant(document: document, mongoDBClient: MongoDBManager.shared.mongoClient)
                     restaurantsResult.append(restaurant)
                     
                     /// If this restaurant's distance is equal to the last distance fetched, add it to the collection of restaurants to be excluded from the next fetch

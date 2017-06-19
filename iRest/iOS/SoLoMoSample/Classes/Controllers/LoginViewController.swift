@@ -8,7 +8,7 @@
 
 import UIKit
 import FBSDKLoginKit
-import MongoCore
+import StitchCore
 
 enum LoginViewControllerType {
     case signup

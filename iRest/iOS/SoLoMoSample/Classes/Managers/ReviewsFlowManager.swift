@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import MongoCore
-import MongoDB
-import MongoBaasODM
-import MongoExtendedJson
+import StitchCore
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
 // MARK: - ReviewsFlowManagerDelegate
 protocol ReviewsFlowManagerDelegate: class {

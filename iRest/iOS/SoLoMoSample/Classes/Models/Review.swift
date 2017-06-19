@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
-class Review: RootMongoEntity {
+class Review: RootEntity {
     
     static let ownerIdKey         = "owner_id"
     static let commentKey         = "comment"

@@ -7,11 +7,11 @@
 //
 
 import Foundation
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
-class OpeningHours: EmbeddedMongoEntity {
+class OpeningHours: EmbeddedEntity {
     
     static let startKey = "start"
     static let endKey   = "end"

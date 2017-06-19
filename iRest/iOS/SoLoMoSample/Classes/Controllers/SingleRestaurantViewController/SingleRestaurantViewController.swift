@@ -7,10 +7,10 @@
 //
 
 import UIKit
-import MongoBaasODM
-import MongoDB
-import MongoExtendedJson
-import MongoCore
+import StitchCore
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
 protocol SingleRestaurantViewControllerDelegate: ReviewsFlowManagerDelegate {
     func singleRestaurantViewControllerDidUpdate(restaurant: Restaurant)
@@ -97,7 +97,7 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
     private func fetchReviews() {
         guard
             let restaurantId = restaurant?.objectId,
-            let userId = MongoDBManager.shared.stitchClient.authUser?.id
+            let userId = MongoDBManager.shared.stitchClient.auth?.userId
             else {
             print("Cannor fetch reviews, no restaurant id / user id")
             return
@@ -112,7 +112,7 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
         /// A criteria which limits the query to reviews by other users (not including review models which only contain a rating)
         let otherUsersCriteria = otherUsersReviewsCriteria(forRestaurantId: restaurantId, userId: userId)
         
-        let queryUserReviews = Query<Review>(criteria: userCriteria, mongoClient: MongoDBManager.shared.mongoClient)
+        let queryUserReviews = Query<Review>(criteria: userCriteria, mongoDBClient: MongoDBManager.shared.mongoClient)
         
         /// First fetch reviews written on this restaurant, by this user
         queryUserReviews.find().response { [weak self] result in
@@ -138,7 +138,7 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
             }
             
             /// Now fetch other users' reviews
-            let queryOtherUsers = Query<Review>(criteria: otherUsersCriteria, mongoClient: MongoDBManager.shared.mongoClient)
+            let queryOtherUsers = Query<Review>(criteria: otherUsersCriteria, mongoDBClient: MongoDBManager.shared.mongoClient)
             
             queryOtherUsers.find(limit: reviewCountLimit).response { [weak self] result in
                 
@@ -184,7 +184,7 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
         
         let criteria: Criteria = .equals(field: "_id", value: id)
         
-        let query = Query<Restaurant>(criteria: criteria, mongoClient: MongoDBManager.shared.mongoClient)
+        let query = Query<Restaurant>(criteria: criteria, mongoDBClient: MongoDBManager.shared.mongoClient)
             
         query.find().response(completionHandler: { [weak self] result in
             switch result {
@@ -329,7 +329,9 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
         let rev = reviewModel()
         rev.comment = review
         rev.dateOfComment = Date()
-        rev.nameOfCommenter = MongoDBManager.shared.userName()
+        MongoDBManager.shared.userName {
+            rev.nameOfCommenter = $0
+        }
         
         /// If the user has rated as well, save it in the model
         /// We cannot assign the optional property directly, since assigning nil to the model will create an empty property in the DB
@@ -409,8 +411,8 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
         } else {
             
             /// If a user review does not exist, create a new one
-            let review = Review(mongoClient: MongoDBManager.shared.mongoClient)
-            review.owner_id = MongoDBManager.shared.stitchClient.authUser?.id
+            let review = Review(mongoDBClient: MongoDBManager.shared.mongoClient)
+            review.owner_id = MongoDBManager.shared.stitchClient.auth?.userId
             review.restaurantId = restaurant?.objectId
             return review
         }

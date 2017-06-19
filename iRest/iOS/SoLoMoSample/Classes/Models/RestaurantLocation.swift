@@ -8,11 +8,11 @@
 
 import Foundation
 import CoreLocation
-import MongoExtendedJson
-import MongoDB
-import MongoBaasODM
+import ExtendedJson
+import MongoDBService
+import MongoDBODM
 
-class RestaurantLocation: EmbeddedMongoEntity {
+class RestaurantLocation: EmbeddedEntity {
     
     static let typeKey        = "type"
     static let coordinatesKey = "coordinates"
