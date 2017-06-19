@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private GoogleApiClient _googleApiClient;
     private StitchClient _client;
     private MongoClient _mongoClient;
-    private UserProfile _user;
 
     private TodoListAdapter _itemAdapter;
     private Handler _handler;
@@ -206,19 +205,13 @@ public class MainActivity extends AppCompatActivity {
     private void initLogin() {
         _client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
             @Override
-            public void onComplete(@NonNull final Task<AvailableAuthProviders> authTask) {
-                _client.getUserProfile().addOnCompleteListener(new OnCompleteListener<UserProfile>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UserProfile> task) {
-                        if (task.isSuccessful() && authTask.isSuccessful()) {
-                            _user = task.getResult();
-                            setupLogin(authTask.getResult());
+            public void onComplete(@NonNull final Task<AvailableAuthProviders> task) {
+                        if (task.isSuccessful()) {
+                            setupLogin(task.getResult());
                         } else {
                             Log.e(TAG, "Error getting auth info", task.getException());
                             // Maybe retry here...
                         }
-                    }
-                });
             }
         });
     }
@@ -288,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addItem(final String text) {
         final Document doc = new Document();
-        doc.put("owner_id", _user.getId());
+        doc.put("owner_id", _client.getAuth().getUserId());
         doc.put("text", text);
         doc.put("checked", false);
 
@@ -306,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearChecked() {
         final Document query = new Document();
-        query.put("owner_id", _user.getId());
+        query.put("owner_id", _client.getAuth().getUserId());
         query.put("checked", true);
 
         getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -334,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Task<Void> refreshList() {
-        return getItemsCollection().find(new Document("owner_id", _user.getId())).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
+        return getItemsCollection().find(new Document("owner_id", _client.getAuth().getUserId())).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
                 if (task.isSuccessful()) {
