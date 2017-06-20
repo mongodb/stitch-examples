@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // allow anonymous user access for this app
     function doAnonymousAuth() {
-      stitchClient.authManager.anonymousAuth()
+      stitchClient.login()
         .then( result => {
           console.log("authenticated");
         }).catch( err => {

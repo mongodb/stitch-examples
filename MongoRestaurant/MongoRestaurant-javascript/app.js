@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded',() => {
     
     // Replace the STITCH-APP-ID with your Stitch Application ID
     // Replace the MONGODB-SERVICE-NAME with the name of the Stitch MongoDB Service
-    const stitchClient = new stitch.StitchClient("rest1-vvoul");
-    const mongoClient = stitchClient.service("mongodb", "mongodb1");
+    const stitchClient = new stitch.StitchClient("STITCH-APP-ID");
+    const mongoClient = stitchClient.service("mongodb", "mongodb-atlas");
     
     const db = mongoClient.db("guidebook");
     const coll = db.collection("restaurants");
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded',() => {
     var restaurantName = ""
     
     function doAnonymousAuth(){
-        stitchClient.authManager.anonymousAuth().then( result => {
+        stitchClient.login().then( result => {
             console.log("authenticated");
             
         }).catch( err => {
