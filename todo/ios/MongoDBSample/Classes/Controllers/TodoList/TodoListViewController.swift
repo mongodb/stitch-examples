@@ -47,7 +47,7 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     // MARK: - Init
     
     required init?(coder aDecoder: NSCoder) {
-        mongoClient = MongoDBClient(stitchClient: stitchClient, serviceName: "mdb1")
+        mongoClient = MongoDBClient(stitchClient: stitchClient, serviceName: "mongodb-atlas")
         super.init(coder: aDecoder)
     }
     
@@ -79,8 +79,8 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     @IBAction private func logoutButtonPressed(_ sender: Any) {
         stitchClient.logout().response { [weak self] (result) in
             switch result {
-            case .success(let provider):
-                self?.handleLogout(provider: provider)
+            case .success(_):
+                self?.handleLogout(provider: MongoDBManager.shared.provider)
                 break
             case .failure:
                 // present error?

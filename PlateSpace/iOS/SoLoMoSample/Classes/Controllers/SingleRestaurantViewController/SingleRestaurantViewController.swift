@@ -273,7 +273,7 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
         case TableViewSectionType.writeReview.rawValue:
             if let addReviewCell = tableView.dequeueReusableCell(withIdentifier: AddReviewTableViewCell.stringFromClass(), for: indexPath) as? AddReviewTableViewCell {
                 addReviewCell.delegate = self
-                let enableReviewButton = !MongoDBManager.shared.stitchClient.isAnonymous && !isUserReviewed()
+                let enableReviewButton = !MongoDBManager.shared.isAnonymous() && !isUserReviewed()
                 addReviewCell.set(isReviewEnabled: enableReviewButton)
                 return addReviewCell
             }
@@ -351,7 +351,7 @@ class SingleRestaurantViewController: UIViewController , UITableViewDelegate, UI
     // MARK: - RateNowTableViewCellDelegate
     
     func rateNowTableViewCell(_ cell: RateNowTableViewCell, didRate rate: Int) {
-        if MongoDBManager.shared.stitchClient.isAnonymous {
+        if MongoDBManager.shared.isAnonymous() {
             /// Anonymous user cannot rate
             cell.set(rating: 0)
             self.showAlert(withTitle: "Attention", message: "In order to test the feature in your App you must first login.")

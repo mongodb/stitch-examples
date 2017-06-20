@@ -87,10 +87,6 @@ public class StitchClient: StitchClientType {
         return auth != nil
     }
     
-    public var isAnonymous: Bool {
-        return isAuthenticated && auth?.provider == .anonymous
-    }
-    
     private var refreshToken: String? {
         
         guard isAuthenticated else {
@@ -410,16 +406,15 @@ public class StitchClient: StitchClientType {
     }
     
     @discardableResult
-    public func logout() -> StitchTask<Provider?> {
-        let task = StitchTask<Provider?>()
+    public func logout() -> StitchTask<Bool> {
+        let task = StitchTask<Bool>()
         
         if !isAuthenticated {
             printLog(.info, text: "Tried logging out while there was no authenticated user found.")
-            task.result = .success(nil)
+            task.result = .success(false)
             return task
         }
         
-        let provider = auth!.provider
         performRequest(method: .delete, endpoint: Consts.AuthPath, parameters: nil, refreshOnFailure: false, useRefreshToken: true).response(onQueue: DispatchQueue.global(qos: .utility)) { [weak self] (result) in
             guard let strongSelf = self else {
                 task.result = StitchResult.failure(StitchError.clientReleased)
@@ -432,7 +427,7 @@ public class StitchClient: StitchClientType {
             else {
                 do {
                     try strongSelf.clearAuth()
-                    task.result = .success(provider)
+                    task.result = .success(true)
                 } catch {
                     task.result = .failure(error)
                 }
@@ -451,7 +446,7 @@ public class StitchClient: StitchClientType {
             return
         }
         
-        onLogout(lastProvider: (auth?.provider.name)!)
+        onLogout()
 
         auth = nil
         
@@ -735,8 +730,8 @@ public class StitchClient: StitchClientType {
     /**
      * Called when a user is logged out from this client.
      */
-    private func onLogout(lastProvider: String) {
-        authDelegates.forEach { $0?.onLogout(lastProvider: lastProvider) }
+    private func onLogout() {
+        authDelegates.forEach { $0?.onLogout() }
     }
     
     public func addAuthDelegate(delegate: AuthDelegate) {

@@ -9,9 +9,9 @@ target 'SoLoMoSample' do
   pod 'FBSDKCoreKit'
   pod 'FBSDKLoginKit'
 
-pod 'StitchLogger'
-pod 'ExtendedJson'
-pod 'StitchCore'
-pod 'MongoDBService'
-pod 'MongoDBODM'
+  pod 'StitchLogger'
+  pod 'ExtendedJson'
+  pod 'StitchCore'
+  pod 'MongoDBService'
+  pod 'MongoDBODM'
 end

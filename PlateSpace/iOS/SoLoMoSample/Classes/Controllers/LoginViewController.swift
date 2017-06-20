@@ -277,6 +277,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, DeepLinkingMan
             
             switch result {
             case .success:
+                MongoDBManager.shared.authProvider = provider
                 self?.navigateToRestaurantsList()
             case .failure(let error):
                 print("failed logging in Stitch. error: \(error.localizedDescription)")

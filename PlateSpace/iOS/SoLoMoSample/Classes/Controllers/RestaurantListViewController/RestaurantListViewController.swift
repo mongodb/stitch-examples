@@ -484,13 +484,13 @@ class RestaurantListViewController: UIViewController, UITableViewDelegate, UITab
             self?.showLoadingView(show: false)
             
             switch result {
-            case .success(let resultValue):
+            case .success(_):
                 
                 /// Logout succeeded
                 /// The response result value is an optional provider from whom we have logged out (returned in case we were indeed logged in)
-                if let provider = resultValue {
+                if let provider = MongoDBManager.shared.authProvider {
                     switch provider {
-                    case .facebook:
+                    case is FacebookAuthProvider:
                         self?.logoutFacebook()
                     default:
                         self?.navigateToLoginPage()                        

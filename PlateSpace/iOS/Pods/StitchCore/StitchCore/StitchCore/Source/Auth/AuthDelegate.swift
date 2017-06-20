@@ -12,5 +12,5 @@ public protocol AuthDelegate {
         - parameter lastProvider: The last provider this user
             logged in with
     */
-    func onLogout(lastProvider: String)
+    func onLogout()
 }

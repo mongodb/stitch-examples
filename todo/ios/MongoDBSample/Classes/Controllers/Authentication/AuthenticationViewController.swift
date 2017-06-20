@@ -98,7 +98,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
             if let facebookAuthInfo = authInfo.facebookProviderInfo {
                 authAvailable = true
                 var readPermissions: [FacebookCore.ReadPermission] = []
-                for per in facebookAuthInfo.scopes {
+                for per in facebookAuthInfo.scopes! {
                     switch per {
                     case "public_profile":
                         readPermissions.append(.publicProfile)
@@ -236,6 +236,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
             stitchClient.login(withProvider: GoogleAuthProvider(authCode: user.serverAuthCode), link: stitchClient.isAuthenticated).response(completionHandler: { [weak self] (result) in
                 switch result {
                 case .success:
+                    MongoDBManager.shared.provider = Provider.google
                     self?.delegate?.authenticationViewControllerDidLogin()
                     break
                 case .failure(let error):
@@ -269,6 +270,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
             stitchClient.login(withProvider: FacebookAuthProvider(accessToken: token.authenticationToken), link: stitchClient.isAuthenticated).response(completionHandler: { [weak self] (result) in
                 switch result {
                 case .success:
+                    MongoDBManager.shared.provider = Provider.facebook
                     self?.delegate?.authenticationViewControllerDidLogin()
                     break
                 case .failure(let error):

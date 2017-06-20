@@ -21,6 +21,7 @@ class MongoDBManager {
     let stitchClient: StitchClient
     let mongoClient: MongoDBClient
 
+    var authProvider: AuthProvider?
     
     // MARK: - Private Constants, Please change your app id in Stitch-Info.plist
     
@@ -62,6 +63,10 @@ class MongoDBManager {
         /// Init a mongo client
         mongoClient = MongoDBClient(stitchClient: stitchClient,
                                     serviceName: MongoDBManager.serviceName)
+    }
+    
+    func isAnonymous() -> Bool {
+        return authProvider is AnonymousAuthProvider
     }
     
     /// Get the logged in user name

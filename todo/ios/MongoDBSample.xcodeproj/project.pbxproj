@@ -19,6 +19,7 @@
 		369D1E4D1E6AF64D00ADE4DB /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */; };
 		369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */; };
 		36B1D4931EE36F88006B15B7 /* EmailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */; };
+		F4228C231EF96924009AB09F /* MongoDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4228C221EF96924009AB09F /* MongoDBManager.swift */; };
 		F474B43E1EF8C04300193E24 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 		36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAuthViewController.swift; sourceTree = "<group>"; };
 		716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		90C50230166CE80DBF894C8E /* Pods-MongoDBSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.debug.xcconfig"; sourceTree = "<group>"; };
+		F4228C221EF96924009AB09F /* MongoDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MongoDBManager.swift; sourceTree = "<group>"; };
 		F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +126,7 @@
 			children = (
 				367E0C931E45D40300EE2C00 /* AppDelegate */,
 				367E0CA31E45E4D000EE2C00 /* BridgingHeader */,
+				F4228C241EF96929009AB09F /* Classes */,
 				367E0C941E45D40300EE2C00 /* Controllers */,
 			);
 			path = Classes;
@@ -193,6 +196,15 @@
 				716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F4228C241EF96929009AB09F /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				F4228C221EF96924009AB09F /* MongoDBManager.swift */,
+			);
+			name = Classes;
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -323,6 +335,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4228C231EF96924009AB09F /* MongoDBManager.swift in Sources */,
 				369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */,
 				369D1E4C1E6AF64D00ADE4DB /* TodoListViewController.swift in Sources */,
 				3661C1831E6E09310081530D /* CheckBox.swift in Sources */,

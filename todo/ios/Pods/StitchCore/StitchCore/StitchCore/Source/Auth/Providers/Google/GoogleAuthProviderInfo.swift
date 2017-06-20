@@ -8,18 +8,20 @@ public struct GoogleAuthProviderInfo {
     }
     
     public private(set) var clientId: String
-    public private(set) var scopes: [String]
+    public private(set) var scopes: [String]?
     
     
     init?(dictionary: [String : Any]) {
         
-        guard let clientId = dictionary[Consts.clientIdKey] as? String,
-            let scopes = dictionary[Consts.scopesKey] as? [String]
+        guard let clientId = dictionary[Consts.clientIdKey] as? String
         else {
             return nil
         }
         
+        if let scopes = dictionary[Consts.scopesKey] as? [String] {
+            self.scopes = scopes
+        }
+        
         self.clientId = clientId
-        self.scopes = scopes
     }
 }

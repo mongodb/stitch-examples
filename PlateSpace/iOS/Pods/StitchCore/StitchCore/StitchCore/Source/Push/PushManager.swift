@@ -42,7 +42,7 @@ public class PushManager: AuthDelegate {
         Deregisters all active and previously active clients. This is only a best effort and
         there may be a period of time where the application will still receive notifications.
      */
-    public func onLogout(lastProvider: String) {
+    public func onLogout() {
         do {
             // Create any missing clients from saved data
             try PushProviderInfoHelper.fromPreferences().forEach { info in

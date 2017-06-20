@@ -6,7 +6,6 @@ public protocol StitchClientType {
     var appId: String { get }
     var auth: Auth? { get }
     var isAuthenticated: Bool { get }
-    var isAnonymous: Bool { get }
     
     // MARK: - Auth
     
@@ -38,7 +37,7 @@ public protocol StitchClientType {
     func login(withProvider provider: AuthProvider, link: Bool) -> StitchTask<Bool>
     
     @discardableResult
-    func logout() -> StitchTask<Provider?>
+    func logout() -> StitchTask<Bool>
     
     // MARK: - Requests
     
