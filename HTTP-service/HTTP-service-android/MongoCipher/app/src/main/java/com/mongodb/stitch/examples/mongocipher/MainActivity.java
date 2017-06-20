@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         final Map<String, Object> cipher = new HashMap<>();
 
         final Map<String, Object> pipe = new HashMap<>();
-        pipe.put("name", "AWSLambda");
+        pipe.put("name", "AWSLambdaPipeline");
 
         final Map<String, Object> args = new HashMap<>();
         args.put("message",msg);
