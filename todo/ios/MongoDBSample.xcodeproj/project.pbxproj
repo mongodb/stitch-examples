@@ -18,28 +18,9 @@
 		369D1E4C1E6AF64D00ADE4DB /* TodoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E491E6AF64D00ADE4DB /* TodoListViewController.swift */; };
 		369D1E4D1E6AF64D00ADE4DB /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */; };
 		369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */; };
-		36A025D21EF2E3E600450FB1 /* MongoDBService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36A025BF1EF2E33A00450FB1 /* MongoDBService.framework */; };
-		36A025D31EF2E3E600450FB1 /* MongoDBService.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 36A025BF1EF2E33A00450FB1 /* MongoDBService.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		36B1D4931EE36F88006B15B7 /* EmailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */; };
 		36B1D4F91EE9582C006B15B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 36B1D4F81EE9582C006B15B7 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		36A025BE1EF2E33A00450FB1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 36A025B51EF2E33900450FB1 /* MongoDBService.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DA09B01E4CE78200875C3C;
-			remoteInfo = MongoDBService;
-		};
-		36A025C01EF2E33A00450FB1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 36A025B51EF2E33900450FB1 /* MongoDBService.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 36DA09B91E4CE78300875C3C;
-			remoteInfo = MongoDBServiceTests;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		36D649781ECA0B7000ECC1F8 /* Embed Frameworks */ = {
@@ -48,7 +29,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				36A025D31EF2E3E600450FB1 /* MongoDBService.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,7 +50,6 @@
 		369D1E491E6AF64D00ADE4DB /* TodoListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoListViewController.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoListViewController.swift; sourceTree = SOURCE_ROOT; };
 		369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItem.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItem.swift; sourceTree = SOURCE_ROOT; };
 		369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItemTableViewCell.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItemTableViewCell.swift; sourceTree = SOURCE_ROOT; };
-		36A025B51EF2E33900450FB1 /* MongoDBService.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MongoDBService.xcodeproj; path = "mongo-baas-core-ios/MongoDBService/MongoDBService.xcodeproj"; sourceTree = "<group>"; };
 		36A025C31EF2E35600450FB1 /* ExtendedJson.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExtendedJson.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/ExtendedJson/build/Debug-iphoneos/ExtendedJson.framework"; sourceTree = "<group>"; };
 		36A025C41EF2E35600450FB1 /* StitchCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchCore.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchCore/build/Debug-iphoneos/StitchCore.framework"; sourceTree = "<group>"; };
 		36A025C51EF2E35600450FB1 /* StitchLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchLogger.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchLogger/build/Debug-iphoneos/StitchLogger.framework"; sourceTree = "<group>"; };
@@ -86,7 +65,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				040ACF5C8A9A83C133374801 /* Pods_MongoDBSample.framework in Frameworks */,
-				36A025D21EF2E3E600450FB1 /* MongoDBService.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,7 +94,6 @@
 			children = (
 				367E0C7A1E442BCC00EE2C00 /* Classes */,
 				367E0C671E44294F00EE2C00 /* Resources */,
-				367E0C841E44321900EE2C00 /* MongoSDK */,
 			);
 			path = MongoDBSample;
 			sourceTree = "<group>";
@@ -150,14 +127,6 @@
 				367E0C941E45D40300EE2C00 /* Controllers */,
 			);
 			path = Classes;
-			sourceTree = "<group>";
-		};
-		367E0C841E44321900EE2C00 /* MongoSDK */ = {
-			isa = PBXGroup;
-			children = (
-				36A025B51EF2E33900450FB1 /* MongoDBService.xcodeproj */,
-			);
-			path = MongoSDK;
 			sourceTree = "<group>";
 		};
 		367E0C931E45D40300EE2C00 /* AppDelegate */ = {
@@ -204,15 +173,6 @@
 				36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */,
 			);
 			path = Authentication;
-			sourceTree = "<group>";
-		};
-		36A025B61EF2E33900450FB1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				36A025BF1EF2E33A00450FB1 /* MongoDBService.framework */,
-				36A025C11EF2E33A00450FB1 /* MongoDBServiceTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		52E58D9E87FB3468EEA8EC5B /* Pods */ = {
@@ -288,35 +248,12 @@
 			mainGroup = 367E0C491E4428BE00EE2C00;
 			productRefGroup = 367E0C531E4428BE00EE2C00 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 36A025B61EF2E33900450FB1 /* Products */;
-					ProjectRef = 36A025B51EF2E33900450FB1 /* MongoDBService.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				367E0C511E4428BE00EE2C00 /* MongoDBSample */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		36A025BF1EF2E33A00450FB1 /* MongoDBService.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MongoDBService.framework;
-			remoteRef = 36A025BE1EF2E33A00450FB1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		36A025C11EF2E33A00450FB1 /* MongoDBServiceTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MongoDBServiceTests.xctest;
-			remoteRef = 36A025C01EF2E33A00450FB1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		367E0C501E4428BE00EE2C00 /* Resources */ = {
