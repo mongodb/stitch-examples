@@ -98,19 +98,22 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
             if let facebookAuthInfo = authInfo.facebookProviderInfo {
                 authAvailable = true
                 var readPermissions: [FacebookCore.ReadPermission] = []
-                for per in facebookAuthInfo.scopes! {
-                    switch per {
-                    case "public_profile":
-                        readPermissions.append(.publicProfile)
-                        break
-                    case "user_friends":
-                        readPermissions.append(.userFriends)
-                        break
-                    case "email":
-                        readPermissions.append(.email)
-                        break
-                    default:
-                        break
+                
+                if let scopes = facebookAuthInfo.scopes {
+                    scopes.forEach { per in
+                        switch per {
+                        case "public_profile":
+                            readPermissions.append(.publicProfile)
+                            break
+                        case "user_friends":
+                            readPermissions.append(.userFriends)
+                            break
+                        case "email":
+                            readPermissions.append(.email)
+                            break
+                        default:
+                            break
+                        }
                     }
                 }
                 let loginButton = LoginButton(readPermissions: readPermissions)
