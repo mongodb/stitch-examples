@@ -5,7 +5,7 @@ import StitchLogger
 import Security
 
 internal struct Consts {
-    static let DefaultBaseUrl =          "http://https://stitch.mongodb.com"
+    static let DefaultBaseUrl =          "https://stitch.mongodb.com"
     static let ApiPath =                 "/api/client/v1.0/app/"
     
     //User Defaults

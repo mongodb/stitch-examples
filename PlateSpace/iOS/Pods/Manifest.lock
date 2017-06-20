@@ -47,7 +47,7 @@ SPEC CHECKSUMS:
   FBSDKLoginKit: 6b92bd65f319d669d2b0730e49db495ef1660566
   MongoDBODM: 5ecefeec3ed3c430f510e89d0dba36cc5afaac32
   MongoDBService: bcd62936eeb8e1e45569adbb8bcf5fd30167fcf8
-  StitchCore: 9905ada07b59bbd46fec29a6604e3b8eea75a603
+  StitchCore: 7b5850500aba4776ec9532d417ef8fe4faee1788
   StitchLogger: ac79a0a301f6fffae7273c790d1e999d1f458c38
 
 PODFILE CHECKSUM: 0c571b13ded6ed45964bb77d40400f4da95de95c
