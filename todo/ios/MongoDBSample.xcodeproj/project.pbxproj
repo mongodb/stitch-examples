@@ -19,7 +19,7 @@
 		369D1E4D1E6AF64D00ADE4DB /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */; };
 		369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */; };
 		36B1D4931EE36F88006B15B7 /* EmailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */; };
-		36B1D4F91EE9582C006B15B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 36B1D4F81EE9582C006B15B7 /* GoogleService-Info.plist */; };
+		F474B43E1EF8C04300193E24 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -54,9 +54,9 @@
 		36A025C41EF2E35600450FB1 /* StitchCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchCore.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchCore/build/Debug-iphoneos/StitchCore.framework"; sourceTree = "<group>"; };
 		36A025C51EF2E35600450FB1 /* StitchLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchLogger.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchLogger/build/Debug-iphoneos/StitchLogger.framework"; sourceTree = "<group>"; };
 		36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAuthViewController.swift; sourceTree = "<group>"; };
-		36B1D4F81EE9582C006B15B7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		90C50230166CE80DBF894C8E /* Pods-MongoDBSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.debug.xcconfig"; sourceTree = "<group>"; };
+		F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,7 +104,7 @@
 				367E0C761E4429C700EE2C00 /* Assets.xcassets */,
 				367E0C771E4429C700EE2C00 /* Info.plist */,
 				360EAC911EB012450014A7E3 /* Stitch-Info.plist */,
-				36B1D4F81EE9582C006B15B7 /* GoogleService-Info.plist */,
+				F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */,
 				367E0C681E44298900EE2C00 /* Storyboards */,
 			);
 			path = Resources;
@@ -261,8 +261,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				367E0C741E4429BA00EE2C00 /* LaunchScreen.storyboard in Resources */,
+				F474B43E1EF8C04300193E24 /* GoogleService-Info.plist in Resources */,
 				360EAC921EB012450014A7E3 /* Stitch-Info.plist in Resources */,
-				36B1D4F91EE9582C006B15B7 /* GoogleService-Info.plist in Resources */,
 				367E0C781E4429C700EE2C00 /* Assets.xcassets in Resources */,
 				367E0C751E4429BA00EE2C00 /* Main.storyboard in Resources */,
 			);
@@ -459,7 +459,7 @@
 				INFOPLIST_FILE = MongoDBSample/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.zemingo.MongoDBSample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mongo.MongoDBSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "a1c88464-0500-4831-82f5-76f96cf8af1d";
 				PROVISIONING_PROFILE_SPECIFIER = ZemingoTeamDevProfile;
@@ -481,7 +481,7 @@
 				INFOPLIST_FILE = MongoDBSample/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.zemingo.MongoDBSample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mongo.MongoDBSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MongoDBSample/Classes/BridgingHeader/MongoDBSample-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;

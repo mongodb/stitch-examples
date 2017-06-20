@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>APP_ID</key>
-    <string>&lt;Your-App-ID&gt;</string>
+	<string>test-app-amjob</string>
 </dict>
 </plist>
