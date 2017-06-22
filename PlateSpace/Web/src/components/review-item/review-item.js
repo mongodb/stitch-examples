@@ -8,7 +8,7 @@ import {
   Colors
 } from '../../commons/common-styles/common-styles';
 import { Localization } from '../../localization';
-import Custombuttom from '../custom-button';
+import EditButton from '../custom-button';
 
 const styles = {
   container: {
@@ -67,8 +67,35 @@ const styles = {
     letterSpacing: '0px',
     fontStrech: 'normal',
     cursor: 'pointer'
-  }
+  },
+  thumbnailContainer: {
+    marginRight:'5px'
+  },
+  thumbnailImage: {
+    width:'50px', borderRadius:'3px'
+  },
+  imageDescription: {
+    position: 'absolute',
+  top: '0',
+  bottom: '0',
+  left: '0',
+  right: '0',
+  background: 'rgba(29, 106, 154, 0.72)',
+  color: '#fff',
+  visibility: 'hidden',
+  opacity: '0',
+  /* transition effect. not necessary */
+  transition: 'opacity .2s, visibility .2s'
+  },
 };
+
+const ThumbnailContainer = props =>
+  <div style={styles.thumbnailContainer}>
+    <a href={props.imageUrl} target='_blank' alt={props.imageRecognitionData}>
+      <img style={styles.thumbnailImage} src={props.imageUrl} alt={props.imageRecognitionData} title={props.imageRecognitionData} ></img>
+      <p style={styles.imageDescription}>{props.imageRecognitionData}</p>
+      </a>
+  </div>;
 
 const NameRateContainer = props =>
   <div style={styles.titleContainer}>
@@ -80,7 +107,7 @@ const NameRateContainer = props =>
       style={styles.stars}
     />
     {props.editable &&
-      <Custombuttom
+      <EditButton
         onClick={() => props.editClick(props.id)}
         style={styles.button}
         labelStyle={styles.buttonLabel}
@@ -99,7 +126,11 @@ const ReviewText = props => <div style={styles.text}>{props.text}</div>;
 const ReviewItem = props =>
   <div style={styles.container}>
     <Header {...props} />
+    <div style={{display:'flex'}}>
+    {props.imageUrl &&
+    <ThumbnailContainer {...props} />}
     <ReviewText text={props.text} />
+    </div>
   </div>;
 
 ReviewItem.propTypes = {
@@ -107,6 +138,8 @@ ReviewItem.propTypes = {
   rateValue: React.PropTypes.number,
   date: React.PropTypes.instanceOf(Date).isRequired,
   text: React.PropTypes.string.isRequired,
+  imageUrl: React.PropTypes.string,
+  imageRecognitionData: React.PropTypes.string,
   editable: React.PropTypes.bool,
   editClick: React.PropTypes.func
 };

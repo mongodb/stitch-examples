@@ -39,5 +39,18 @@ export const Styles = {
     paddingTop: '10px',
     marginBottom: '27px',
     resize: 'none'
+  },
+  dropZone: {
+    height:'80px',
+    width: '200px',
+    borderWidth: '2px',
+    borderColor: 'rgb(102, 102, 102)',
+    borderStyle: 'dashed',
+    borderRadius: '5px',
+    fontSize: '14px'
+  },
+  dropZoneText: {
+    fontSize: '14px',
+    textAlign: 'center'
   }
 };

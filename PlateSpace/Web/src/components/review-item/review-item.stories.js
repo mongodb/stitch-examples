@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf, action, linkTo } from '@kadira/storybook';
-import { mocks } from '../../storybook-mocks';
+import { mocks } from '../../mocks';
 import ReviewItem from './review-item';
 
 storiesOf('Review item', module)

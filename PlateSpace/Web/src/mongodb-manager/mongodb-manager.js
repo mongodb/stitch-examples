@@ -1,24 +1,25 @@
-import { StitchClient } from 'stitch';
+import { StitchClient, builtins } from 'mongodb-stitch';
 import { BSON } from 'mongodb-extjson';
 import geolib from 'geolib';
 
-const APP_NAME = '<YOUR-APP-NAME>';
-const SERVICE_NAME = '<YOUR-SERVICE-NAME>';
-const DB_NAME = 'iRestDB';
+const config = require('./../config.js');
+
+const CURRENT_LOCATION = config.CURRENT_LOCATION;
+
 const COLLECTIONS = {
   RESTAURANTS: 'restaurants',
   REVIEWS_RATINGS: 'reviewsRatings'
 };
 
 const { ObjectID, BSONRegExp, Double } = BSON;
-const options = {};
-const stitchClient = new StitchClient(APP_NAME, options);
-const db = stitchClient.service('mongodb', SERVICE_NAME).db(DB_NAME);
+const options = {baseUrl: config.STITCH_ENDPOINT };
+const stitchClient = new StitchClient(config.STITCH_APP_ID, options);
+const db = stitchClient.service('mongodb', config.MONGODB_SERVICE_NAME).db(config.DB_NAME);
 const restaurants = db.collection(COLLECTIONS.RESTAURANTS);
 const reviewsRatings = db.collection(COLLECTIONS.REVIEWS_RATINGS);
 
 const PAGE_SIZE = 60;
-const CURRENT_LOCATION = { latitude: 40.676676, longitude: -73.901132 };
+
 
 const attributeMapping = {
   WIFI: 'hasWifi',
@@ -113,6 +114,7 @@ function isValidReview({
   dateOfComment,
   comment
 }) {
+
   if (!_id || !owner_id || !nameOfCommenter || !dateOfComment) {
     return false;
   }
@@ -121,6 +123,7 @@ function isValidReview({
   if (!rate && !comment) {
     return false;
   }
+
   return true;
 }
 
@@ -130,7 +133,9 @@ function convertToReviewModel({
   nameOfCommenter,
   rate,
   dateOfComment,
-  comment
+  comment,
+  imageUrl,
+  imageRecognitionData
 }) {
   return {
     id: _id.toString(),
@@ -139,6 +144,8 @@ function convertToReviewModel({
     rateValue: (rate && Number(rate.toString())) || undefined,
     date: dateOfComment,
     text: comment,
+    imageUrl: imageUrl,
+    imageRecognitionData: imageRecognitionData,
     editable: owner_id === getUserId()
   };
 }
@@ -149,26 +156,13 @@ function firstOrUndefined(results) {
 
 function geoNear(latitude, longitude, query = {}, limit, minDistance = 0) {
   return stitchClient.executePipeline([
-    {
-      action: 'literal',
-      args: {
-        items: '%%vars.geo_matches'
-      },
-      let: {
-        geo_matches: {
-          '%pipeline': {
-            name: 'geoNear',
-            args: {
-              latitude: latitude,
-              longitude: longitude,
-              minDistance: new Double(minDistance),
-              query: query,
-              limit: limit
-            }
-          }
-        }
-      }
-    }
+    builtins.namedPipeline('geoNear', {
+      latitude: latitude,
+      longitude: longitude,
+      minDistance: new Double(minDistance),
+      query: query,
+      limit: limit
+    })
   ]);
 }
 
@@ -190,7 +184,7 @@ function findRestaurantsByGeoNear(
     PAGE_SIZE,
     minDistance
   )
-    .then(response => response.result)
+    .then(response => response.result[0])
     .then(data => data.map(convertToRestaurantModel));
 }
 
@@ -203,6 +197,7 @@ function getFilteredRestaurants(nameToSearch, attributes) {
 }
 
 function getRestaurantDetailsById(restaurantId) {
+
   return restaurants
     .find({ _id: new ObjectID(restaurantId) })
     .then(data => data.map(convertToRestaurantModel))
@@ -241,26 +236,33 @@ function executeUpdateRatingsPipeline(restaurantId) {
   ]);
 }
 
-function addReview(rateValue, text, restaurantId) {
-  const date = new Date();
-  const ownerId = getUserId();
-  const nameOfCommenter = getUserName();
+function addReview(rateValue, reviewText, imageS3Url, clarifaiConcepts, restaurantId) {
+  return getUserName()
+    .then(nameOfCommenter => {
+      const date = new Date();
+      const ownerId = getUserId();
+      var imageUrl; //we're only saving the image url if we were able to at least recognize one element on the picture with enough confidence
+      if(clarifaiConcepts) {
+        imageUrl = imageS3Url;
+      }
+      const query = {
+        comment: reviewText,
+        imageUrl: imageUrl,
+        imageRecognitionData: clarifaiConcepts,
+        restaurantId: new ObjectID(restaurantId),
+        owner_id: ownerId,
+        dateOfComment: date,
+        rate: rateValue > 0 && rateValue,
+        nameOfCommenter
+      };
 
-  const query = {
-    comment: text,
-    restaurantId: new ObjectID(restaurantId),
-    owner_id: ownerId,
-    dateOfComment: date,
-    rate: rateValue > 0 && rateValue,
-    nameOfCommenter
-  };
-
-  return reviewsRatings
-    .insertOne(query)
-    .then(() => executeUpdateRatingsPipeline(restaurantId));
+      return reviewsRatings
+        .insertOne(query)
+        .then(() => executeUpdateRatingsPipeline(restaurantId));
+    });
 }
 
-function updateReview(rateValue, text, reviewId, restaurantId) {
+function updateReview(reviewId, rateValue, text, imgUrl, imageConcepts, restaurantId) {
   const date = new Date();
 
   const query = {
@@ -271,45 +273,59 @@ function updateReview(rateValue, text, reviewId, restaurantId) {
     $set: {
       comment: text,
       dateOfComment: date,
-      rate: rateValue > 0 && rateValue
+      rate: rateValue > 0 && rateValue,
+      imageUrl: imgUrl,
+      imageRecognitionData: imageConcepts
     }
   };
 
   return reviewsRatings
     .updateOne(query, update)
-    .then(() => executeUpdateRatingsPipeline(restaurantId));
+    .then(() => executeUpdateRatingsPipeline(restaurantId))
+    .catch( err => console.warn('error in updateReview', err));
 }
 
 function getUserId() {
-  return stitchClient.auth().user._id;
+  return stitchClient.authedId();
 }
 
 function getUserName() {
-  return stitchClient.auth().user.data.name;
+  return stitchClient.userProfile()
+    .then(profile => 
+    profile.data.name ? profile.data.name : profile.data.email);
+    
 }
 
 function createAccount(email, password) {
-  return Promise.reject();
+  console.log('registering account', email, password)
+  return stitchClient.register(email, password);
+}
+
+function confirmAccount(tokenId, token) {
+  console.log('confirming account', tokenId, token)
+  return stitchClient.auth.provider('userpass').emailConfirm(tokenId, token);
 }
 
 function login(email, password) {
-  return Promise.reject();
+  return stitchClient.login(email, password);
 }
 
 function loginWithFacebook() {
-  stitchClient.authWithOAuth('facebook');
+  stitchClient.authenticate('facebook');
 }
 
+let isAnonymousLogin = false;
 function loginAnonymous() {
-  return stitchClient.anonymousAuth();
+  isAnonymousLogin = true;
+  return stitchClient.login();
 }
 
 function isAnonymous() {
-  return stitchClient.auth().provider === 'anon/user';
+  return isAnonymousLogin;
 }
 
 function isAuthenticated() {
-  return !!stitchClient.auth();
+  return !!stitchClient.authedId();
 }
 
 function logout() {
@@ -322,6 +338,7 @@ export const MongoDbManager = {
   getRestaurantDetailsById,
   getRestaurantReviews,
   createAccount,
+  confirmAccount,
   findRestaurantsByGeoNear,
   addReview,
   updateReview,

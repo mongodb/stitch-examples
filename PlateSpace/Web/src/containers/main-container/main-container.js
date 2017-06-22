@@ -5,6 +5,7 @@ import queryString from 'query-string';
 
 import RestaurantDetailsContainer from '../restaurant-details-container';
 import RestaurantsListContainer from '../restaurants-list-container';
+import ConfirmAccountContainer from '../confirm-account-container';
 import { Localization } from '../../localization';
 import { Colors } from '../../commons/common-styles/common-styles';
 import Header from '../../components/header';
@@ -65,6 +66,7 @@ class MainContainer extends Component {
     this.changeView = this.changeView.bind(this);
     this.navigateToDetails = this.navigateToDetails.bind(this);
     this.logout = this.logout.bind(this);
+    this.getParameterByName = this.getParameterByName.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -142,9 +144,20 @@ class MainContainer extends Component {
     MongoDbManager.logout().then(() => this.props.router.replace(`/`));
   }
 
-  render() {
-    const renderList = this.props.router.isActive({ pathname: 'restaurants' });
+ getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[[]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 
+  render() {
+    const routerPath = this.props.router.location.pathname;
+    var tokenValue = this.getParameterByName('token');
+    var tokenIdValue = this.getParameterByName('tokenId');
     return (
       <div style={styles.container}>
         <Header
@@ -156,18 +169,25 @@ class MainContainer extends Component {
           logoutClicked={this.logout}
           searchDefaultValue={this.state.restaurantName}
         />
-
-        {renderList
-          ? <RestaurantsListContainer
+        {routerPath === '/restaurants' && 
+          <RestaurantsListContainer
               restaurantName={this.state.restaurantName}
               filters={this.state.filters}
               onRestaurantClicked={this.navigateToDetails}
               onChangeView={this.changeView}
               showAsList={this.state.showAsList}
             />
-          : <RestaurantDetailsContainer
+        } 
+        {routerPath.startsWith('/restaurant-details') && 
+          <RestaurantDetailsContainer
               restaurantId={this.props.params.restId}
-            />}
+            />
+        } 
+        {routerPath === '/confirm' && 
+          <ConfirmAccountContainer 
+          token={tokenValue}
+          tokenId={tokenIdValue}/>
+        }
 
         <FilterDialog
           saveFilters={this.saveFilters}
