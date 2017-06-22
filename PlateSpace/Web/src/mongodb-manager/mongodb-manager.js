@@ -1,10 +1,10 @@
-import { StitchClient } from 'stitch';
+import { StitchClient } from 'mongodb-stitch';
 import { BSON } from 'mongodb-extjson';
 import geolib from 'geolib';
 
 const APP_NAME = '<YOUR-APP-NAME>';
 const SERVICE_NAME = '<YOUR-SERVICE-NAME>';
-const DB_NAME = 'iRestDB';
+const DB_NAME = 'PlateSpaceDB';
 const COLLECTIONS = {
   RESTAURANTS: 'restaurants',
   REVIEWS_RATINGS: 'reviewsRatings'
@@ -309,7 +309,7 @@ function isAnonymous() {
 }
 
 function isAuthenticated() {
-  return !!stitchClient.auth();
+  return !!stitchClient.authedId();
 }
 
 function logout() {
