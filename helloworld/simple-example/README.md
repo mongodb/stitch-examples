@@ -23,7 +23,7 @@ authentication, click the *Edit* button on the *Anonymous Authentication*
 line to open the configuration modal. Toggle the switch to enable anonymous 
 authentication.
 
-Alternatively, configure least one of the authentication providers listed below:
+Alternatively, configure at least one of the authentication providers listed below:
 
 ##### Facebook
 
