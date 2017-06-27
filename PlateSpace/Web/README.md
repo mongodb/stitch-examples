@@ -441,7 +441,7 @@ The first step is to retrieve a valid Bearer token from Clarifai. To do so, sign
 
 #### Stitch Pipeline Setup
 
-The application needs a pipeline to be able to call the Clarifai HTTP service with the proper format and parameters. As mentioned above we must configure a multi-stage pipeline to make sure we always call the Clarifai with a valid OAuth2 access token.
+The application needs a pipeline to be able to call the Clarifai HTTP service with the proper format and parameters. As mentioned above we must configure a multi-stage pipeline to make sure we always call the Clarifai API with a valid OAuth2 access token.
 
 Select the __Pipelines__ link in the left-hand menu add press the `New` button. Then enter the following values:
 
