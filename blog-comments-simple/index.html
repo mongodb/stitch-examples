@@ -1,0 +1,150 @@
+<h2>Adding comments to a blob with Stitch</h2>
+
+<p>In this example, we'll start with a very simple blog page and add commenting functionality.</p>
+
+<p>We'll do it all in a single html file just for simplicity.</p>
+
+<p>First, start with this in a file called <code>blog.html</code></p>
+
+<pre><code> &lt;html&gt;
+     &lt;head&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+         &lt;h3&gt;This is a great blog post&lt;/h3&gt;
+         &lt;div id="content"&gt;
+             I like to write about technology. Because I want to get on the front page of hacker news.
+         &lt;/div&gt;
+     &lt;/body&gt;
+ &lt;/html&gt;
+</code></pre>
+
+<p>Next we'll startup a single python webserver</p>
+
+<pre><code> python -m SimpleHTTPServer
+</code></pre>
+
+<p>Now browse to <a href="http://localhost:8000/blog.html">the page</a></p>
+
+<p>Ok, we have our basic page, time to add comments.
+Browse to your stitch application home page, on it you should see a script tag to load the stitch sdk and connect.
+Copy the first few lines that should look something like:</p>
+
+<pre><code>        &lt;script src="https://s3.amazonaws.com/stitch-sdks/js/library/298a2b586d91d462099e5d9f66fba0a687837abe/stitch.min.js"&gt;&lt;/script&gt;
+        &lt;script&gt;
+           const client = new stitch.StitchClient('eliot1-qffsf');
+           const db = client.service('mongodb', 'mongodb1').db('blog');
+</code></pre>
+
+<p>For the <code>db</code> argument, change the name to <code>blog</code> from whatever was there before.</p>
+
+<p>This is the basic setup code.</p>
+
+<p>Next we are going to add an onLoad handler.</p>
+
+<p>So add a function in the script block:</p>
+
+<pre><code>     function displayCommentsOnLoad() {
+         client.anonymousAuth().then(displayComments)
+     }
+</code></pre>
+
+<p>Add make your body tag look like:</p>
+
+<pre><code>&lt;body onLoad="displayCommentsOnLoad()"&gt;
+</code></pre>
+
+<p>That function firsts logs the user into stitch anonymously, and then dislpays any comments in the database.</p>
+
+<p>Since <code>dislpayComments</code> doesn't exist, lets add it:</p>
+
+<pre><code>     function displayComments() {
+         db.collection('comments').find({}).then((docs) =&gt; {
+             var html = "";
+             docs.forEach((doc, index) =&gt; {
+                 html += "&lt;div&gt;" + JSON.stringify(doc) + "&lt;/div&gt;";
+             });
+             document.getElementById("comments").innerHTML = html;
+         });
+     }
+</code></pre>
+
+<p>Reload the page, and you'll actually get an error!</p>
+
+<p>The namespace <code>blog.comments</code> isn't known to stitch so it won't let you query it.
+Lets fix that
+* Browse to the Stitch admin interface
+* Click on your atlas cluster
+* Click on the rules tab
+* Click "Add Namespace"
+* Create it with db: blog collection: comments
+* Now on the filtes table remove the filter there using delete since we aren't creating privately owned data.
+* Now on the Fields tab, click top level document
+* Make the READ rule empty <code>{}</code> and leave the write rule as is. This means that anyone can ready anything in the collection, but you can only edit or delete your own comments.</p>
+
+<p>Now lets reload our page again and it should work.
+Of course we have no comments, so lets fix that.</p>
+
+<p>At the bottom of the html file, add</p>
+
+<pre><code>    &lt;hr&gt;
+    &lt;div id="comments"&gt;&lt;/div&gt;
+    &lt;hr&gt;
+    Add a Comment: &lt;input id="new_comment"&gt;&lt;input type="submit" onClick="addComment()"&gt;
+</code></pre>
+
+<p>This creates a little form to add a comment.
+Not lets add the addComment function</p>
+
+<pre><code>     function addComment() {
+         var foo = document.getElementById("new_comment");
+         db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+         foo.value = "";
+     }
+</code></pre>
+
+<p>Now lets try it out!</p>
+
+<p>The entire thing looks like:</p>
+
+<pre><code> &lt;html&gt;
+     &lt;head&gt;
+         &lt;script src="https://s3.amazonaws.com/stitch-sdks/js/library/298a2b586d91d462099e5d9f66fba0a687837abe/stitch.min.js"&gt;&lt;/script&gt;
+         &lt;script&gt;
+          const client = new stitch.StitchClient('eliot1-qffsf');
+          const db = client.service('mongodb', 'mongodb1').db('blog');
+
+          function displayCommentsOnLoad() {
+              client.anonymousAuth().then(displayComments);
+          }
+
+          function displayComments() {
+              db.collection('comments').find({}).then((docs) =&gt; {
+                  var html = "";
+                  docs.forEach((doc, index) =&gt; {
+                      html += "&lt;div&gt;" + JSON.stringify(doc) + "&lt;/div&gt;";
+                  });
+                  document.getElementById("comments").innerHTML = html;
+              });
+          }
+
+          function addComment() {
+              var foo = document.getElementById("new_comment");
+              db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+              foo.value = "";
+          }
+
+         &lt;/script&gt;
+     &lt;/head&gt;
+     &lt;body onLoad="displayCommentsOnLoad()"&gt;
+         &lt;h3&gt;This is a great blog post&lt;/h3&gt;
+         &lt;div id="content"&gt;
+             I like to write about technology. Because I want to get on the front page of hacker news.
+         &lt;/div&gt;
+         &lt;hr&gt;
+         &lt;div id="comments"&gt;&lt;/div&gt;
+         &lt;hr&gt;
+         Add a Comment: &lt;input id="new_comment"&gt;&lt;input type="submit" onClick="addComment()"&gt;
+
+     &lt;/body&gt;
+ &lt;/html&gt;
+</code></pre>
