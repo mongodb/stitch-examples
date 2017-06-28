@@ -30,10 +30,10 @@ Ok, we have our basic page, time to add comments.
 Browse to your stitch application home page, on it you should see a script tag to load the stitch sdk and connect.
 Copy the first few lines that should look something like:
 
-            <script src="https://s3.amazonaws.com/stitch-sdks/js/library/298a2b586d91d462099e5d9f66fba0a687837abe/stitch.min.js"></script>
+            <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
             <script>
-               const client = new stitch.StitchClient('eliot1-qffsf');
-               const db = client.service('mongodb', 'mongodb1').db('blog');
+               const client = new stitch.StitchClient('mdbw17s1-poiib');
+               const db = client.service('mongodb', 'mongodb-atlas').db('blog');
 
 For the `db` argument, change the name to `blog` from whatever was there before.
 
@@ -41,17 +41,17 @@ This is the basic setup code.
 
 Next we are going to add an onLoad handler.
 
-So add a function in the script block:
+Add a function in the script block:
 
          function displayCommentsOnLoad() {
              client.anonymousAuth().then(displayComments)
          }
 
-Add make your body tag look like:
+And make your body tag look like:
 
     <body onLoad="displayCommentsOnLoad()">
 
-That function firsts logs the user into stitch anonymously, and then dislpays any comments in the database.
+That function first logs the user into stitch anonymously, and then dislpays any comments in the database.
 
 Since `dislpayComments` doesn't exist, lets add it:
 
@@ -108,10 +108,10 @@ The entire thing looks like:
 
      <html>
          <head>
-             <script src="https://s3.amazonaws.com/stitch-sdks/js/library/298a2b586d91d462099e5d9f66fba0a687837abe/stitch.min.js"></script>
+             <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
              <script>
-              const client = new stitch.StitchClient('eliot1-qffsf');
-              const db = client.service('mongodb', 'mongodb1').db('blog');
+              const client = new stitch.StitchClient('mdbw17s1-poiib');
+              const db = client.service('mongodb', 'mongodb-atlas').db('blog');
      
               function displayCommentsOnLoad() {
                   client.anonymousAuth().then(displayComments);
