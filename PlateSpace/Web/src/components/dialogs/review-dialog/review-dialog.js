@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Rate from "rc-rate";
 import Dropzone from "react-dropzone";
 import "rc-rate/assets/index.css";
-import { StitchClient, builtins  } from "mongodb-stitch";
+import { StitchClient, builtins } from "mongodb-stitch";
 
 import { Localization } from "../../../localization";
 import { Styles } from "./review-dialog-style";
@@ -10,7 +10,9 @@ import StyledDialog from "../styled-dialog";
 
 const config = require("../../../config.js");
 
-const stitchClient = new StitchClient(config.STITCH_APP_ID, {baseUrl: config.STITCH_ENDPOINT });
+const stitchClient = new StitchClient(config.STITCH_APP_ID, {
+  baseUrl: config.STITCH_ENDPOINT
+});
 
 class ReviewDialog extends Component {
   constructor(props) {
@@ -19,7 +21,7 @@ class ReviewDialog extends Component {
       rateValue: props.rateValue,
       reviewValue: props.reviewValue,
       imageUrlValue: props.imageUrlValue,
-      clarifaiConceptsValue:props.imageConceptsValue
+      clarifaiConceptsValue: props.imageConceptsValue
     };
 
     this.saveReview = this.saveReview.bind(this);
@@ -63,62 +65,74 @@ class ReviewDialog extends Component {
   }
 
   onDrop(files) {
-
     const file = files[0];
     const reader = new FileReader();
     let imageUrl;
     //var x = this;
-    reader.onload = (data) => {
-      let fileKey = stitchClient.authedId() + "_" + Date.now().toString() + "_" + file.name;
+    reader.onload = data => {
+      let fileKey =
+        stitchClient.authedId() + "_" + Date.now().toString() + "_" + file.name;
       let fileData = btoa(data.target.result);
       let fileContentType = file.type;
       var filteredConcepts;
-      
-      const s3 = stitchClient.service('aws/s3', config.S3_SERVICE_NAME);
+
+      const s3 = stitchClient.service("aws/s3", config.S3_SERVICE_NAME);
       const putPromise = stitchClient.executePipeline([
-        builtins.binary('base64', fileData),
-          s3.put(config.S3_BUCKET, fileKey, "public-read", fileContentType)]);
-          
-        putPromise.then(res => {
+        builtins.binary("base64", fileData),
+        s3.put(config.S3_BUCKET, fileKey, "public-read", fileContentType)
+      ]);
+
+      putPromise
+        .then(res => {
           console.log("AWS S3 url: ", res.result[0].location);
           imageUrl = res.result[0].location;
           this.setState({
             imageUrlValue: imageUrl
           });
-          if(imageUrl) {
-            stitchClient.executePipeline([builtins.namedPipeline('processImage', { imagePublicUrl: imageUrl })])
-           .then(res => {
-              console.log('clarifai result', res.result[0]);
-              var clarifaiResult = res.result[0].bodyJSON;
-              console.log('processImage pipeline result:', clarifaiResult);
-              var concepts = clarifaiResult.outputs[0].data.concepts;
-              console.log('Clarifai concepts before filtering:', concepts);
-              
-              concepts.forEach(function(concept) {
-                if(concept.value > config.IMAGE_RECOGNITION_CONFIDENCE_THRESHOLD) {
-                  if(!filteredConcepts) {
-                    filteredConcepts = concept.name;
+          if (imageUrl) {
+            stitchClient
+              .executePipeline([
+                builtins.namedPipeline("processImage", {
+                  imagePublicUrl: imageUrl
+                })
+              ])
+              .then(res => {
+                console.log("clarifai result", res.result[0]);
+                var clarifaiResult = res.result[0].bodyJSON;
+                console.log("processImage pipeline result:", clarifaiResult);
+                var concepts = clarifaiResult.outputs[0].data.concepts;
+                console.log("Clarifai concepts before filtering:", concepts);
+
+                concepts.forEach(function(concept) {
+                  if (
+                    concept.value >
+                    config.IMAGE_RECOGNITION_CONFIDENCE_THRESHOLD
+                  ) {
+                    if (!filteredConcepts) {
+                      filteredConcepts = concept.name;
+                    } else {
+                      filteredConcepts += ";" + concept.name;
+                    }
                   }
-                  else {
-                    filteredConcepts += ';' + concept.name;
-                  }
-                }
-              }, this);
-              console.log('Filtered Concepts', filteredConcepts);
-              if(filteredConcepts && filteredConcepts.length > 0)
-              this.setState({
-                clarifaiConceptsValue: filteredConcepts
+                }, this);
+                console.log("Filtered Concepts", filteredConcepts);
+                if (filteredConcepts && filteredConcepts.length > 0)
+                  this.setState({
+                    clarifaiConceptsValue: filteredConcepts
+                  });
+              })
+              .catch(err => {
+                console.error(
+                  "An error occurred in processImage pipeline: ",
+                  err
+                );
               });
-            }).catch(err => {
-          console.log("An error occurred in processImage pipeline: ", err);
-            });      
-          }    
+          }
         })
         .catch(err => {
-          console.log("An error occurred in S3 Service: ", err);
+          console.error("An error occurred in S3 Service: ", err);
         });
     };
-
     reader.readAsBinaryString(file);
   }
 
@@ -154,10 +168,11 @@ class ReviewDialog extends Component {
               onChange={this.rateValueChanged}
               style={{ fontSize: 55 }}
             />
-            
-              {!this.state.imageUrlValue &&
+
+            {!this.state.imageUrlValue &&
               <div>
-                <Dropzone style={Styles.dropZone}
+                <Dropzone
+                  style={Styles.dropZone}
                   multiple={false}
                   accept="image/png, image/jpg, image/jpeg"
                   onDrop={this.onDrop.bind(this)}
@@ -167,13 +182,17 @@ class ReviewDialog extends Component {
                   </p>
                 </Dropzone>
               </div>}
-              {this.state.imageUrlValue &&
-              <div style={{alignItems:'center'}}>
+            {this.state.imageUrlValue &&
+              <div style={{ alignItems: "center" }}>
                 <div>
-                <img src={this.state.imageUrlValue} title={this.state.clarifaiConceptsValue} alt={this.state.clarifaiConceptsValue} style={{width:'150px',textAlign:'center'}}/>
+                  <img
+                    src={this.state.imageUrlValue}
+                    title={this.state.clarifaiConceptsValue}
+                    alt={this.state.clarifaiConceptsValue}
+                    style={{ width: "150px", textAlign: "center" }}
+                  />
                 </div>
-              </div>             
-                }
+              </div>}
           </div>
         }
       />

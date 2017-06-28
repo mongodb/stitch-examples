@@ -5,14 +5,13 @@ var config = require("./config");
 
 axios.defaults.headers.common["Authorization"] = config.YELP_AUTH_TOKEN;
 
-var i = 0;
 const openingHours = [
   { start: "0800", end: "2200" },
   { start: "0900", end: "2300" },
   { start: "1000", end: "2400" }
 ];
 
-function createPlateSpace(data) {
+function createPlateSpace(data, i) {
   i++;
   return {
     name: data.name,
@@ -63,8 +62,9 @@ while (offset < 1000) {
 
 Promise.all(promises)
   .then(response => {
+    var i;
     const restaurants = flatten(response.map(item => item.data.businesses)).map(
-      createPlateSpace
+      createPlateSpace, i
     );
     mongoose.connect(config.MONGODB_ATLAS_URI);
     var db = mongoose.connection;
@@ -72,7 +72,7 @@ Promise.all(promises)
       var Restaurant = mongoose.model("Restaurant", restSchema);
       Restaurant.insertMany(restaurants.map(r => new Restaurant(r)))
         .then(() => db.close())
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
     });
   })
-  .catch(err => console.log(err));
+  .catch(err => console.error(err));

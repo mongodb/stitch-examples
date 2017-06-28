@@ -69,7 +69,7 @@ class ConfirmAccountContainer extends Component {
         });
       })
       .catch(error => {
-        console.log('error while confirming your account', error);
+        console.error('error while confirming your account', error);
         this.setState({
           showMessage: true,
           messageDialogTitle: Localization.ERRORS.TITLE,

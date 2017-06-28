@@ -17,7 +17,9 @@ Getting Started:
 The script creates new collection for restaurants, using Yelp Fusion API.
 
 Collection schema:
-    ```{
+
+```json
+    {
       name: String,
       address: String,
       phone: String,
@@ -29,10 +31,10 @@ Collection schema:
       averageRating: Number,
       numberOfRates: Number
     }
-    ```
+```
 
-Please notice that 'attributes' and 'openingHours' fields, are not taken from Yelp and generate fake data.
+Please note that `attributes` and `openingHours` fields, are not taken from Yelp and generate fake data.
 
-In order to delete the collection, please run the following line:
+In order to delete the collection, please run the following command:
 
-- `node clearRestCollection.js`
+`node clearRestCollection.js`

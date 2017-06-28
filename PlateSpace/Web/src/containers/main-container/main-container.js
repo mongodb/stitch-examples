@@ -66,7 +66,6 @@ class MainContainer extends Component {
     this.changeView = this.changeView.bind(this);
     this.navigateToDetails = this.navigateToDetails.bind(this);
     this.logout = this.logout.bind(this);
-    this.getParameterByName = this.getParameterByName.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -144,20 +143,11 @@ class MainContainer extends Component {
     MongoDbManager.logout().then(() => this.props.router.replace(`/`));
   }
 
- getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[[]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
   render() {
     const routerPath = this.props.router.location.pathname;
-    var tokenValue = this.getParameterByName('token');
-    var tokenIdValue = this.getParameterByName('tokenId');
+    const query = queryString.parse(window.location.search);
+    const tokenValue = query.token;
+    const tokenIdValue = query.tokenId;
     return (
       <div style={styles.container}>
         <Header
