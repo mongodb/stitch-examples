@@ -18,7 +18,7 @@ The script creates new collection for restaurants, using Yelp Fusion API.
 
 Collection schema:
 
-```json
+```javascript
     {
       name: String,
       address: String,

@@ -12,7 +12,6 @@ const openingHours = [
 ];
 
 function createPlateSpace(data, i) {
-  i++;
   return {
     name: data.name,
     address: data.location.display_address,
@@ -62,9 +61,8 @@ while (offset < 1000) {
 
 Promise.all(promises)
   .then(response => {
-    var i;
     const restaurants = flatten(response.map(item => item.data.businesses)).map(
-      createPlateSpace, i
+      createPlateSpace
     );
     mongoose.connect(config.MONGODB_ATLAS_URI);
     var db = mongoose.connection;
