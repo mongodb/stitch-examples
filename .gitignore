@@ -1,6 +1,5 @@
 coverage
 node_modules
-npm-debug.log
 .DS_Store
 tmp
 local.properties
