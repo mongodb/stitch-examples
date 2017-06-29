@@ -94,56 +94,6 @@ Create a new pipeline with the following parameters:
 * Press the `Done` button.
 * Scroll up and at the top press the `Save` button.
 
-#### userHasSingleReview pipeline
-
-This pipeline is used by the `Write` permission of the `platespace.reviewRatings` namespace.
-
-Add a new named pipeline and configure the following parameters:
-
-* __Name__: `userHasSingleReview`
-* __Private__:  Disabled
-* __Skip Rules__: Disabled
-* __Can Evaluate__: Leave set to `{}`
-* __Parameters__:
-  * `userId`: Required
-  * `restaurantId`: Required
-* __Output Type__: Boolean
-* __Service__: mongodb-atlas
-* __Action__: aggregate
-* __Value__:
-  ```json
-  {
-    "database": "platespace",
-    "collection": "reviewsRatings",
-    "pipeline": [
-      {
-        "$match": {
-          "owner_id": "%%vars.userId",
-          "restaurantId": "%%vars.restaurantId"
-        }
-      },
-      {
-        "$count": "result"
-      },
-      {
-        "$match": {
-          "result": 1
-        }
-      }
-    ]
-  }
-  ```
-* __Bind data to %%vars__:
-
-   ```json
-  {
-    "userId": "%%args.userId",
-    "restaurantId": "%%args.restaurantId"
-  }
-   ```
-* Press the `Done` button.
-* Scroll up and at the top press the `Save` button.
-
 #### aggregateRestaurant pipeline
 
 Add a new pipeline named `aggregateRestaurant` and configure the following parameters:
@@ -278,59 +228,12 @@ Stitch lets you set up rules for every collection in your database, for instance
   * __Write__:
   ```json
   {
-  "%and":
-    [
-      {
-        "%%root.owner_id": "%%user.id"
-      },
-      {
-        "%or": [
-          {
-            "%and": [
-              {
-                "%%true": {
-                  "%pipeline": {
-                    "name": "userHasSingleReview",
-                    "args": {
-                      "userId": "%%user.id",
-                      "restaurantId": "%%root.restaurantId"
-                    }
-                  }
-                }
-              },
-              {
-                "%%prevRoot": {
-                  "%exists": true
-                }
-              }
-            ]
-          },
-          {
-            "%and": [
-              {
-                "%%false": {
-                  "%pipeline": {
-                    "name": "userHasSingleReview",
-                    "args": {
-                      "userId": "%%user.id",
-                      "restaurantId": "%%root.restaurantId"
-                    }
-                  }
-                }
-              },
-              {
-                "%%prevRoot": {
-                  "%exists": false
-                }
-              }
-            ]
-          }
-        ]
-      }
-    ]
+  "owner_id": "%%user.id"
   }
   ```
 * Leave the `owner_id` field as is.
+
+__Important note__: There is a unique compound index on the reviewsRatings collection (restaurant_id/user_id) to prevent users from adding more than one review per restaurant.
 
 ### Authentication
 
