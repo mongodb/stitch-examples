@@ -258,7 +258,8 @@ function addReview(rateValue, reviewText, imageS3Url, clarifaiConcepts, restaura
 
       return reviewsRatings
         .insertOne(query)
-        .then(() => executeUpdateRatingsPipeline(restaurantId));
+        .then(() => executeUpdateRatingsPipeline(restaurantId))
+        .catch( err => console.error('error in addReview', err));
     });
 }
 
@@ -282,7 +283,7 @@ function updateReview(reviewId, rateValue, text, imgUrl, imageConcepts, restaura
   return reviewsRatings
     .updateOne(query, update)
     .then(() => executeUpdateRatingsPipeline(restaurantId))
-    .catch( err => console.warn('error in updateReview', err));
+    .catch( err => console.error('error in updateReview', err));
 }
 
 function getUserId() {
