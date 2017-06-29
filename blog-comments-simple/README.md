@@ -44,7 +44,7 @@ Next we are going to add an onLoad handler.
 Add a function in the script block:
 
          function displayCommentsOnLoad() {
-             client.anonymousAuth().then(displayComments)
+             client.login().then(displayComments)
          }
 
 And make your body tag look like:
@@ -114,7 +114,7 @@ The entire thing looks like:
               const db = client.service('mongodb', 'mongodb-atlas').db('blog');
      
               function displayCommentsOnLoad() {
-                  client.anonymousAuth().then(displayComments);
+                  client.login().then(displayComments);
               }
      
               function displayComments() {

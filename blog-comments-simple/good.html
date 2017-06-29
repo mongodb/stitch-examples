@@ -6,7 +6,7 @@
          const db = client.service('mongodb', 'mongodb-atlas').db('blog');
 
          function displayCommentsOnLoad() {
-             client.anonymousAuth().then(displayComments);
+             client.login().then(displayComments);
          }
 
          function displayComments() {
