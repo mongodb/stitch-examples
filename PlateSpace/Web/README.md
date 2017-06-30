@@ -233,7 +233,7 @@ Stitch lets you set up rules for every collection in your database, for instance
   ```
 * Leave the `owner_id` field as is.
 
-__Important note__: There is a unique compound index on the reviewsRatings collection (restaurant_id/user_id) to prevent users from adding more than one review per restaurant.
+__Important note__: There is a unique compound index on the reviewsRatings collection (on the *restaurantId* and *user_id* fields) to prevent users from adding more than one review per restaurant.
 
 ### Authentication
 
