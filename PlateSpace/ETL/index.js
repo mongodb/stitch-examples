@@ -51,6 +51,8 @@ var restSchema = mongoose.Schema({
   numberOfRates: Number
 });
 
+restSchema.index({ location: '2dsphere' });
+
 var offset = 0;
 var promises = [];
 
