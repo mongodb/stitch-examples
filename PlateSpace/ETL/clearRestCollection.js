@@ -16,6 +16,6 @@ var restSchema = mongoose.Schema({
 
 var Restaurant = mongoose.model('Restaurant', restSchema);
 
-mongoose.connect(config.MONGO_URI);
+mongoose.connect(config.MONGODB_ATLAS_URI);
 
 Restaurant.collection.remove();

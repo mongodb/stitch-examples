@@ -64,7 +64,7 @@ class RestaurantDetailsContainer extends Component {
     }
   }
 
-  editableFirstThanByDate(a, b) {
+  editableFirstThenByDate(a, b) {
     if (a.editable) {
       return -1;
     }
@@ -75,16 +75,19 @@ class RestaurantDetailsContainer extends Component {
   }
 
   fetchData(restaurantId) {
-    const restaurantDetails = MongoDbManager.getRestaurantDetailsById(
-      restaurantId
-    );
-    const restaurantReviews = MongoDbManager.getRestaurantReviews(restaurantId);
+    const restaurantDetails =
+      MongoDbManager.getRestaurantDetailsById(restaurantId);
+    const restaurantReviews =
+      MongoDbManager.getRestaurantReviews(restaurantId);
+
     return Promise.all([restaurantDetails, restaurantReviews])
       .then(results => {
         const details = results[0];
         const reviews = results[1];
+        if (details) {
+          details.reviews = reviews.sort(this.editableFirstThenByDate) || [];
+        }
 
-        details.reviews = reviews.sort(this.editableFirstThanByDate) || [];
         this.setState({ details, loading: false });
       })
       .catch(err => {
@@ -120,11 +123,11 @@ class RestaurantDetailsContainer extends Component {
     this.setState({ openEditReviewDialog: true, editedReview: reviewId });
   }
 
-  addReview(rateValue, reviewValue) {
+  addReview(rateValue, reviewValue, imageUrlValue, clarifaiConceptsValue) {
     const restaurantId = this.props.restaurantId;
     this.closeDialogs();
     this.setState({ loadingReviews: true });
-    MongoDbManager.addReview(rateValue, reviewValue, restaurantId)
+    MongoDbManager.addReview(rateValue, reviewValue, imageUrlValue, clarifaiConceptsValue, restaurantId)
       .then(() => this.fetchData(restaurantId))
       .then(() => this.setState({ loadingReviews: false }))
       .catch(err => {
@@ -133,11 +136,11 @@ class RestaurantDetailsContainer extends Component {
       });
   }
 
-  updateReview(rateValue, reviewValue, reviewId) {
+  updateReview(rateValue, reviewValue, imageUrlValue, imageRecoDataValue, reviewId) {
     const restaurantId = this.props.restaurantId;
     this.closeDialogs();
     this.setState({ loadingReviews: true });
-    MongoDbManager.updateReview(rateValue, reviewValue, reviewId, restaurantId)
+    MongoDbManager.updateReview(reviewId, rateValue, reviewValue, imageUrlValue, imageRecoDataValue, restaurantId)
       .then(() => this.fetchData(restaurantId))
       .then(() => this.setState({ loadingReviews: false }))
       .catch(err => {
@@ -200,6 +203,8 @@ class RestaurantDetailsContainer extends Component {
             rateValue={userReview.rateValue}
             reviewValue={userReview.text}
             reviewId={userReview.id}
+            imageUrlValue={userReview.imageUrl}
+            imageConceptsValue={userReview.imageRecognitionData}
             open={this.state.openEditReviewDialog}
             onCancelClick={this.closeDialogs}
             onOkClick={this.updateReview}
