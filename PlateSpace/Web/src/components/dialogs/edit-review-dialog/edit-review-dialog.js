@@ -9,6 +9,7 @@ const EditReviewDialog = props =>
     buttonText={Localization.REVIEW_DIALOG.BUTTON_TEXT_POST}
     title={Localization.REVIEW_DIALOG.TITLE_EDIT}
     validationText={Localization.REVIEW_DIALOG.VALIDATION_TEXT}
+    imageUploadText={Localization.REVIEW_DIALOG.IMAGE_UPLOAD_TEXT}
   />;
 
 EditReviewDialog.propTypes = {
@@ -17,6 +18,8 @@ EditReviewDialog.propTypes = {
   onOkClick: React.PropTypes.func.isRequired,
   rateValue: React.PropTypes.number,
   reviewValue: React.PropTypes.string,
+  imageUrlValue: React.PropTypes.string,
+  imageRecoginationDataValue: React.PropTypes.string,
   reviewId: React.PropTypes.string
 };
 

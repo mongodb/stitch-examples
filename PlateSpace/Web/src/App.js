@@ -46,6 +46,10 @@ class App extends Component {
             component={MainContainer}
             onEnter={enforceAuthentication}
           />
+          <Route
+            path="confirm"
+            component={MainContainer}
+          />
         </Router>
       </MuiThemeProvider>
     );

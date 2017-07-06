@@ -1,6 +1,6 @@
 {
-  "name": "restaurant-sample",
-  "version": "0.1.0",
+  "name": "platespace",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "date-fns": "^1.28.5",
@@ -8,25 +8,21 @@
     "google-map-react": "^0.23.0",
     "material-ui": "^0.18.2",
     "mongodb-extjson": "^1.0.4",
+    "mongodb-stitch": "^0.0.16",
     "query-string": "^4.3.4",
     "radium": "^0.18.2",
     "rc-rate": "^2.1.0",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-dropzone": "^3.13.2",
     "react-router": "3.0.1",
     "react-router-dom": "^4.0.0",
     "react-scroll-pagination": "^0.1.9",
     "react-tap-event-plugin": "^2.0.1",
-    "mongodb-stitch": "0.0.15",
     "storybook-addon-material-ui": "^0.7.7"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.21.0",
-    "babel-cli": "^6.24.1",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-preset-stage-1": "^6.24.1",
-    "radium": "^0.18.4",
     "react-scripts": "0.9.5"
   },
   "scripts": {
@@ -36,5 +32,22 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
-  }
+  },
+  "description": "A single page app for restaurant reviews built with MongoDB Stitch",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mongodb/platespace.git"
+  },
+  "keywords": [
+    "mongodb",
+    "atlas",
+    "stitch"
+  ],
+  "author": "MongoDB, Inc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mongodb/platespace/issues"
+  },
+  "homepage": "https://github.com/mongodb/platespace#readme"
 }

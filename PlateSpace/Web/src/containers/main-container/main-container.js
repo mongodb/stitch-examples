@@ -5,6 +5,7 @@ import queryString from 'query-string';
 
 import RestaurantDetailsContainer from '../restaurant-details-container';
 import RestaurantsListContainer from '../restaurants-list-container';
+import ConfirmAccountContainer from '../confirm-account-container';
 import { Localization } from '../../localization';
 import { Colors } from '../../commons/common-styles/common-styles';
 import Header from '../../components/header';
@@ -143,8 +144,10 @@ class MainContainer extends Component {
   }
 
   render() {
-    const renderList = this.props.router.isActive({ pathname: 'restaurants' });
-
+    const routerPath = this.props.router.location.pathname;
+    const query = queryString.parse(window.location.search);
+    const tokenValue = query.token;
+    const tokenIdValue = query.tokenId;
     return (
       <div style={styles.container}>
         <Header
@@ -156,18 +159,25 @@ class MainContainer extends Component {
           logoutClicked={this.logout}
           searchDefaultValue={this.state.restaurantName}
         />
-
-        {renderList
-          ? <RestaurantsListContainer
+        {routerPath === '/restaurants' && 
+          <RestaurantsListContainer
               restaurantName={this.state.restaurantName}
               filters={this.state.filters}
               onRestaurantClicked={this.navigateToDetails}
               onChangeView={this.changeView}
               showAsList={this.state.showAsList}
             />
-          : <RestaurantDetailsContainer
+        } 
+        {routerPath.startsWith('/restaurant-details') && 
+          <RestaurantDetailsContainer
               restaurantId={this.props.params.restId}
-            />}
+            />
+        } 
+        {routerPath === '/confirm' && 
+          <ConfirmAccountContainer 
+          token={tokenValue}
+          tokenId={tokenIdValue}/>
+        }
 
         <FilterDialog
           saveFilters={this.saveFilters}

@@ -9,6 +9,7 @@ const AddReviewDialog = props =>
     buttonText={Localization.REVIEW_DIALOG.BUTTON_TEXT_POST}
     title={Localization.REVIEW_DIALOG.TITLE_ADD}
     validationText={Localization.REVIEW_DIALOG.VALIDATION_TEXT}
+    imageUploadText={Localization.REVIEW_DIALOG.IMAGE_UPLOAD_TEXT}
   />;
 
 AddReviewDialog.propTypes = {
