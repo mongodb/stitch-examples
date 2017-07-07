@@ -35,11 +35,11 @@ In order to get our Stitch backend-as-a-service application fully set up, we mus
 ### Named pipelines
 
 Stitch lets you define named pipelines.
-Named pipelines are custom pipeline requests that could be executed from the client side / by rules on top of the collections (see Rules section below). To create a named pipeline, select the  `Pipelines` link in the left-hand menu and press the `New` button close to the `Named Pipelines` text.
+Named pipelines are custom pipeline requests that can be executed from the client side or by rules on a collection (see [Rules configuration](https://github.com/mongodb/stitch-examples/tree/master/PlateSpace/Web#rules-configuration) below). To create a named pipeline, select the `Pipelines` link in the left-hand menu and press the `New` button.
 
 #### geoNear pipeline
 
-Paginated geoLocation pipeline * in the app we are paginating from the nearest restaurant (nearest to the CURRENT_LOCATION value in src/mongodb-manager/mongodb-manager.js).
+A paginated geoLocation pipeline that allows the app to order and paginate restaurants that are closest to the `CURRENT_LOCATION` value as defined in *src/config.js*.
 
 Create a new pipeline with the following parameters:
 
@@ -330,7 +330,7 @@ The first step is to retrieve a valid Bearer token from Clarifai. To do so, sign
 * Sign in to the MongoDB Stitch console and press the `Add Service` button in the `Services` section of the left nav menu.
 * Select the __HTTP__ service, name it `Clarifai` and press the `Add service` button.
 * Select the __Rules__ tab and press the `Add Rule` button.
-* Check the `post` checkbox in the __Actions__ list
+* Enable the `Post` action in the __Actions__ list
 * In the __When__ text area, enter the following value:
   ```json
     {

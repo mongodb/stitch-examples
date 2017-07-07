@@ -35,10 +35,6 @@
   },
   "description": "A single page app for restaurant reviews built with MongoDB Stitch",
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mongodb/platespace.git"
-  },
   "keywords": [
     "mongodb",
     "atlas",
@@ -47,7 +43,7 @@
   "author": "MongoDB, Inc",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mongodb/platespace/issues"
+    "url": "https://github.com/mongodb/stitch-examples/issues"
   },
-  "homepage": "https://github.com/mongodb/platespace#readme"
+  "homepage": "https://github.com/mongodb/stitch-examples/tree/master/PlateSpace/Web#readme"
 }
