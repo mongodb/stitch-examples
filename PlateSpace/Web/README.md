@@ -39,7 +39,7 @@ Named pipelines are custom pipeline requests that can be executed from the clien
 
 #### geoNear pipeline
 
-Paginated geoLocation pipeline that allows the app to order and paginate restaurants from the restaurant that is closest to the `CURRENT_LOCATION` value as defined in *src/config.js*.
+A paginated geoLocation pipeline that allows the app to order and paginate restaurants that are closest to the `CURRENT_LOCATION` value as defined in *src/config.js*.
 
 Create a new pipeline with the following parameters:
 
