@@ -3,7 +3,7 @@ var flatten = require("lodash.flatten");
 var mongoose = require("mongoose");
 var config = require("./config");
 
-axios.defaults.headers.common["Authorization"] = config.YELP_AUTH_TOKEN;
+axios.defaults.headers.common["Authorization"] = "Bearer " + config.YELP_AUTH_TOKEN;
 
 const openingHours = [
   { start: "0800", end: "2200" },
@@ -35,7 +35,7 @@ function createPlateSpace(data, i) {
 }
 
 function getData(offset) {
-  return axios.get(`${config.YELP_RESTAURANTS_REQ}&offset=${offset}`);
+  return axios.get(`${config.YELP_RESTAURANTS_REQ}&latitude=${config.BASE_LOCATION_LATITUDE}&longitude=${config.BASE_LOCATION_LONGITUDE}&offset=${offset}`);
 }
 
 var restSchema = mongoose.Schema({
@@ -51,8 +51,6 @@ var restSchema = mongoose.Schema({
   numberOfRates: Number
 });
 
-restSchema.index({ location: '2dsphere' });
-
 var offset = 0;
 var promises = [];
 
@@ -63,13 +61,9 @@ while (offset < 1000) {
 
 Promise.all(promises)
   .then(response => {
-    const restaurants =
-      flatten(response.map(item => item.data.businesses))
-        .map(createPlateSpace)
-        .filter(item => Array.isArray(item.location.coordinates) &&
-          item.location.coordinates.length === 2 &&
-          !!item.location.coordinates[0] && !!item.location.coordinates[1]);
-
+    const restaurants = flatten(response.map(item => item.data.businesses)).map(
+      createPlateSpace
+    );
     mongoose.connect(config.MONGODB_ATLAS_URI);
     var db = mongoose.connection;
     db.once("open", () => {
