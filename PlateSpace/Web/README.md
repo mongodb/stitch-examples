@@ -35,7 +35,7 @@ In order to get our Stitch backend-as-a-service application fully set up, we mus
 ### Named pipelines
 
 Stitch lets you define named pipelines.
-Named pipelines are custom pipeline requests that could be executed from the client side or by collection (see [Rules configuration](https://github.com/mongodb/stitch-examples/tree/master/PlateSpace/Web#rules-configuration) below). To create a named pipeline, select the  `Pipelines` link in the left-hand menu and press the `New` button close to the `Named Pipelines` text.
+Named pipelines are custom pipeline requests that can be executed from the client side or by rules on a collection (see [Rules configuration](https://github.com/mongodb/stitch-examples/tree/master/PlateSpace/Web#rules-configuration) below). To create a named pipeline, select the `Pipelines` link in the left-hand menu and press the `New` button.
 
 #### geoNear pipeline
 
