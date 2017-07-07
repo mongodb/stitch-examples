@@ -61,9 +61,12 @@ while (offset < 1000) {
 
 Promise.all(promises)
   .then(response => {
-    const restaurants = flatten(response.map(item => item.data.businesses)).map(
-      createPlateSpace
-    );
+    const restaurants =
+      flatten(response.map(item => item.data.businesses))
+        .map(createPlateSpace)
+        .filter(item => Array.isArray(item.location.coordinates) &&
+          item.location.coordinates.length === 2 &&
+          !!item.location.coordinates[0] && !!item.location.coordinates[1]);
     mongoose.connect(config.MONGODB_ATLAS_URI);
     var db = mongoose.connection;
     db.once("open", () => {
