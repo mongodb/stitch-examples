@@ -310,9 +310,11 @@ var AwaitVerifyCode = class extends React.Component {
     );
   }
 };
-
+ 
 let formatPhoneNum = raw => {
-  return raw.replace(/\D/g, "");
+  let intl = (number[1] === "+");
+  let number = raw.replace(/\D/g, "");
+  return intl ? "+" + number : "+1" + number;
 };
 
 let generateCode = len => {
@@ -327,7 +329,7 @@ let generateCode = len => {
 var NumberConfirm = class extends React.Component {
   saveNumber(e) {
     if (e.keyCode == 13) {
-      if (formatPhoneNum(this._number.value).length == 10) {
+      if (formatPhoneNum(this._number.value).length >= 10) {
         // TODO: generate this code on the server-side.
         let code = generateCode(7);
         stitchClient
@@ -337,7 +339,7 @@ var NumberConfirm = class extends React.Component {
               service: "tw1",
               action: "send",
               args: {
-                to: "+1" + this._number.value,
+                to: this._number.value,
                 from: "%%values.ourNumber",
                 body: "Your confirmation code is " + code
               }
@@ -349,7 +351,7 @@ var NumberConfirm = class extends React.Component {
                 { _id: stitchClient.authedId(), number_status: "unverified" },
                 {
                   $set: {
-                    phone_number: "+1" + this._number.value,
+                    phone_number: this._number.value,
                     number_status: "pending",
                     verify_code: code
                   }
