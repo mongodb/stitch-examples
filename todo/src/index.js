@@ -270,14 +270,13 @@ var Home = function() {
 };
 
 function initUserInfo() {
-  users
+  return users
     .updateOne(
       { _id: stitchClient.authedId() },
       { $setOnInsert: { phone_number: "", number_status: "unverified" } },
       { upsert: true }
     )
-    .then(function() {});
-}
+};
 
 var AwaitVerifyCode = class extends React.Component {
   checkCode(e) {
@@ -402,8 +401,8 @@ var Settings = class extends React.Component {
   }
 
   componentWillMount() {
-    initUserInfo();
-    this.loadUser();
+    initUserInfo()
+    .then (() => this.loadUser())
   }
 
   render() {
