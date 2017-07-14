@@ -29,11 +29,11 @@ import ExtendedJson
              }
              
              var collectionName: String {
-                return "Restaurants"
+                return "restaurants"
              }
              
              var databaseName: String {
-                return "iRestDB"
+                return "platespace"
              }
      
         }

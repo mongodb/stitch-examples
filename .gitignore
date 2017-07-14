@@ -3,4 +3,10 @@ node_modules
 .DS_Store
 tmp
 local.properties
+PlateSpace/iOS/SoLoMoSample.xcworkspace/xcuserdata/*
+PlateSpace/iOS/Pods/Pods.xcodeproj/xcuserdata/*
+PlateSpace/iOS/PlateSpace.xcodeproj/xcuserdata/*
+PlateSpace/iOS/PlateSpace.xcworkspace/xcuserdata/*
+PlateSpace/iOS/build/*
+PlateSpace/iOS/Pods/Pods.xcodeproj/project.xcworkspace/xcuserdata/*
 *~
