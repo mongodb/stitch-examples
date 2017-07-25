@@ -2,8 +2,6 @@
 //  LocationManager.swift
 //  PlateSpace
 //
-//  Created by Miko Halevi on 3/7/17.
-//  Copyright © 2017 Miko Halevi. All rights reserved.
 //
 
 import Foundation

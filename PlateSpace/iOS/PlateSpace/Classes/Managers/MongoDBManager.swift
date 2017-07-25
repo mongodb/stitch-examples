@@ -2,9 +2,6 @@
 //  MongoDBManager.swift
 //  PlateSpace
 //
-//  Created by Miko Halevi on 6/13/17.
-//  Copyright © 2017 Miko Halevi. All rights reserved.
-//
 
 import Foundation
 

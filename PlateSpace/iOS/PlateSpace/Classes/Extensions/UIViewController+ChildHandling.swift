@@ -2,9 +2,6 @@
 //  UIViewController+ChildHandling.swift
 //  PlateSpace
 //
-//  Created by Miko Halevi on 3/9/17.
-//  Copyright © 2017 Miko Halevi. All rights reserved.
-//
 
 import Foundation
 import UIKit

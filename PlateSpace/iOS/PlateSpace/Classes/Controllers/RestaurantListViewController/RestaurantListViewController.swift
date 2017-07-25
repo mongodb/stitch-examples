@@ -2,9 +2,6 @@
 //  RestaurantListViewController.swift
 //  PlateSpace
 //
-//  Created by Miko Halevi on 3/5/17.
-//  Copyright © 2017 Miko Halevi. All rights reserved.
-//
 
 import UIKit
 import CoreLocation

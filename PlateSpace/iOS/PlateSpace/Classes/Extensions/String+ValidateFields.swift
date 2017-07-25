@@ -2,9 +2,6 @@
 //  String+ValidateFields.swift
 //  PlateSpace
 //
-//  Created by Ofir Zucker on 04/06/2017.
-//  Copyright © 2017 Miko Halevi. All rights reserved.
-//
 
 import Foundation
 
