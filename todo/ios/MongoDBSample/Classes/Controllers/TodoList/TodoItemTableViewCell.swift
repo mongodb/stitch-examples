@@ -2,9 +2,7 @@
 //  TodoItemTableViewCell.swift
 //  MongoDBSample
 //
-//  Created by Ofer Meroz on 04/03/2017.
-//  Copyright © 2017 Zemingo. All rights reserved.
-//
+
 
 import UIKit
 
