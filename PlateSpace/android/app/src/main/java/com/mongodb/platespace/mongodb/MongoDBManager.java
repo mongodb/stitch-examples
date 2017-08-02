@@ -55,9 +55,10 @@ public class MongoDBManager
     * */
     private class Statics
     {
-        private static final String DB_NAME = "YOUR_DB_NAME";
+
         private static final String APP_ID = "YOUR_APP_ID";
-        private static final String SERVICE_NAME = "YOUR_SERVICE_NAME";
+        private static final String SERVICE_NAME = "mongodb-atlas";
+        private static final String DB_NAME = "platespace";
     }
 
     /*
