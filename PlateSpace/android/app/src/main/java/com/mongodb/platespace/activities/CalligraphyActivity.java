@@ -1,4 +1,4 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;

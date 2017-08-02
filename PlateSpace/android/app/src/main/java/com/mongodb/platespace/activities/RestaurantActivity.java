@@ -1,4 +1,4 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -32,12 +32,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
-import com.mongodb.solomo.R;
-import com.mongodb.solomo.interfaces.QueryListener;
-import com.mongodb.solomo.model.Restaurant;
-import com.mongodb.solomo.model.Review;
-import com.mongodb.solomo.mongodb.MongoDBManager;
-import com.mongodb.solomo.utils.ProgressDialog;
+import com.mongodb.platespace.R;
+import com.mongodb.platespace.interfaces.QueryListener;
+import com.mongodb.platespace.model.Restaurant;
+import com.mongodb.platespace.model.Review;
+import com.mongodb.platespace.mongodb.MongoDBManager;
+import com.mongodb.platespace.utils.ProgressDialog;
 
 import java.util.LinkedList;
 import java.util.List;

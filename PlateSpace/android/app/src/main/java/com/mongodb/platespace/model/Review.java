@@ -1,4 +1,4 @@
-package com.mongodb.solomo.model;
+package com.mongodb.platespace.model;
 
 import android.util.Log;
 

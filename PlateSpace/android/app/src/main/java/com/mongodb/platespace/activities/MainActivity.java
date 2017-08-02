@@ -1,4 +1,4 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -27,13 +27,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mongodb.solomo.R;
-import com.mongodb.solomo.interfaces.LocationListener;
-import com.mongodb.solomo.interfaces.QueryListener;
-import com.mongodb.solomo.model.Attributes;
-import com.mongodb.solomo.model.Restaurant;
-import com.mongodb.solomo.mongodb.MongoDBManager;
-import com.mongodb.solomo.utils.ProgressDialog;
+import com.mongodb.platespace.R;
+import com.mongodb.platespace.interfaces.LocationListener;
+import com.mongodb.platespace.interfaces.QueryListener;
+import com.mongodb.platespace.model.Attributes;
+import com.mongodb.platespace.model.Restaurant;
+import com.mongodb.platespace.mongodb.MongoDBManager;
+import com.mongodb.platespace.utils.ProgressDialog;
 import com.paginate.Paginate;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.mongodb.solomo">
+          package="com.mongodb.platespace">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
-        android:name=".application.SoloMoApplication"
+        android:name="com.mongodb.platespace.application.PlateSpaceApplication"
         android:allowBackup="false"
         tools:replace="android:allowBackup"
         android:icon="@mipmap/ic_launcher"
@@ -25,7 +25,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
 
-        <activity android:name=".activities.SignInActivity"
+        <activity android:name="com.mongodb.platespace.activities.SignInActivity"
                   android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.MainActivity"
+        <activity android:name="com.mongodb.platespace.activities.MainActivity"
                   android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
@@ -43,9 +43,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
         </activity>
-        <activity android:name=".activities.SignUpActivity"
+        <activity android:name="com.mongodb.platespace.activities.SignUpActivity"
                   android:screenOrientation="sensorPortrait"/>
-        <activity android:name=".activities.RestaurantActivity"
+        <activity android:name="com.mongodb.platespace.activities.RestaurantActivity"
                   android:screenOrientation="sensorPortrait"/>
 
         <!--
@@ -61,7 +61,7 @@
             android:value="@string/google_maps_key"/>
 
         <activity
-            android:name=".activities.MapActivity"
+            android:name="com.mongodb.platespace.activities.MapActivity"
             android:label="@string/title_activity_map"
             android:screenOrientation="sensorPortrait">
         </activity>

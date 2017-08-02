@@ -1,4 +1,4 @@
-package com.mongodb.solomo.interfaces;
+package com.mongodb.platespace.interfaces;
 
 /**
  * Interface for queries on MongoDB

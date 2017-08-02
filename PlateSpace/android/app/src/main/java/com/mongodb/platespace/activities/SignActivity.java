@@ -1,4 +1,4 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -21,10 +21,10 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.mongodb.solomo.R;
-import com.mongodb.solomo.interfaces.QueryListener;
-import com.mongodb.solomo.mongodb.MongoDBManager;
-import com.mongodb.solomo.utils.ProgressDialog;
+import com.mongodb.platespace.R;
+import com.mongodb.platespace.interfaces.QueryListener;
+import com.mongodb.platespace.mongodb.MongoDBManager;
+import com.mongodb.platespace.utils.ProgressDialog;
 
 import org.json.JSONObject;
 

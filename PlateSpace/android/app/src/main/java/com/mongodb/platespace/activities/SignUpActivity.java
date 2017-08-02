@@ -1,6 +1,6 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
-import com.mongodb.solomo.R;
+import com.mongodb.platespace.R;
 
 
 public class SignUpActivity extends SignActivity

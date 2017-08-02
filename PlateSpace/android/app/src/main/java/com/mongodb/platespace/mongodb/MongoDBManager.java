@@ -1,4 +1,4 @@
-package com.mongodb.solomo.mongodb;
+package com.mongodb.platespace.mongodb;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,10 +11,10 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.mongodb.solomo.interfaces.QueryListener;
-import com.mongodb.solomo.model.Attributes;
-import com.mongodb.solomo.model.Restaurant;
-import com.mongodb.solomo.model.Review;
+import com.mongodb.platespace.interfaces.QueryListener;
+import com.mongodb.platespace.model.Attributes;
+import com.mongodb.platespace.model.Restaurant;
+import com.mongodb.platespace.model.Review;
 import com.mongodb.stitch.android.PipelineStage;
 import com.mongodb.stitch.android.StitchClient;
 import com.mongodb.stitch.android.auth.Auth;

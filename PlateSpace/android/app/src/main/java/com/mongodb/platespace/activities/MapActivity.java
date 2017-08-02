@@ -1,4 +1,4 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -19,8 +19,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.mongodb.solomo.R;
-import com.mongodb.solomo.model.Restaurant;
+import com.mongodb.platespace.R;
+import com.mongodb.platespace.model.Restaurant;
 
 import java.util.ArrayList;
 import java.util.HashMap;

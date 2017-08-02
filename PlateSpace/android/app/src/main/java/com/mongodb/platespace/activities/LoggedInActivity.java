@@ -1,4 +1,4 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -22,8 +22,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.mongodb.solomo.R;
-import com.mongodb.solomo.interfaces.LocationListener;
+import com.mongodb.platespace.R;
+import com.mongodb.platespace.interfaces.LocationListener;
 
 /**
  * Activity for location handling.

@@ -1,11 +1,11 @@
-package com.mongodb.solomo.application;
+package com.mongodb.platespace.application;
 
 import android.app.Application;
 
-import com.mongodb.solomo.R;
+import com.mongodb.platespace.R;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
-public class SoloMoApplication extends Application
+public class PlateSpaceApplication extends Application
 {
     @Override
     public void onCreate()

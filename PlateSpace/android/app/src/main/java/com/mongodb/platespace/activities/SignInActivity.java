@@ -1,9 +1,9 @@
-package com.mongodb.solomo.activities;
+package com.mongodb.platespace.activities;
 
 import android.content.Context;
 import android.content.Intent;
 
-import com.mongodb.solomo.R;
+import com.mongodb.platespace.R;
 
 public class SignInActivity extends SignActivity
 {
