@@ -3,7 +3,7 @@ var flatten = require("lodash.flatten");
 var mongoose = require("mongoose");
 var config = require("./config");
 
-axios.defaults.headers.common["Authorization"] = "Bearer " + config.YELP_AUTH_TOKEN;
+axios.defaults.headers.common["Authorization"] =  config.YELP_AUTH_TOKEN;
 
 const openingHours = [
   { start: "0800", end: "2200" },
