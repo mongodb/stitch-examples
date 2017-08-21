@@ -3,7 +3,7 @@ var flatten = require("lodash.flatten");
 var mongoose = require("mongoose");
 var config = require("./config");
 
-axios.defaults.headers.common["Authorization"] = config.YELP_AUTH_TOKEN;
+axios.defaults.headers.common["Authorization"] =  config.YELP_AUTH_TOKEN;
 
 const openingHours = [
   { start: "0800", end: "2200" },
@@ -35,7 +35,7 @@ function createPlateSpace(data, i) {
 }
 
 function getData(offset) {
-  return axios.get(`${config.YELP_RESTAURANTS_REQ}&offset=${offset}`);
+  return axios.get(`${config.YELP_RESTAURANTS_REQ}&latitude=${config.BASE_LOCATION_LATITUDE}&longitude=${config.BASE_LOCATION_LONGITUDE}&offset=${offset}`);
 }
 
 var restSchema = mongoose.Schema({
