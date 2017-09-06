@@ -15,15 +15,15 @@ android {
     signingConfigs {
         debug {
             storeFile file("../keys/debug.jks")
-            keyAlias 'platespace'
-            keyPassword 'platespace2017'
-            storePassword 'platespace2017'
+            keyAlias 'solomo'
+            keyPassword 'solomo2017'
+            storePassword 'solomo2017'
         }
         release {
             storeFile file("../keys/release.jks")
-            keyAlias 'platespace'
-            keyPassword 'platespace2017'
-            storePassword 'platespace2017'
+            keyAlias 'solomo'
+            keyPassword 'solomo2017'
+            storePassword 'solomo2017'
         }
     }
 
