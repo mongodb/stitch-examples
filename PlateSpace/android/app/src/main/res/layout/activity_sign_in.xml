@@ -30,11 +30,13 @@
             app:fontPath="@string/font_comfortaa_light"
         />
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="0dp"
-                      android:layout_weight="1"
-                      android:gravity="center_horizontal"
-                      android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <EditText
                 android:id="@+id/email"
@@ -43,7 +45,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/sign_in_space"
                 android:hint="@string/email_hint"
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress"
+                android:visibility="invisible" />
 
             <EditText
                 android:id="@+id/password"
@@ -52,28 +55,32 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/sign_in_space"
                 android:hint="@string/password_hint"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword"
+                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/sign_in"
                 style="@style/OrangeButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/log_in"/>
+                android:text="@string/log_in"
+                android:visibility="invisible" />
 
             <TextView
                 style="@style/BaseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/or"/>
+                android:text="@string/or"
+                android:visibility="invisible" />
 
             <Button
                 android:id="@+id/sign_up"
                 style="@style/TransparentButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/create_new_account"/>
+                android:text="@string/create_new_account"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
