@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Stitch Sample Push Notification App</string>
+    <string name="subscribe_holidays">Holidays</string>
+    <string name="subscribe_quotes">Quotes</string>
+    <string name="btn_subscribe">Subscribe</string>
+</resources>
