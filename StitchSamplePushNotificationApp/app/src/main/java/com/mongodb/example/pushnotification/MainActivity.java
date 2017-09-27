@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,15 +28,15 @@ public class MainActivity extends AppCompatActivity {
     private StitchClient stitchClient;
 
     private GCMPushClient pushClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        stitchClient =  new StitchClient(this, "STICH-APP-ID");
+        stitchClient = new StitchClient(this, "STICH-APP-ID");
 
         initLogin();
 
-        setContentView(R.layout.activity_main);
     }
 
     private void initLogin() {
@@ -54,22 +54,25 @@ public class MainActivity extends AppCompatActivity {
                                     initGCMClient();
                                 } else {
                                     Log.e(TAG, "Error logging in anonymously", task.getException());
+                                    Toast.makeText(getApplicationContext(), "Error logging in anonymously.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
                     } else {
                         Log.e(TAG, "Enable Anonymous Login", task.getException());
+                        Toast.makeText(getApplicationContext(), "You must enable Anonymous Login in Stitch.", Toast.LENGTH_LONG).show();
                     }
-
                 } else {
                     Log.e(TAG, "Error getting authentication info", task.getException());
+                    Toast.makeText(getApplicationContext(), "Error getting authentication info.", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
     private void initGCMClient() {
-        stitchClient.getPushProviders().addOnSuccessListener(new OnSuccessListener<AvailablePushProviders>() {
+        stitchClient.getPushProviders()
+                .addOnSuccessListener(new OnSuccessListener<AvailablePushProviders>() {
             @Override
             public void onSuccess(final AvailablePushProviders availablePushProviders) {
                 if (!availablePushProviders.hasGCM()) {
@@ -81,9 +84,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull final Task<Void> task) {
                         if (!task.isSuccessful()) {
                             Log.d(TAG, "Registration failed: " + task.getException());
+                            Toast.makeText(getApplicationContext(), "Error registering client for GCM.", Toast.LENGTH_LONG).show();
                             return;
                         }
+
                         Log.d(TAG, "Registration completed");
+                        Toast.makeText(getApplicationContext(), "Successfully registered client for GCM.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -91,24 +97,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /** Called when the user registers for push notification topics
+    /** Called when the user subscribes to specific push notification topics.
+     * The method is the onClick method for button2.
      * @param view
      */
     public void subscribeToTopic(View view) {
 
         if (!stitchClient.isAuthenticated()) {
             Log.e(TAG, "Not Logged In.");
+            Toast.makeText(getApplicationContext(), "Error: Not logged in.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        final TextView txtView = (TextView) findViewById(R.id.textView);
-        txtView.setText("");
-        txtView.setVisibility(View.INVISIBLE);
-        String subscriptionStatus = "";
-
         CheckBox chkboxHolidays = (CheckBox) findViewById(R.id.checkBox_holidays);
 
-        if (chkboxHolidays.isChecked()){
+        if (chkboxHolidays.isChecked() ) {
             pushClient.subscribeToTopic(TOPIC_HOLIDAYS).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull final Task<Void> task) {
@@ -116,10 +119,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "Error subscribing to topic " + task.getException());
                         return;
                     }
-                    Log.d(TAG, "Subscribed to topic Holidays");
-                    txtView.append("Subscribed to topic Holidays.\n");
-                }
 
+                    Log.d(TAG, "Subscribed to topic Holidays");
+                    Toast.makeText(getApplicationContext(), "Subscribed to topic Holidays.", Toast.LENGTH_LONG).show();
+                }
             });
         } else {
             pushClient.unsubscribeFromTopic(TOPIC_HOLIDAYS).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -127,12 +130,10 @@ public class MainActivity extends AppCompatActivity {
                 public void onComplete(@NonNull final Task<Void> task) {
                     if (!task.isSuccessful()) {
                         Log.d(TAG, "Error Unsubscribing to topic " + task.getException());
+                        Toast.makeText(getApplicationContext(), "Error unsubscribing to topic Holidays.", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Log.d(TAG, "Successfully Unsubscribed to topic Holidays");
-
                 }
-
             });
         }
 
@@ -144,11 +145,12 @@ public class MainActivity extends AppCompatActivity {
                 public void onComplete(@NonNull final Task<Void> task) {
                     if (!task.isSuccessful()) {
                         Log.d(TAG, "Error subscribing to topic " + task.getException());
+                        Toast.makeText(getApplicationContext(), "Error subscribing to topic.", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Log.d(TAG, "Subscribed to topic Quotes.");
-                    txtView.append("Subscribed to topic Quotes.");
 
+                    Log.d(TAG, "Subscribed to topic Quotes.");
+                    Toast.makeText(getApplicationContext(), "Subscribed to topic Quotes.", Toast.LENGTH_LONG).show();
                 }
 
             });
@@ -158,14 +160,13 @@ public class MainActivity extends AppCompatActivity {
                 public void onComplete(@NonNull final Task<Void> task) {
                     if (!task.isSuccessful()) {
                         Log.d(TAG, "Error Unsubscribing to topic " + task.getException());
+                        Toast.makeText(getApplicationContext(), "Error unsubscribing to topic Quotes.", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Log.d(TAG, "Successfully Unsubscribed to topic Quotes.");
-
                 }
 
             });
         }
-        txtView.setVisibility(View.VISIBLE);
+
     }
 }

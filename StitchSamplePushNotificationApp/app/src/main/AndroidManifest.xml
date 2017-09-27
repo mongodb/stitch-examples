@@ -25,10 +25,12 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
+                <!-- Specify your app package name-->
                 <category android:name="com.mongodb.example.pushnotification" />
             </intent-filter>
         </receiver>
 
+        <!-- Name of your GCM ListenerService -->
         <service
             android:name=".MyGCMListenerService"
             android:exported="false">
