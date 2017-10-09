@@ -7,21 +7,24 @@ We'll do it all in a single html file just for simplicity.
 
 First, start with this in a file called `blog.html`
 
-
-     <html>
-         <head>
-         </head>
-         <body>
-             <h3>This is a great blog post</h3>
-             <div id="content">
-                 I like to write about technology. Because I want to get on the front page of hacker news.
-             </div>
-         </body>
-     </html>
+```html
+<html>
+   <head>
+   </head>
+   <body>
+       <h3>This is a great blog post</h3>
+       <div id="content">
+           I like to write about technology. Because I want to get on the front page of hacker news.
+       </div>
+   </body>
+</html>
+```
 
 Next we'll startup a simple python webserver
 
-     python -m SimpleHTTPServer
+```bash
+python -m SimpleHTTPServer
+```
 
 Now browse to [the page](http://localhost:8000/blog.html)
 
@@ -30,10 +33,14 @@ Ok, we have our basic page, time to add comments.
 Browse to your stitch application home page, on it you should see a script tag to load the stitch sdk and connect.
 Copy the first few lines that should look something like:
 
-            <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
-            <script>
-               const client = new stitch.StitchClient('mdbw17s1-poiib');
-               const db = client.service('mongodb', 'mongodb-atlas').db('blog');
+```js
+<script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
+<script>
+   const client = new stitch.StitchClient('mdbw17s1-poiib');
+   const db = client.service('mongodb', 'mongodb-atlas').db('blog');
+   // ...
+</script>
+```
 
 For the `db` argument, change the name to `blog` from whatever was there before.
 
@@ -43,24 +50,30 @@ Next we are going to add an onLoad handler.
 
 Add a function in the script block:
 
-         function displayCommentsOnLoad() {
-             client.login().then(displayComments)
-         }
+```js
+function displayCommentsOnLoad() {
+  client.login().then(displayComments)
+}
+```
 
 And make your body tag look like:
 
-    <body onLoad="displayCommentsOnLoad()">
+```html
+  <body onload="displayCommentsOnLoad()">
+```
 
-That function first logs the user into stitch anonymously, and then dislpays any comments in the database.
+That function first logs the user into stitch anonymously, and then displays any comments in the database.
 
-Since `dislpayComments` doesn't exist, lets add it:
+Since `dispayComments` doesn't exist, lets add it:
 
-         function displayComments() {
-             db.collection('comments').find({}).then(docs => {
-                 var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
-                 document.getElementById("comments").innerHTML = html;
-             });
-         }
+```js
+function displayComments() {
+   db.collection('comments').find({}).then(docs => {
+       var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
+       document.getElementById("comments").innerHTML = html;
+   });
+}
+```
 
 Reload the page, and you'll actually get an error!
 
@@ -80,19 +93,23 @@ Of course we have no comments, so lets fix that.
 
 At the bottom of the html file, add
 
-        <hr>
-        <div id="comments"></div>
-        <hr>
-        Add a Comment: <input id="new_comment"><input type="submit" onClick="addComment()">
+```html
+  <hr>
+  <div id="comments"></div>
+  <hr>
+  Add a Comment: <input id="new_comment"><button type="submit" onclick="addComment()">
+```
 
 This creates a little form to add a comment.
 Not lets add the addComment function
 
-         function addComment() {
-             var foo = document.getElementById("new_comment");
-             db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
-             foo.value = "";
-         }
+```js
+  function addComment() {
+     var foo = document.getElementById("new_comment");
+     db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+     foo.value = "";
+  }
+```
 
 Now lets try it out!
 
@@ -102,45 +119,43 @@ You should now be able to add comments to your blog!
 The entire thing looks like:
 
 
-
-
-
-
-     <html>
-         <head>
-             <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
-             <script>
-              const client = new stitch.StitchClient('mdbw17s1-poiib');
-              const db = client.service('mongodb', 'mongodb-atlas').db('blog');
-     
-              function displayCommentsOnLoad() {
-                  client.login().then(displayComments);
-              }
-     
-              function displayComments() {
-                  db.collection('comments').find({}).then(docs => {
-                      var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
-                      document.getElementById("comments").innerHTML = html;
-                  });
-              }
-              
-              function addComment() {
-                  var foo = document.getElementById("new_comment");
-                  db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
-                  foo.value = "";
-              }
-              
-             </script>
-         </head>
-         <body onLoad="displayCommentsOnLoad()">
-             <h3>This is a great blog post</h3>
-             <div id="content">
-                 I like to write about technology. Because I want to get on the front page of hacker news.
-             </div>
-             <hr>
-             <div id="comments"></div>
-             <hr>
-             Add a Comment: <input id="new_comment"><input type="submit" onClick="addComment()">
-                 
-         </body>
-     </html>
+```html
+ <html>
+     <head>
+         <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
+         <script>
+          const client = new stitch.StitchClient('mdbw17s1-poiib');
+          const db = client.service('mongodb', 'mongodb-atlas').db('blog');
+ 
+          function displayCommentsOnLoad() {
+              client.login().then(displayComments);
+          }
+ 
+          function displayComments() {
+              db.collection('comments').find({}).then(docs => {
+                  var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
+                  document.getElementById("comments").innerHTML = html;
+              });
+          }
+          
+          function addComment() {
+              var foo = document.getElementById("new_comment");
+              db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+              foo.value = "";
+          }
+          
+         </script>
+     </head>
+     <body onload="displayCommentsOnLoad()">
+         <h3>This is a great blog post</h3>
+         <div id="content">
+             I like to write about technology. Because I want to get on the front page of hacker news.
+         </div>
+         <hr>
+         <div id="comments"></div>
+         <hr>
+         Add a Comment: <input id="new_comment"><input type="submit" onclick="addComment()">
+             
+     </body>
+ </html>
+```
