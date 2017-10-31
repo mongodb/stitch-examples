@@ -1,10 +1,10 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {StitchClient} from 'stitch';
+import {StitchClient} from 'mongodb-stitch';
 
 // These settings should match the ones you've configured in the Stitch admin app.
 const APP_ID = "helloworld-fgyjb"
-const MONGO_SERVICE_NAME = "mongodb1"
+const MONGO_SERVICE_NAME = "mongodb-atlas"
 const DB_NAME = "app-fgyjb"
 const ITEMS_COLLECTION = "items"
 const client = new StitchClient(APP_ID)
@@ -53,9 +53,9 @@ const HelloWorld = class extends React.Component {
       // User is not authenticated; display login flow
       return (
         <div>
-          <button onClick={() => this.props.client.authWithOAuth("facebook")}>Log in with Facebook</button>
-          <button onClick={() => this.props.client.authWithOAuth("google")}>Log in with Google</button>
-          <button onClick={() => this.props.client.anonymousAuth(true).then(()=>{window.location.replace("/")})}>Log in anonymously</button>
+          <button onClick={() => this.props.client.authenticate("facebook")}>Log in with Facebook</button>
+          <button onClick={() => this.props.client.authenticate("google")}>Log in with Google</button>
+          <button onClick={() => this.props.client.login().then(()=>{window.location.replace("/")})}>Log in anonymously</button>
         </div>
       )
     }
