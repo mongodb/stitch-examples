@@ -1,10 +1,10 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {StitchClient} from 'stitch';
+import {StitchClient} from 'mongodb-stitch';
 
 // These settings should match the ones you've configured in the Stitch admin app.
 const APP_ID = "helloworld-fgyjb"
-const MONGO_SERVICE_NAME = "mongodb1"
+const MONGO_SERVICE_NAME = "mongodb-atlas"
 const DB_NAME = "app-fgyjb"
 const ITEMS_COLLECTION = "items"
 const client = new StitchClient(APP_ID)
