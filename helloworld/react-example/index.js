@@ -53,9 +53,9 @@ const HelloWorld = class extends React.Component {
       // User is not authenticated; display login flow
       return (
         <div>
-          <button onClick={() => this.props.client.authWithOAuth("facebook")}>Log in with Facebook</button>
-          <button onClick={() => this.props.client.authWithOAuth("google")}>Log in with Google</button>
-          <button onClick={() => this.props.client.anonymousAuth(true).then(()=>{window.location.replace("/")})}>Log in anonymously</button>
+          <button onClick={() => this.props.client.authenticate("facebook")}>Log in with Facebook</button>
+          <button onClick={() => this.props.client.authenticate("google")}>Log in with Google</button>
+          <button onClick={() => this.props.client.login().then(()=>{window.location.replace("/")})}>Log in anonymously</button>
         </div>
       )
     }
