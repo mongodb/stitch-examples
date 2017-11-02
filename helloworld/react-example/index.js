@@ -3,7 +3,7 @@ import {render} from 'react-dom';
 import {StitchClient} from 'stitch';
 
 // These settings should match the ones you've configured in the Stitch admin app.
-const APP_ID = "helloworld-fgyjb"
+const APP_ID = "<your-app-id>"
 const MONGO_SERVICE_NAME = "mongodb1"
 const DB_NAME = "app-fgyjb"
 const ITEMS_COLLECTION = "items"
