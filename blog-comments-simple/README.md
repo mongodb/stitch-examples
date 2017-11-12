@@ -71,7 +71,7 @@ Lets fix that
 * Click on the rules tab
 * Click "Add Namespace"
 * Create it with db: blog collection: comments
-* Now on the filtes table remove the filter there using delete since we aren't creating privately owned data.
+* Now on the Filters tab remove the filter there using delete since we aren't creating privately owned data.
 * Now on the Fields tab, click top level document
 * Make the READ rule empty `{}` and leave the write rule as is. This means that anyone can ready anything in the collection, but you can only edit or delete your own comments.
 
