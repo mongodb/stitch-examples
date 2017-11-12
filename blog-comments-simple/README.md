@@ -53,7 +53,7 @@ And make your body tag look like:
 
 That function first logs the user into stitch anonymously, and then dislpays any comments in the database.
 
-Since `dislpayComments` doesn't exist, lets add it:
+Since `displayComments` doesn't exist, lets add it:
 
          function displayComments() {
              db.collection('comments').find({}).then(docs => {
