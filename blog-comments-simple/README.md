@@ -86,7 +86,7 @@ At the bottom of the html file, add
         Add a Comment: <input id="new_comment"><input type="submit" onClick="addComment()">
 
 This creates a little form to add a comment.
-Not lets add the addComment function
+Now lets add the addComment function
 
          function addComment() {
              var foo = document.getElementById("new_comment");
