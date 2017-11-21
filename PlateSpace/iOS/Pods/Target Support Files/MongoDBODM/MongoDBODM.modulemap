@@ -1,6 +1,0 @@
-framework module MongoDBODM {
-  umbrella header "MongoDBODM-umbrella.h"
-
-  export *
-  module * { export * }
-}

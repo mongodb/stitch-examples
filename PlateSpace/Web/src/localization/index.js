@@ -1,1 +1,0 @@
-export { Localization } from './localization';

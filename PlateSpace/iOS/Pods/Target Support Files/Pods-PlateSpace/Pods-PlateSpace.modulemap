@@ -1,6 +1,0 @@
-framework module Pods_PlateSpace {
-  umbrella header "Pods-PlateSpace-umbrella.h"
-
-  export *
-  module * { export * }
-}

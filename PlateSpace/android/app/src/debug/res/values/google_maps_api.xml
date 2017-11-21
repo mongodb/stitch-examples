@@ -1,5 +1,0 @@
-<resources>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-        YOUR_GOOGLE_MAPS_API
-    </string>
-</resources>
