@@ -1,0 +1,16 @@
+{
+  "name": "stitch-tutorial",
+  "version": "1.0.0",
+  "description": "Dashboard Tutorial for MongoDB Stitch",
+  "main": "data_generator.js",
+  "scripts": {
+    "start": "http-server &"
+  },
+  "author": "Drew DiPalma",
+  "license": "MIT",
+  "dependencies": {
+    "chance": "^1.0.11",
+    "http-server": "^0.10.0",
+    "mongodb-stitch": "^1.0.6"
+  }
+}
