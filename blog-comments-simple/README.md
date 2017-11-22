@@ -53,10 +53,10 @@ And make your body tag look like:
 
 That function first logs the user into stitch anonymously, and then dislpays any comments in the database.
 
-Since `displayComments` doesn't exist, lets add it:
+Since `dislpayComments` doesn't exist, lets add it:
 
          function displayComments() {
-             db.collection('comments').find({}).then(docs => {
+             db.collection('comments').find({}).limit(1000).execute().then(docs => {
                  var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
                  document.getElementById("comments").innerHTML = html;
              });
@@ -71,7 +71,7 @@ Lets fix that
 * Click on the rules tab
 * Click "Add Namespace"
 * Create it with db: blog collection: comments
-* Now on the Filters tab remove the filter there using delete since we aren't creating privately owned data.
+* Now on the filtes table remove the filter there using delete since we aren't creating privately owned data.
 * Now on the Fields tab, click top level document
 * Make the READ rule empty `{}` and leave the write rule as is. This means that anyone can ready anything in the collection, but you can only edit or delete your own comments.
 
@@ -86,11 +86,11 @@ At the bottom of the html file, add
         Add a Comment: <input id="new_comment"><input type="submit" onClick="addComment()">
 
 This creates a little form to add a comment.
-Now lets add the addComment function
+Not lets add the addComment function
 
          function addComment() {
              var foo = document.getElementById("new_comment");
-             db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+             db.collection("comments").insertOne({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
              foo.value = "";
          }
 
@@ -110,7 +110,7 @@ The entire thing looks like:
          <head>
              <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
              <script>
-              const client = new stitch.StitchClient('mdbw17s1-poiib');
+              const client = new stitch.StitchClient('<your-app-id>');
               const db = client.service('mongodb', 'mongodb-atlas').db('blog');
      
               function displayCommentsOnLoad() {
@@ -118,7 +118,7 @@ The entire thing looks like:
               }
      
               function displayComments() {
-                  db.collection('comments').find({}).then(docs => {
+                  db.collection('comments').find({}).limit(1000).execute().then(docs => {
                       var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
                       document.getElementById("comments").innerHTML = html;
                   });
@@ -126,7 +126,7 @@ The entire thing looks like:
               
               function addComment() {
                   var foo = document.getElementById("new_comment");
-                  db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+                  db.collection("comments").insertOne({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
                   foo.value = "";
               }
               

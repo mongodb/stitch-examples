@@ -1,6 +1,6 @@
 <html>
     <head>
-        <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
+        <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v2/stable/stitch.min.js"></script>
         <script>
          const client = new stitch.StitchClient('<your-app-id>');
          const db = client.service('mongodb', 'mongodb-atlas').db('blog');
@@ -10,7 +10,7 @@
          }
 
          function displayComments() {
-             db.collection('comments').find({}).then(docs => {
+             db.collection('comments').find({}).limit(1000).execute().then(docs => {
                  var html = docs.map(c => "<div>" + c.comment + "</div>").join("");
                  document.getElementById("comments").innerHTML = html;
              });
@@ -18,7 +18,7 @@
          
          function addComment() {
              var foo = document.getElementById("new_comment");
-             db.collection("comments").insert({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
+             db.collection("comments").insertOne({owner_id : client.authedId(), comment: foo.value}).then(displayComments);
              foo.value = "";
          }
          
