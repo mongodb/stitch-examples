@@ -1,0 +1,14 @@
+{
+  "name": "stitch-imp-tutorial",
+  "version": "1.0.0",
+  "description": "Tutorial for MongoDB Stitch and Electric Imp",
+  "main": "no_hardware.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Drew DiPalma",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb-stitch": "^2.2.0"
+  }
+}
