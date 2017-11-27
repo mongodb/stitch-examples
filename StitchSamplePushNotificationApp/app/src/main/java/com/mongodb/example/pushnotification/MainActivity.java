@@ -8,12 +8,12 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mongodb.stitch.android.StitchClient;
-import com.mongodb.stitch.android.auth.Auth;
-import com.mongodb.stitch.android.auth.AvailableAuthProviders;
+
 import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
 import com.mongodb.stitch.android.push.AvailablePushProviders;
 import com.mongodb.stitch.android.push.gcm.GCMPushClient;
@@ -33,42 +33,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        stitchClient = new StitchClient(this, "STICH-APP-ID");
+        stitchClient = new StitchClient(this, "STITCH-APP-ID");
 
-        initLogin();
-
-    }
-
-    private void initLogin() {
-        stitchClient.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
+        stitchClient.logInWithProvider(new AnonymousAuthProvider()
+        ).continueWithTask(new Continuation<String, Task<AvailablePushProviders>>() {
             @Override
-            public void onComplete(@NonNull final Task<AvailableAuthProviders> task) {
-                if (task.isSuccessful()) {
-                    AvailableAuthProviders info = task.getResult();
+            public Task<AvailablePushProviders> then(@NonNull Task<String> task) throws Exception {
+                return stitchClient.getPushProviders();
+            }
+        }).continueWithTask(new Continuation<AvailablePushProviders, Task<Void>>() {
+            @Override
+            public Task<Void> then(@NonNull Task<AvailablePushProviders> task) throws Exception {
 
-                    if (info.hasAnonymous()) {
-                        stitchClient.logInWithProvider(new AnonymousAuthProvider()).addOnCompleteListener(new OnCompleteListener<Auth>() {
-                            @Override
-                            public void onComplete(@NonNull final Task<Auth> task) {
-                                if (task.isSuccessful()) {
-                                    initGCMClient();
-                                } else {
-                                    Log.e(TAG, "Error logging in anonymously", task.getException());
-                                    Toast.makeText(getApplicationContext(), "Error logging in anonymously.", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-                    } else {
-                        Log.e(TAG, "Enable Anonymous Login", task.getException());
-                        Toast.makeText(getApplicationContext(), "You must enable Anonymous Login in Stitch.", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Log.e(TAG, "Error getting authentication info", task.getException());
-                    Toast.makeText(getApplicationContext(), "Error getting authentication info.", Toast.LENGTH_LONG).show();
+                pushClient = (GCMPushClient) stitchClient.getPush().forProvider(task.getResult().getGCM());
+                return pushClient.register();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull final Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    Log.d(TAG, "Registration failed: " + task.getException());
+                    Toast.makeText(getApplicationContext(), "Error registering client for GCM.", Toast.LENGTH_LONG).show();
+                    return;
                 }
+
+                Log.d(TAG, "Registration completed");
+                Toast.makeText(getApplicationContext(), "Successfully registered client for GCM.", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
+
 
     private void initGCMClient() {
         stitchClient.getPushProviders()
