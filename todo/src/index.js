@@ -6,7 +6,7 @@ import { BrowserRouter, Link } from "react-router-dom";
 
 require("../static/todo.scss");
 
-let appId = "testing-aqjnx";
+let appId = "<your-app-id>";
 if (process.env.APP_ID) {
   appId = process.env.APP_ID;
 }
@@ -108,7 +108,7 @@ var AuthControls = class extends React.Component {
           ? <div className="login-links-panel">
               <h2>TODO</h2>
               <div
-                onClick={() => this.props.client.authWithOAuth("google")}
+                onClick={() => this.props.client.authenticate("google")}
                 className="signin-button"
               >
                 <svg
@@ -141,7 +141,7 @@ var AuthControls = class extends React.Component {
                 <span className="signin-button-text">Sign in with Google</span>
               </div>
               <div
-                onClick={() => this.props.client.authWithOAuth("facebook")}
+                onClick={() => this.props.client.authenticate("facebook")}
                 className="signin-button"
               >
                 <div className="facebook-signin-logo" />
@@ -165,7 +165,7 @@ var TodoList = class extends React.Component {
       return;
     }
     let obj = this;
-    items.find(null, null).then(function(data) {
+    items.find(null, null).execute().then(function(data) {
       obj.setState({ items: data, requestPending: false });
     });
   }
@@ -198,7 +198,7 @@ var TodoList = class extends React.Component {
     }
     this.setState({ requestPending: true });
     items
-      .insert([{ text: event.target.value, owner_id: stitchClient.authedId() }])
+      .insertOne({ text: event.target.value, owner_id: stitchClient.authedId() })
       .then(() => {
         this._newitem.value = "";
         this.loadList();
@@ -312,8 +312,8 @@ var AwaitVerifyCode = class extends React.Component {
 };
  
 let formatPhoneNum = raw => {
-  let intl = (number[1] === "+");
   let number = raw.replace(/\D/g, "");
+  let intl = (number[1] === "+");
   return intl ? "+" + number : "+1" + number;
 };
 
@@ -330,21 +330,9 @@ var NumberConfirm = class extends React.Component {
   saveNumber(e) {
     if (e.keyCode == 13) {
       if (formatPhoneNum(this._number.value).length >= 10) {
-        // TODO: generate this code on the server-side.
         let code = generateCode(7);
         stitchClient
-          .executePipeline([
-            { action: "literal", args: { items: [{ name: "hi" }] } },
-            {
-              service: "tw1",
-              action: "send",
-              args: {
-                to: this._number.value,
-                from: "%%values.ourNumber",
-                body: "Your confirmation code is " + code
-              }
-            }
-          ])
+          .executeFunction("sendConfirmation", this._number.value, code)
           .then(data => {
             users
               .updateOne(
@@ -395,7 +383,7 @@ var Settings = class extends React.Component {
   }
 
   loadUser() {
-    users.find({}, null).then(data => {
+    users.find({}, null).execute().then(data => {
       if (data.length > 0) {
         this.setState({ user: data[0] });
       }

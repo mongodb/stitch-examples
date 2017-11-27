@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "css-loader": "^0.26.1",
-    "mongodb-stitch": "0.0.15",
+    "mongodb-stitch": "^2.2.0",
     "node-sass": "^3.13.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
