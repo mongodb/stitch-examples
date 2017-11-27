@@ -6,14 +6,15 @@ stitch <- MongoDBStitch("<STITCH APP ID>");
 //Add an API key to link this device to a specific Stitch User
 const API_KEY = "<STITCH API KEY>";
 
+//Ensure you are authenticated to Stitch
+stitch.loginWithApiKey(API_KEY);
+
 function log(data) {
-    //Ensure you are authenticated to Stitch
-    stitch.loginWithApiKey(API_KEY);
     stitch.executeFunction("Imp_Write", [data], function (error, response) {
         if (error) {
             server.log("error: " + error.details);
         } else {
-            server.log(response.message);
+            server.log("temperature sent");
         }
     });
 }
