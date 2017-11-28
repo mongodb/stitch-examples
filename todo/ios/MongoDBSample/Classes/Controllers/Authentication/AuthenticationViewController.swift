@@ -27,7 +27,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     @IBOutlet weak var emailLoginButton: UIButton!
     
     @IBOutlet weak var errorLable: UILabel!
-        
+    
     var stitchClient: StitchClient?
     
     var delegate: AuthenticationViewControllerDelegate?
@@ -53,14 +53,14 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
         
         // fetch auth providers
         stitchClient?.fetchAuthProviders().then { (authProviderInfo: AuthProviderInfo) in
-        
+            
             self.handleAuthenticationProviders(authInfo: authProviderInfo)
-        
+            
             }.catch { error in
-            print("failed to get Authentication Providers. error: \(error)")
+                print("failed to get Authentication Providers. error: \(error)")
+                
+        }
         
-            }
-
     }
     
     //MARK: - Helpers
@@ -94,7 +94,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
             if let facebookAuthInfo = authInfo.facebookProviderInfo {
                 authAvailable = true
                 var readPermissions: [FacebookCore.ReadPermission] = []
-              
+                
                 let loginButton = LoginButton(readPermissions: readPermissions)
                 loginButton.delegate = self
                 loginButton.center = CGPoint(x: strongSelf.fbLoginButtonContainer.bounds.midX, y: strongSelf.fbLoginButtonContainer.bounds.midY)
@@ -142,7 +142,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 print("failed logging in Stitch with Anonymous Authentication. error: \(error)")
                 self.show(show: true, errorMessage: error.localizedDescription)
         }
-       
+        
     }
     
     @IBAction func emailSignUpButtonPressed(_ sender: Any) {
@@ -151,7 +151,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
             return
         }
         
-
+        
     }
     
     @IBAction func emailLoginButtonPressed(_ sender: Any) {
