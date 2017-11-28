@@ -1,16 +1,10 @@
 import Foundation
-
+import ExtendedJson
+/// AnonymousAuthProvider provides a way to authenticate anonymously.
 public struct AnonymousAuthProvider: AuthProvider {
+    /// The authentication type for anonymous login.
+    public let type: String = "anon-user"
     
-    public var type: String {
-        return "anon"
-    }
-    
-    public var name: String {
-        return "user"
-    }
-    
-    public var payload: [String : Any] {
-        return [:]
-    }
+    /// The JSON payload containing authentication material.
+    public var payload: Document = [:]
 }

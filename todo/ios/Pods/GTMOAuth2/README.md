@@ -1,3 +1,9 @@
+> ## :warning: Deprecation Notice
+> Google has [deprecated](https://goo.gl/BkYjsP) the use of embedded web-views
+> for OAuth, which this library relies on. When making OAuth requests to Google,
+> use the replacement [GTMAppAuth](https://github.com/google/GTMAppAuth)
+> library.
+
 # GTM OAuth 2: Google Toolbox for Mac - OAuth 2 Controllers #
 
 **Project site** <https://github.com/google/gtm-oauth2><br>
