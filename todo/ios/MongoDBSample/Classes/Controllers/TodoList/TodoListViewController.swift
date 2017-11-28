@@ -37,7 +37,7 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     var emailAuthOpToPresentWhenOpened : EmailAuthOperationType?
     
     
-    var collection: MongoDBService.CollectionType {
+    var collection: MongoDBService.Collection {
         return mongoClient.database(named: "todo").collection(named: "items")
     }
     
@@ -74,15 +74,8 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     }
     
     @IBAction private func logoutButtonPressed(_ sender: Any) {
-        stitchClient.logout().response { [weak self] (result) in
-            switch result {
-            case .success(_):
-                self?.handleLogout(provider: MongoDBManager.shared.provider)
-                break
-            case .failure:
-                // present error?
-                break
-            }
+        stitchClient.logout().then { Void in
+            self.handleLogout(provider: MongoDBManager.shared.provider)
         }
     }
     
@@ -91,15 +84,8 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
         document["owner_id"] = stitchClient.auth?.userId
         document["checked"] = true
         
-        collection.delete(query: document, singleDoc: false).response { [weak self] (result) in
-            switch result {
-            case .success:
-                self?.refreshList()
-                break
-            case .failure:
-                // present error?
-                break
-            }
+        collection.deleteMany(query: document).then{ (result: Document) in
+            self.refreshList()
         }
     }
     
@@ -139,11 +125,11 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     
     // MARK: - Helpers
     
-    private func update(item: ObjectId, checked: Bool) -> StitchTask<Any> {
+    private func update(item: ObjectId, checked: Bool) -> StitchTask<Document> {
         let query = Document(key: "_id", value: item)
         let set = Document(key: "checked", value: checked)
         let update = Document(key: "$set", value: set)
-        return collection.update(query: query, update: update)
+        return collection.updateOne(query: query, update: update)
     }
     
     private func add(item text: String) {
@@ -151,42 +137,32 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
         itemDoc["owner_id"] = stitchClient.auth?.userId
         itemDoc["text"] = text
         itemDoc["checked"] = false
-        collection.insert(document: itemDoc).response { [weak self] (result) in
-            switch result {
-            case .success:
-                self?.refreshList()
-                break
-            case .failure(let error):
+        collection.insertOne(document: itemDoc).then{ (result: ObjectId) in
+            self.refreshList()
+            }.catch {error in
                 print("failed inserting item: \(error.localizedDescription)")
-                // present error?
-                break
+
             }
-        }
+        
     }
     
     func refreshList() {
-        collection.find(query: Document(key: "owner_id", value: (stitchClient.auth?.userId)!)).response { [weak self] (result) in
-            switch result {
-            case .success(let documents):
-                
-                var todoItems: [TodoItem] = []
-                for document in documents {
-                    if let item = TodoItem(document: document) {
-                        todoItems.append(item)
-                    }
+        collection.find(query: Document(key: "owner_id", value: (stitchClient.auth?.userId)!), limit: 0).then{ (documents: [Document]) in
+            var todoItems: [TodoItem] = []
+            for document in documents {
+                if let item = TodoItem(document: document) {
+                    todoItems.append(item)
                 }
-                
-                DispatchQueue.main.async { [weak self] in
-                    self?.todoItems = todoItems
-                    self?.todoItemsTableView.reloadData()
-                }
-                break
-            case .failure(let error):
-                print("failed refreshing list: \(error.localizedDescription)")
-                // present error?
-                break
             }
-        }
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.todoItems = todoItems
+                self?.todoItemsTableView.reloadData()
+            }
+            }.catch {error in
+                print("failed refreshing item: \(error.localizedDescription)")
+                
+            }
     }
     
     // MARK: - UITableViewDataSource
@@ -212,15 +188,9 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
         if let indexPath = todoItemsTableView.indexPath(for: cell),
             indexPath.row < todoItems.count {
             let todoItem = todoItems[indexPath.row]
-            update(item: todoItem.objectId, checked: checked).response(completionHandler: { (result) in
-                switch result {
-                case .success:
-                    break
-                case .failure(let error):
-                    print("failed updating item with id \(todoItem.objectId.hexString). error: \(error.localizedDescription)")
-                    break
-                }
-            })
+            update(item: todoItem.objectId, checked: checked).catch { err in
+                print(err)
+            }
         }
     }
     
