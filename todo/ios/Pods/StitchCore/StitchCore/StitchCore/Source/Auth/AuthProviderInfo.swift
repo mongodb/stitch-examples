@@ -12,8 +12,8 @@ public struct AnonymousAuthProviderInfo: AuthProviderType {
 }
 public struct EmailPasswordAuthProviderInfo: AuthProviderType {
     public struct Config: Codable {
-        let emailConfirmationUrl: String
-        let resetPasswordUrl: String
+        public let emailConfirmationUrl: String
+        public let resetPasswordUrl: String
     }
 
     public let config: Config
@@ -26,11 +26,11 @@ public struct ApiKeyAuthProviderInfo: AuthProviderType {
 }
 public struct GoogleAuthProviderInfo: AuthProviderType {
     public struct Config: Codable {
-        let clientId: String
+        public let clientId: String
     }
     public struct MetadataField: Codable {
-        let name: String
-        let required: Bool
+        public let name: String
+        public let required: Bool
     }
 
     public let config: Config
@@ -45,11 +45,11 @@ public struct GoogleAuthProviderInfo: AuthProviderType {
 }
 public struct FacebookAuthProviderInfo: AuthProviderType {
     public struct Config: Codable {
-        let clientId: String
+        public let clientId: String
     }
     public struct MetadataField: Codable {
-        let name: String
-        let required: Bool
+        public let name: String
+        public let required: Bool
     }
 
     public let config: Config

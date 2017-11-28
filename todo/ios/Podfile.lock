@@ -58,7 +58,7 @@ PODS:
     - ExtendedJson (~> 2.0.0)
     - StitchCore (~> 2.0.0)
     - StitchLogger (~> 2.0.0)
-  - StitchCore (2.0.1):
+  - StitchCore (2.0.2):
     - ExtendedJson (~> 2.0.1)
     - StitchLogger (~> 2.0.0)
   - StitchLogger (2.0.0)
@@ -87,7 +87,7 @@ SPEC CHECKSUMS:
   GTMOAuth2: be83fd28d63ae3087e7d351b1f39c1a7e24ab6e7
   GTMSessionFetcher: ebaa1f79a5366922c1735f1566901f50beba23b7
   MongoDBService: 640074a1c897b03020550bc4263e62edf779f487
-  StitchCore: bac219ebaf95f94aaa16965feba2a8859ebbae55
+  StitchCore: 0f20c52209d521be0c5147d42f8df5ab67a4be39
   StitchLogger: d9c8ba71d0b0170ba2ea39871ff92fed8a5af5fb
 
 PODFILE CHECKSUM: 337f48a10ad7f71d0c301e38da189ca529b4449a
