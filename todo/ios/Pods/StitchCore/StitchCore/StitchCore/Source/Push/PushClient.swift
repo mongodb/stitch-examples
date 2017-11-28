@@ -1,46 +1,44 @@
 import Foundation
 import ExtendedJson
 
-let PrefConfigs: String = "apns.configs"
+let prefConfigs: String = "apns.configs"
 
-public enum DeviceFields: String {
-    case ServiceName = "service"
-    case Data = "data"
-    case RegistrationToken = "registrationToken"
-    case DeviceId = "deviceId"
-    case AppId = "appId"
-    case AppVersion = "appVersion"
-    case Platform = "platform"
-    case PlatformVersion = "platformVersion"
+internal enum DeviceFields: String {
+    case service
+    case data
+    case registrationToken
+    case deviceId
+    case appId
+    case appVersion
+    case platform
+    case platformVersion
 }
 
-public enum Actions: String {
-    case RegisterPush = "registerPush"
-    case DeregisterPush = "deregisterPush"
+internal enum Actions: String {
+    case registerPush
+    case deregisterPush
 }
 
 /**
-    A PushClient is responsible for allowing users to register and deregister for push notifications sent from Stitch or directly from the provider.
+    A PushClient is responsible for allowing users to register and
+    deregister for push notifications sent from Stitch or directly from the provider.
  */
 public protocol PushClient {
-    var stitchClient: StitchClient { get }
-    var userDefaults: UserDefaults { get }
-    
     /**
         Registers the client with the provider and Stitch
  
         - returns: A task that can be resolved upon registering
     */
     @discardableResult
-    func registerToken(token: String) -> StitchTask<Any>
-    
+    func registerToken(token: String) -> StitchTask<Void>
+
     /**
         Deregisters the client from the provider and Stitch.
         
         - returns: A task that can be resolved upon deregistering
     */
     @discardableResult
-    func deregister() -> StitchTask<Any>
+    func deregister() -> StitchTask<Void>
 }
 
 extension PushClient {
@@ -48,46 +46,48 @@ extension PushClient {
      - parameter info: The push provider info to persist.
      */
     func addInfoToConfigs(info: PushProviderInfo) {
-        var configs: [String : Any] = userDefaults.value(forKey: PrefConfigs) as? [String : Any] ?? [String : Any]()
-        
+        let userDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)!
+
+        var configs: [String: Any] = userDefaults.value(forKey: prefConfigs) as? [String: Any] ?? [String: Any]()
+
         configs[info.serviceName] = info.toDict()
-        
-        userDefaults.setValue(configs, forKey: PrefConfigs)
+
+        userDefaults.setValue(configs, forKey: prefConfigs)
     }
-    
+
     /**
      - parameter info: The push provider info to no longer persist
      */
     public func removeInfoFromConfigs(info: PushProviderInfo) {
-        var configs = Document()
+        let userDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)!
+
+        var configs = [String: Any]()
         do {
-            let configOpt = userDefaults.value(forKey: PrefConfigs)
-            
-            if let config = configOpt {
-                configs = try Document(extendedJson: config as! [String : Any])
+            let configOpt = userDefaults.value(forKey: prefConfigs)
+
+            if let config = configOpt as? [String: Any] {
+                configs = config
             }
         } catch _ {
-            configs = Document()
+            configs = [:]
         }
-        
+
         configs[info.serviceName] = nil
-        userDefaults.setValue(configs, forKey: PrefConfigs)
+        userDefaults.setValue(configs, forKey: prefConfigs)
     }
-    
+
     /**
      - parameter serviceName: The service that will handle push
      for this client
      - returns: A generic device registration request
      */
-    public func getBaseRegisterPushRequest(serviceName: String) -> [String : ExtendedJsonRepresentable] {
-        var request = [String : ExtendedJsonRepresentable]()
-        
-        request[DeviceFields.ServiceName.rawValue] = serviceName
-        request[DeviceFields.Data.rawValue] = ([String : ExtendedJsonRepresentable]() as ExtendedJsonRepresentable)
-
-        return request
+    public func getBaseRegisterPushRequest(serviceName: String) -> Document {
+        return [
+            DeviceFields.service.rawValue: serviceName,
+            DeviceFields.data.rawValue: Document()
+        ]
     }
-    
+
     /**
      - parameter serviceName: The service that will handle push
      for this client
@@ -95,9 +95,9 @@ extension PushClient {
      */
     func getBaseDeregisterPushDeviceRequest(serviceName: String) -> Document {
         var request = Document()
-        
-        request[DeviceFields.ServiceName.rawValue] = serviceName
-        
+
+        request[DeviceFields.service.rawValue] = serviceName
+
         return request
     }
 }

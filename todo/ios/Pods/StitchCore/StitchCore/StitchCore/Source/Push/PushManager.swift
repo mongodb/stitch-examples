@@ -7,24 +7,27 @@ import Foundation
 public class PushManager: AuthDelegate {
     private let stitchClient: StitchClient
     private var clients: [String: PushClient] = [:]
-    
-    init(stitchClient: StitchClient) {
-        self.stitchClient = stitchClient
+
+    init(client: StitchClient) {
+        self.stitchClient = client
         stitchClient.addAuthDelegate(delegate: self)
     }
-    
+
     /**
         - parameter info: Information required to build a client.
         - returns: A [[PushClient]] representing the given provider.
      */
     func forProvider(info: PushProviderInfo) throws -> PushClient {
         var client: PushClient? = nil
-        
-        switch (info.providerName) {
-            case .GCM:
-                client = StitchGCMPushClient(stitchClient: self.stitchClient, info: info as! StitchGCMPushProviderInfo);
+
+        switch info {
+        case let gcmInfo as StitchGCMPushProviderInfo: client =
+            StitchGCMPushClient(stitchClient: self.stitchClient,
+                                info: gcmInfo)
+        default:
+            throw StitchError.illegalAction(message: "unknown push provider info \(info)")
         }
-        
+
         if let cl = clients[stitchClient.appId] {
             return cl
         } else {
@@ -32,12 +35,12 @@ public class PushManager: AuthDelegate {
             return client!
         }
     }
-    
+
     /**
         Does nothing on login
     */
     public func onLogin() {}
-    
+
     /**
         Deregisters all active and previously active clients. This is only a best effort and
         there may be a period of time where the application will still receive notifications.
@@ -51,10 +54,10 @@ public class PushManager: AuthDelegate {
         } catch _ {
             // Ignore errors
         }
-        
+
         // Notify Stitch that we no longer want updates
         clients.values.forEach { client in client.deregister() }
-        
+
         clients.removeAll()
     }
 }

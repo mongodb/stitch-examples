@@ -13,61 +13,63 @@ public class StitchGCMPushClient: PushClient {
         case GCMServiceName = "gcm"
         case GCMSenderID = "push.gcm.senderId"
     }
-    
-    public let userDefaults: UserDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)!
 
-    public let stitchClient: StitchClient
-    
+    internal let userDefaults: UserDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)!
+    private let stitchClient: StitchClient
+
     private let _info: StitchGCMPushProviderInfo
-    
+
+    /**
+        - Parameters:
+            - stitchClient: Current `StitchClient` you want to be associated with this push client
+            - info: Provider info for your applications gcm
+    */
     public init(stitchClient: StitchClient, info: StitchGCMPushProviderInfo) {
         self.stitchClient = stitchClient
         self._info = info
     }
-    
+
     /**
-        -parameter registrationToken: The registration token from GCM.
-        -returns: The request payload for registering for push for GCM.
+        - parameter registrationToken: The registration token from GCM.
+        - returns: The request payload for registering for push for GCM.
      */
-    private func getRegisterPushDeviceRequest(registrationToken: String) -> [String : ExtendedJsonRepresentable] {
-        var request = getBaseRegisterPushRequest(serviceName: Props.GCMServiceName.rawValue)
-        var data = request[DeviceFields.Data.rawValue] as! [String : ExtendedJsonRepresentable]
-        data[DeviceFields.RegistrationToken.rawValue] = registrationToken
-        request[DeviceFields.Data.rawValue] = data as ExtendedJsonRepresentable
-        return request
+    private func getRegisterPushDeviceRequest(registrationToken: String) throws -> Document {
+        return Document(key: DeviceFields.registrationToken.rawValue, value: registrationToken)
     }
 
+    /**
+     Registers the client with the provider and Stitch
+     
+     - returns: A task that can be resolved upon registering
+     */
     @discardableResult
-    public func registerToken(token: String) -> StitchTask<Any> {
-        userDefaults.setValue(token, forKey: DeviceFields.RegistrationToken.rawValue)
-        let pipeline: Pipeline = Pipeline(action: Actions.RegisterPush.rawValue,
-                                          args: getRegisterPushDeviceRequest(registrationToken: token))
-        
-        return stitchClient.executePipeline(pipeline: pipeline).response(completionHandler: { (task: StitchResult<Any>) -> Void in
-            if (task.error != nil) {
-                print(task.error ?? "")
-            } else {
-                self.addInfoToConfigs(info: self._info)
-            }
-        })
+    public func registerToken(token: String) -> StitchTask<Void> {
+        return stitchClient.httpClient.doRequest {
+            $0.method = .put
+            $0.endpoint = self
+                .stitchClient
+                .routes
+                .pushProvidersRegistartionRoute(provider: self._info.providerName.rawValue)
+            $0.parameters = try self.getRegisterPushDeviceRequest(registrationToken: token)
+        }.then { _ in
+            self.addInfoToConfigs(info: self._info)
+        }
     }
-    
+
     /**
         Deregisters the client from the provider and Stitch.
      
      - returns: A task that can be resolved upon deregistering
      */
-    public func deregister() -> StitchTask<Any> {
-        let deviceToken = userDefaults.string(forKey: DeviceFields.RegistrationToken.rawValue)
-        let pipeline: Pipeline = Pipeline(action: Actions.RegisterPush.rawValue,
-                                          args: getRegisterPushDeviceRequest(registrationToken: deviceToken!))
-        
-        return stitchClient.executePipeline(pipeline: pipeline).response(completionHandler: { (task: StitchResult<Any>) -> Void in
-            if (task.error != nil) {
-                print(task.error ?? "")
-            } else {
-                self.removeInfoFromConfigs(info: self._info)
-            }
-        })
+    public func deregister() -> StitchTask<Void> {
+        return stitchClient.httpClient.doRequest {
+            $0.method = .delete
+            $0.endpoint = self
+                .stitchClient
+                .routes
+                .pushProvidersRegistartionRoute(provider: self._info.providerName.rawValue)
+        }.then { _ in
+            self.removeInfoFromConfigs(info: self._info)
+        }
     }
 }

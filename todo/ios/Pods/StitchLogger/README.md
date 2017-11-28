@@ -1,6 +1,6 @@
-# [![Stitch](docs/stitch_beta.png)](https://stitch.mongodb.com/)
+# [![Stitch](https://raw.githubusercontent.com/mongodb/stitch-ios-sdk/master/docs/stitch_beta.png)](https://mongodb.com/cloud/stitch)
 
-![iOS](https://img.shields.io/badge/platform-iOS-blue.svg) [![Swift 3.0](https://img.shields.io/badge/swift-3.0-orange.svg)](https://developer.apple.com/swift/) ![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-lightgrey.svg) [![Cocoapods compatible](https://img.shields.io/badge/pod-v0.1.0-ff69b4.svg)](#Cocoapods)
+[![Join the chat at https://gitter.im/mongodb/stitch](https://badges.gitter.im/mongodb/stitch.svg)](https://gitter.im/mongodb/stitch?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![iOS](https://img.shields.io/badge/platform-iOS-blue.svg) [![Swift 4.0](https://img.shields.io/badge/swift-4.0-orange.svg)](https://developer.apple.com/swift/) ![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-lightgrey.svg) [![Cocoapods compatible](https://img.shields.io/badge/pod-v1.0.0-ff69b4.svg)](#Cocoapods)
 
 ## Creating a new app with the iOS SDK
 
@@ -20,21 +20,21 @@
 $ gem install cocoapods
 ```
 
-> CocoaPods 1.1.0+ is required to build Stitch iOS 0.1.0+.
+> CocoaPods 1.1.0+ is required to build Stitch iOS 0.2.0+.
 
 To integrate the iOS SDK into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '10.0'
+platform :ios, '11.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'StitchCore', '~> 0.1.0'
+    pod 'StitchCore', '~> 1.0.0'
     # optional: for accessing a mongodb client
-    pod 'MongoDBService', '~> 0.1.0'
+    pod 'MongoDBService', '~> 1.0.0'
     # optional: for using mongodb's ExtendedJson
-    pod 'ExtendedJson', '~> 0.1.0'
+    pod 'ExtendedJson', '~> 1.0.0'
 end
 ```
 
@@ -86,7 +86,66 @@ If you prefer not to use any of the aforementioned dependency managers, you can 
 
 ### Using the SDK
 
-TODO: Write usage instructions.
+#### Logging In
+1. To initialize our connection to Stitch, go to your `AppDelegate` and within your `application:didFinishLoadingWithOptions` method, add the following line and replace your-app-id with the app ID you took note of when setting up the application in Stitch:
+
+	```swift
+	let client = StitchClient(appId: "your-app-id")
+	```
+
+2. This will only instantiate a client but will not make any outgoing connection to Stitch
+3. Since we enabled anonymous log in, let's log in with it; add the following after your new _client_:
+
+	```swift
+	client.fetchAuthProviders().then { (authProviderInfo: AuthProviderInfo) in
+            if (authProviderInfo.anonymousAuthProviderInfo != nil) {
+                return client.anonymousAuth()
+            } else {
+                print("no anonymous provider")
+            }
+        }.then { (userId: String) in
+            print("logged in anonymously as user \(userId)")
+        }.catch { error in
+            print("failed to log in anonymously: \(error)")
+        }
+	```
+
+4. Now run your app in XCode by going to product, Run (or hitting ⌘R).
+5. Once the app is running, open up the Debug Area by going to View, Debug Area, Show Debug Area.
+6. You should see log messages like:
+
+	```
+	logging in anonymously                                                    	
+	logged in anonymously as user 58c5d6ebb9ede022a3d75050
+	```
+
+#### Running a Pipeline
+
+1. Once logged in, running a pipeline happens via the client's executePipeline method
+2. To avoid nesting our tasks any further, after logging in we should call some init method that will use the client. We will also place the client as a member of our AppDelegate:
+
+	```swift
+	let client = StitchClient(appId: "your-app-id")
+	
+	func initializeClient() {
+		var literalArgs: [String: ExtendedJsonRepresentable] = [:]
+		literalArgs["items"] = BsonArray(array: ["Hello"])
+		self.client.executePipeline(pipeline: Pipeline(action: "literal", args: literalArgs)).response(completionHandler: { (result) in
+		    if let value = result.value {
+			if let strings = value as? BsonArray {
+			    print("number of results: \(strings.count)")
+			    strings.forEach { string in print(string) }
+			}
+		    }
+		})
+    }
+	```
+3. Call `initalizeClient()` after logging in and run your app. You should see a messages like:
+
+	```
+	number of results: 1
+	Hello world!
+	```
 
 #### Set up Push Notifications (GCM)
 
@@ -102,7 +161,7 @@ TODO: Write usage instructions.
 
 ##### Receive Push Notifications in iOS
 
-1. TODO: Write enabling push.
+1. Currently, StitchGCM needs to be added as a submodule.
 
 2. To create a GCM Push Provider by asking Stitch, you must use the *getPushProviders* method and ensure a GCM provider exists:
 

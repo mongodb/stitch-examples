@@ -7,10 +7,10 @@ import Foundation
 import StitchCore
 
 public protocol MongoDBClientType {
-    
-    var stitchClient: StitchClientType { get }
-    var serviceName: String { get }        
-    
+
+    var stitchClient: StitchClient { get }
+    var serviceName: String { get }
+
     @discardableResult
     func database(named name: String) -> DatabaseType
 }

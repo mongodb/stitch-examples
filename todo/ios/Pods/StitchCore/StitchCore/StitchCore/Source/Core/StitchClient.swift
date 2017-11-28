@@ -4,710 +4,381 @@ import ExtendedJson
 import StitchLogger
 import Security
 
-internal struct Consts {
-    static let DefaultBaseUrl =          "https://stitch.mongodb.com"
-    static let ApiPath =                 "/api/client/v1.0/app/"
-    
+public struct Consts {
+    public static let DefaultBaseUrl =   "https://stitch.mongodb.com"
+    static let ApiPath =                 "/api/client/v2.0/"
+
     //User Defaults
     static let UserDefaultsName =        "com.mongodb.stitch.sdk.UserDefaults"
     static let IsLoggedInUDKey =         "StitchCoreIsLoggedInUserDefaultsKey"
-    
+
     //keychain
     static let AuthJwtKey =              "StitchCoreAuthJwtKey"
     static let AuthRefreshTokenKey =     "StitchCoreAuthRefreshTokenKey"
     static let AuthKeychainServiceName = "com.mongodb.stitch.sdk.authentication"
-    
+
     //keys
-    static let ResultKey =               "result"
-    static let AccessTokenKey =          "accessToken"
-    static let RefreshTokenKey =         "refreshToken"
     static let ErrorKey =                "error"
-    static let ErrorCodeKey =            "errorCode"
-    
-    //api
-    static let AuthPath =                "auth"
-    static let UserProfilePath =         "auth/me"
-    static let NewAccessTokenPath =      "newAccessToken"
-    static let PipelinePath =            "pipeline"
-    static let PushPath =                "push"
 }
 
+/// A StitchClient is responsible for handling the overall interaction with all Stitch services.
 public class StitchClient: StitchClientType {
     // MARK: - Properties
+    /// Id of the current application
     public var appId: String
-    
-    private var baseUrl: String
-    private let networkAdapter: NetworkAdapter
-    
-    private let userDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)
+    internal lazy var routes = Routes(appId: appId)
+    internal var baseUrl: String
+    internal let networkAdapter: NetworkAdapter
 
+    internal let userDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)
+
+    internal lazy var httpClient = StitchHTTPClient(baseUrl: baseUrl,
+                                                   appId: appId,
+                                                   networkAdapter: networkAdapter)
     private var authProvider: AuthProvider?
     private var authDelegates = [AuthDelegate?]()
 
+    private lazy var services = Services(client: self)
+    public lazy var push = PushManager(client: self)
+
+    internal struct Routes {
+        private var appId: String
+
+        lazy var authRoute = "app/\(appId)/auth"
+        lazy var authProvidersExtensionRoute = "app/\(appId)/auth/providers"
+        lazy var authProfileRoute = "auth/profile"
+        lazy var authSessionRoute = "auth/session"
+        mutating func authProvidersLoginRoute(provider: String) -> String {
+            return "\(authProvidersExtensionRoute)/\(provider)/login"
+        }
+
+        lazy var localUserpassResetRoute = "\(authProvidersExtensionRoute)/local-userpass/reset"
+        lazy var localUserpassResetSendRoute = "\(authProvidersExtensionRoute)/local-userpass/reset/send"
+        lazy var localUserpassRegisterRoute = "\(authProvidersExtensionRoute)/local-userpass/register/"
+        lazy var localUserpassConfirmRoute = "\(authProvidersExtensionRoute)/local-userpass/confirm"
+        lazy var localUserpassConfirmSendRoute = "\(authProvidersExtensionRoute)/local-userpass/confirm/send"
+
+        lazy var functionsCallRoute = "app/\(appId)/functions/call"
+
+        lazy var pushProvidersRoute = "app/\(appId)/push/providers"
+        mutating func pushProvidersRegistartionRoute(provider: String) -> String {
+            return "\(pushProvidersRoute)/\(provider)/registration"
+        }
+
+        lazy var apiKeysRoute = "auth/api_keys"
+        mutating func apiKeyRoute(id: String) -> String {
+            return "\(apiKeysRoute)/\(id)"
+        }
+        mutating func apiKeyEnableRoute(id: String) -> String {
+            return "\(apiKeysRoute)/\(id)/enable"
+        }
+        mutating func apiKeyDisableRoute(id: String) -> String {
+            return "\(apiKeysRoute)/\(id)/disable"
+        }
+
+        init(appId: String) {
+            self.appId = appId
+        }
+    }
+
+    /// The currently authenticated user (if authenticated).
     public private(set) var auth: Auth? {
-        didSet{
-            if let newValue = auth {
+        didSet {
+            if let refreshToken = httpClient.authInfo?.refreshToken {
                 // save auth persistently
                 userDefaults?.set(true, forKey: Consts.IsLoggedInUDKey)
-                
+
                 do {
-                    let jsonData = try JSONSerialization.data(withJSONObject: newValue.json, options: JSONSerialization.WritingOptions())
-                    guard let jsonString = String(data: jsonData, encoding: String.Encoding.utf8) else {
+                    let jsonData = try JSONEncoder().encode(httpClient.authInfo)
+                    guard let jsonString = String(data: jsonData,
+                                                  encoding: .utf8) else {
                         printLog(.error, text: "Error converting json String to Data")
                         return
                     }
-                    
-                    save(token: jsonString, withKey: Consts.AuthJwtKey)
+
+                    self.httpClient.save(token: refreshToken, withKey: Consts.AuthRefreshTokenKey)
+                    self.httpClient.save(token: jsonString, withKey: Consts.AuthJwtKey)
                 } catch let error as NSError {
-                    printLog(.error, text: "failed saving auth to keychain, array to JSON conversion failed: \(error.localizedDescription)")
+                    printLog(.error,
+                             text: "failed saving auth to keychain, array to JSON conversion failed: " +
+                                error.localizedDescription)
                 }
-            }
-            else {
+            } else {
                 // remove from keychain
-                try? deleteToken(withKey: Consts.AuthJwtKey)
+                try? self.httpClient.deleteToken(withKey: Consts.AuthJwtKey)
                 userDefaults?.set(false, forKey: Consts.IsLoggedInUDKey)
             }
         }
     }
-    
+
+    /// Whether or not the client is currently authenticated
     public var isAuthenticated: Bool {
-        
-        guard auth == nil else {
-            return true
-        }
-        
-        do {
-            auth = try getAuthFromSavedJwt()
-        }
-        catch {
-            printLog(.error, text: error.localizedDescription)
-        }
-        
-        onLogin()
-        return auth != nil
+        return self.httpClient.isAuthenticated
     }
-    
-    private var refreshToken: String? {
-        
-        guard isAuthenticated else {
-            return nil
-        }
-        
-        return readToken(withKey: Consts.AuthRefreshTokenKey)
-    }
-    
-    private var isSimulator: Bool {
-        /*
-         This is computed in a separate variable due to a compiler warning when the check is done directly inside the 'if' statement, indicating that either the 'if' block or the 'else' block will never be executed - depending whether the build target is a simulator or a device.
-         */
-        return TARGET_OS_SIMULATOR != 0
-    }
-    
+
     // MARK: - Init
-    
-    public init(appId: String, baseUrl: String = Consts.DefaultBaseUrl, networkAdapter: NetworkAdapter = AlamofireNetworkAdapter()) {
+    /**
+        Create a new object to interact with Stitch
+        - Parameters: 
+            - appId:  The App ID for the Stitch app.
+            - baseUrl: The base URL of the Stitch Client API server.
+            - networkAdapter: Optional interface if AlamoFire is not desired.
+     */
+    public init(appId: String,
+                baseUrl: String = Consts.DefaultBaseUrl,
+                networkAdapter: NetworkAdapter = StitchNetworkAdapter()) {
         self.appId = appId
         self.baseUrl = baseUrl
         self.networkAdapter = networkAdapter
     }
-    
+
     // MARK: - Auth
-    @discardableResult
-    public func fetchUserProfile() -> StitchTask<UserProfile> {
-        let task = StitchTask<UserProfile>()
-        
-        if !isAuthenticated {
-            task.result = StitchResult.failure(StitchError.unauthorized(
-                message: "Tried fetching user while there was no authenticated user found."))
-            return task
-        }
-        
-        performRequest(method: .get,
-                       endpoint: Consts.UserProfilePath,
-                       parameters: nil,
-                       refreshOnFailure: false,
-                       useRefreshToken: false).response(onQueue: DispatchQueue.global(qos: .utility)) { [weak self] (result) in
-                        guard let strongSelf = self else {
-                            task.result = StitchResult.failure(StitchError.clientReleased)
-                            return
-                        }
-                        
-                        switch result {
-                        case .success(let value):
-                            if let value = value as [String : Any]? {
-                                if let error = strongSelf.parseError(from: value) {
-                                    task.result = .failure(error)
-                                }
-                                else if let user = try? UserProfile(dictionary: value) {
-                                    task.result = .success(user)
-                                } else {
-                                    task.result = StitchResult.failure(StitchError.clientReleased)
-                                }
-                            }
-                        case .failure(let error):
-                            task.result = .failure(error)
-                        }
-        }
-        
-        return task
-    }
-    
+
+    /**
+     Fetches all available auth providers for the current app.
+     
+     - Returns: A task containing AuthProviderInfo that can be resolved
+     on completion of the request.
+     */
     @discardableResult
     public func fetchAuthProviders() -> StitchTask<AuthProviderInfo> {
-        let task = StitchTask<AuthProviderInfo>()
-        let url = self.url(withEndpoint: Consts.AuthPath)
-        networkAdapter.requestWithJsonEncoding(url: url, method: .get, parameters: nil, headers: nil).response(onQueue: DispatchQueue.global(qos: .utility)) { [weak self] (response) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
+        return httpClient.doRequest {
+            $0.endpoint = self.routes.authProvidersExtensionRoute
+            $0.isAuthenticatedRequest = false
+        }.then { any in
+            guard let json = any as? [[String: Any]] else {
+                throw StitchError.responseParsingFailed(reason: "\(any) was not valid")
             }
-            
-            switch response {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        task.result = .success(AuthProviderInfo(dictionary: value))
-                    }
-                }
-                
-            case .failure(let error):
-                task.result = .failure(error)
-                
-            }
+
+            return try AuthProviderInfo(from: json)
         }
-        
-        return task
     }
-    
+
+    /**
+     Registers the current user using email and password.
+     
+     - parameter email: email for the given user
+     - parameter password: password for the given user
+     - returns: A task containing whether or not registration was successful.
+     */
     @discardableResult
     public func register(email: String, password: String) -> StitchTask<Void> {
-        let task = StitchTask<Void>()
-        let provider = EmailPasswordAuthProvider(username: email, password: password)
-        let url = "\(self.url(withEndpoint: Consts.AuthPath))/\(provider.type)/\(provider.name)/register"
-        
-        let payload = ["email" : email, "password" : password]
-        networkAdapter.requestWithJsonEncoding(url: url, method: .post, parameters: payload, headers: nil).response { [weak self] (result) in
-            
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch result {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        task.result = .success()
-                    }
-                }
-            case .failure(let error):
-                task.result = .failure(error)
-            }
-        }
-        
-        return task
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.localUserpassRegisterRoute
+            $0.isAuthenticatedRequest = false
+            $0.parameters = ["email": email, "password": password]
+        }.then { _ in }
     }
-    
+
+    /**
+     * Confirm a newly registered email in this context
+     * - parameter token: confirmation token emailed to new user
+     * - parameter tokenId: confirmation tokenId emailed to new user
+     * - returns: A task containing whether or not the email was confirmed successfully
+     */
     @discardableResult
-    public func emailConfirm(token: String, tokenId: String) -> StitchTask<Any> {
-        let task = StitchTask<Any>()
-        let url = "\(self.url(withEndpoint: Consts.AuthPath))/local/userpass/confirm"
-        let params = ["token" : token, "tokenId" : tokenId]
-        networkAdapter.requestWithJsonEncoding(url: url, method: .post, parameters: params, headers: nil).response { [weak self] (result) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch result {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        task.result = .success(value)
-                    }
-                }
-            case .failure(let error):
-                task.result = .failure(error)
-            }
-        }
-        
-        return task
+    public func emailConfirm(token: String, tokenId: String) -> StitchTask<Void> {
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.localUserpassConfirmRoute
+            $0.isAuthenticatedRequest = false
+            $0.parameters = ["token": token, "tokenId": tokenId]
+        }.then { _ in }
     }
-    
+
+    /**
+     * Send a confirmation email for a newly registered user
+     * - parameter email: email address of user
+     * - returns: A task containing whether or not the email was sent successfully.
+     */
     @discardableResult
     public func sendEmailConfirm(toEmail email: String) -> StitchTask<Void> {
-        let task = StitchTask<Void>()
-        let url = "\(self.url(withEndpoint: Consts.AuthPath))/local/userpass/confirm/send"
-        let params = ["email" : email]
-        networkAdapter.requestWithJsonEncoding(url: url, method: .post, parameters: params, headers: nil).response { [weak self] (result) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch result {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        task.result = .success()
-                    }
-                }
-            case .failure(let error):
-                task.result = .failure(error)
-            }
-        }
-        
-        return task
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.localUserpassConfirmSendRoute
+            $0.isAuthenticatedRequest = false
+            $0.parameters = ["email": email]
+        }.then { _ in }
     }
-    
+
+    /**
+     * Reset a given user's password
+     * - parameter token: token associated with this user
+     * - parameter tokenId: id of the token associated with this user
+     * - returns: A task containing whether or not the reset was successful
+     */
     @discardableResult
-    public func resetPassword(token: String, tokenId: String) -> StitchTask<Any> {
-        let task = StitchTask<Any>()
-        let url = "\(self.url(withEndpoint: Consts.AuthPath))/local/userpass/reset"
-        let params = ["token" : token, "tokenId" : tokenId]
-        networkAdapter.requestWithJsonEncoding(url: url, method: .post, parameters: params, headers: nil).response { [weak self] (result) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch result {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        task.result = .success(value)
-                    }
-                }
-            case .failure(let error):
-                task.result = .failure(error)
-            }
-        }
-        
-        return task
+    public func resetPassword(token: String, tokenId: String) -> StitchTask<Void> {
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.localUserpassResetRoute
+            $0.isAuthenticatedRequest = false
+            $0.parameters = ["token": token, "tokenId": tokenId]
+        }.then { _ in }
     }
-    
+
+    /**
+     * Send a reset password email to a given email address
+     * - parameter email: email address to reset password for
+     * - returns: A task containing whether or not the reset email was sent successfully
+     */
     @discardableResult
     public func sendResetPassword(toEmail email: String) -> StitchTask<Void> {
-        let task = StitchTask<Void>()
-        let url = "\(self.url(withEndpoint: Consts.AuthPath))/local/userpass/reset/send"
-        let params = ["email" : email]
-        networkAdapter.requestWithJsonEncoding(url: url, method: .post, parameters: params, headers: nil).response { [weak self] (result) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch result {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        task.result = .success()
-                    }
-                }
-            case .failure(let error):
-                task.result = .failure(error)
-            }
-        }
-        
-        return task
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.localUserpassResetSendRoute
+            $0.isAuthenticatedRequest = false
+            $0.parameters = ["email": email]
+        }.then { _ in }
     }
-    
+
+    /**
+     Logs the current user in anonymously.
+     
+     - Returns: A task containing whether or not the login as successful
+     */
     @discardableResult
-    public func anonymousAuth() -> StitchTask<Bool> {
+    public func anonymousAuth() -> StitchTask<UserId> {
         return login(withProvider: AnonymousAuthProvider())
     }
-    
+
+    /**
+     Logs the current user in using a specific auth provider.
+     
+     - Parameters:
+     - withProvider: The provider that will handle the login.
+     - link: Whether or not to link a new auth provider.
+     - Returns: A task containing whether or not the login as successful
+     */
     @discardableResult
-    public func login(withProvider provider: AuthProvider, link: Bool = false) -> StitchTask<Bool> {
-        let task = StitchTask<Bool>()
-        
+    public func login(withProvider provider: AuthProvider) -> StitchTask<UserId> {
         self.authProvider = provider
-        
-        if isAuthenticated && !link {
+
+        if isAuthenticated, let auth = auth {
             printLog(.info, text: "Already logged in, using cached token.")
-            task.result = .success(true)
-            return task
+            return StitchTask<UserId>.withSuccess(auth.userId)
         }
-        
-        var url = "\(self.url(withEndpoint: Consts.AuthPath))/\(provider.type)/\(provider.name)"
-        if link {
-            guard let auth = auth else {
-                task.result = .failure(StitchError.illegalAction(message: "In order to link a new authentication provider you must first be authenticated."))
-                return task
-            }
-            
-            url += "?link=\(auth.accessToken)"
+
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.authProvidersLoginRoute(provider: provider.type)
+            $0.isAuthenticatedRequest = false
+            $0.parameters = self.getAuthRequest(provider: provider)
+        }.then { [weak self] any in
+            guard let strongSelf = self else { throw StitchError.clientReleased }
+            let authInfo = try JSONDecoder().decode(AuthInfo.self,
+                                                    from: JSONSerialization.data(withJSONObject: any))
+            strongSelf.httpClient.authInfo = authInfo
+            strongSelf.auth = Auth(stitchClient: strongSelf,
+                                   stitchHttpClient: strongSelf.httpClient,
+                                   userId: authInfo.userId)
+            strongSelf.onLogin()
+            return authInfo.userId
         }
-        
-        var parameters = provider.payload
-        self.getAuthRequest(provider: provider).forEach { (key: String, value: Any) in
-            parameters[key] = value
-        }
-        
-        networkAdapter.requestWithJsonEncoding(url: url, method: .post, parameters: parameters, headers: nil).response(onQueue: DispatchQueue.global(qos: .utility)) { [weak self] (response) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch response {
-            case .success(let value):
-                if let value = value as? [String : Any] {
-                    if let error = strongSelf.parseError(from: value) {
-                        task.result = .failure(error)
-                    }
-                    else {
-                        do {
-                            strongSelf.auth = try Auth(dictionary: value)
-                        }
-                        catch let error {
-                            printLog(.error, text: "failed creating Auth: \(error)")
-                            task.result = .failure(error)
-                        }
-                        
-                        if strongSelf.auth != nil {
-                            
-                            if let refreshToken = value[Consts.RefreshTokenKey] as? String {
-                                self?.save(token: refreshToken, withKey: Consts.AuthRefreshTokenKey)
-                            }
-                            task.result = .success(true)
-                        }
-                    }
-                }
-                else {
-                    printLog(.error, text: "Login failed - failed parsing auth response.")
-                    task.result = .failure(StitchError.responseParsingFailed(reason: "Invalid auth response - expected json and received: \(value)"))
-                }
-            case .failure(let error):
-                task.result = .failure(error)
-                
-            }
-        }
-        
-        return task
     }
-    
+
+    /**
+     * Logs out the current user.
+     *
+     * - returns: A task that can be resolved upon completion of logout.
+     */
     @discardableResult
-    public func logout() -> StitchTask<Bool> {
-        let task = StitchTask<Bool>()
-        
+    public func logout() -> StitchTask<Void> {
         if !isAuthenticated {
             printLog(.info, text: "Tried logging out while there was no authenticated user found.")
-            task.result = .success(false)
-            return task
+            return StitchTask<Void>(value: Void())
         }
-        
-        performRequest(method: .delete, endpoint: Consts.AuthPath, parameters: nil, refreshOnFailure: false, useRefreshToken: true).response(onQueue: DispatchQueue.global(qos: .utility)) { [weak self] (result) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            if let error = result.error {
-                task.result = .failure(error)
-            }
-            else {
-                do {
-                    try strongSelf.clearAuth()
-                    task.result = .success(true)
-                } catch {
-                    task.result = .failure(error)
-                }
-            }
-        }
-        return task
+
+        return httpClient.doRequest {
+            $0.method = .delete
+            $0.endpoint = self.routes.authSessionRoute
+            $0.refreshOnFailure = false
+            $0.useRefreshToken = true
+        }.then { _ in }
     }
-    
+
     // MARK: Private
-    private func url(withEndpoint endpoint: String) -> String {
-        return "\(baseUrl)\(Consts.ApiPath)\(appId)/\(endpoint)"
-    }
-    
-    private func clearAuth() throws {
-        guard auth != nil else {
-            return
-        }
-        
+    internal func clearAuth() throws {
         onLogout()
 
-        auth = nil
-        
-        try deleteToken(withKey: Consts.AuthRefreshTokenKey)
-        
-        networkAdapter.cancelAllRequests()
+        try self.httpClient.clearAuth()
     }
-    
-    enum AuthFields : String {
-        case AccessToken = "accessToken";
-        case Options = "options";
-        case Device = "device";
+
+    enum AuthFields: String {
+        case accessToken, options, device
     }
-    
+
     /**
      * @return A {@link Document} representing the information for this device
      * from the context of this app.
      */
-    private func getDeviceInfo() -> [String : Any] {
-        var info = [String : Any]()
-        
-        if let deviceId = auth?.deviceId {
-            info[DeviceFields.DeviceId.rawValue] = deviceId
+    private func getDeviceInfo() -> Document {
+        var info = Document()
+
+        if let deviceId = self.httpClient.authInfo?.deviceId {
+            info[DeviceFields.deviceId.rawValue] = deviceId
         }
-        
-        info[DeviceFields.AppVersion.rawValue] = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-        info[DeviceFields.AppId.rawValue] = Bundle.main.bundleIdentifier
-        info[DeviceFields.Platform.rawValue] = "ios"
-        info[DeviceFields.PlatformVersion.rawValue] = UIDevice.current.systemVersion
-        
-        return info;
+
+        info[DeviceFields.appVersion.rawValue] = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        info[DeviceFields.appId.rawValue] = Bundle.main.bundleIdentifier
+        info[DeviceFields.platform.rawValue] = "ios"
+        info[DeviceFields.platformVersion.rawValue] = UIDevice.current.systemVersion
+
+        return info
     }
-    
+
     /**
      * -parameter provider: The provider that will handle authentication.
      * -returns: A dict representing all information required for
      *              an auth request against a specific provider.
      */
-    private func getAuthRequest(provider: AuthProvider) -> [String : Any] {
+    private func getAuthRequest(provider: AuthProvider) -> Document {
         var request = provider.payload
-        var options = [String : Any]()
-        options[AuthFields.Device.rawValue] = getDeviceInfo()
-    	request[AuthFields.Options.rawValue] = options
-        return request;
+        let options: Document = [
+            AuthFields.device.rawValue: getDeviceInfo()
+        ]
+    	request[AuthFields.options.rawValue] = options
+        return request
     }
-    
+
     // MARK: - Requests
-    
-    @discardableResult
-    public func executePipeline(pipeline: Pipeline) -> StitchTask<Any> {
-        return executePipeline(pipelines: [pipeline])
-    }
-    
-    @discardableResult
-    public func executePipeline(pipelines: [Pipeline]) -> StitchTask<Any> {
-        let params: [[String: Any]] = pipelines.map { $0.toJson }
-        
-        return performRequest(method: .post, endpoint: Consts.PipelinePath, parameters: params).continuationTask(parser: { (json) -> Any in
-            let document = try Document(extendedJson: json)
-            if let docResult = document[Consts.ResultKey] {
-                return docResult
-            }
-            else {
-                throw StitchError.responseParsingFailed(reason: "Unexpected result received - expected a json reponse with a 'result' key, found: \(json).")
-            }
-        })
-    }
-    
-    // MARK: Private
-    
-    @discardableResult
-    private func performRequest(method: NAHTTPMethod, endpoint: String, parameters: [[String : Any]]?, refreshOnFailure: Bool = true, useRefreshToken: Bool = false) -> StitchTask<[String : Any]> {
-        let task = StitchTask<[String : Any]>()
-        guard isAuthenticated else {
-            task.result = .failure(StitchError.unauthorized(message: "Must first authenticate"))
-            return task
-        }
-        
-        let url = self.url(withEndpoint: endpoint)
-        let token = useRefreshToken ? refreshToken ?? String() : auth?.accessToken ?? String()
-        
-        networkAdapter.requestWithArray(url: url, method: method, parameters: parameters, headers: ["Authorization" : "Bearer \(token)"]).response(onQueue: DispatchQueue.global(qos: .utility), completionHandler: { [weak self] (response) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch response {
-            case .success(let value):
-                strongSelf.handleSuccessfulResponse(withValue: value, method: method, endpoint: endpoint, parameters: parameters, refreshOnFailure: refreshOnFailure, task: task)
-                
-            case .failure(let error):
-                task.result = .failure(error)
-                
-            }
-        })
-        
-        return task
-    }
-    
-    func handleSuccessfulResponse(withValue value: Any, method: NAHTTPMethod, endpoint: String, parameters: [[String : Any]]?, refreshOnFailure: Bool, task: StitchTask<[String : Any]>) {
-        if let value = value as? [String : Any] {
-            if let error = parseError(from: value) {
-                switch error {
-                case .serverError(let reason):
-                    
-                    // check if error is invalid session
-                    if reason.isInvalidSession {
-                        if refreshOnFailure {
-                            handleInvalidSession(method: method, endpoint: endpoint, parameters: parameters, task: task)
-                        }
-                        else {
-                            try? clearAuth()
-                            task.result = .failure(error)
-                        }
-                    }
-                    else {
-                        task.result = .failure(error)
-                    }
-                default:
-                    task.result = .failure(error)
-                }
-            }
-            else {
-                task.result = .success(value)
-            }
-        }
-        else {
-            task.result = .failure(StitchError.responseParsingFailed(reason: "Unexpected result received - expected json and received: \(value)"))
+    /**
+     * Execute a named function
+     * -parameter name: name of the function
+     * -parameter args: extended JSON arguments associated with the function
+     * -returns: return value of the associated function
+    */
+    public func executeFunction(name: String,
+                                args: ExtendedJsonRepresentable...) -> StitchTask<Any> {
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.functionsCallRoute
+            $0.parameters = ["name": name,
+                             "arguments": BSONArray(array: args)]
         }
     }
-    
-    private func getAuthFromSavedJwt() throws -> Auth? {
-        guard userDefaults?.bool(forKey: Consts.IsLoggedInUDKey) == true else {
-            return nil
-        }
-        
-        do {
-            if let authDicString = readToken(withKey: Consts.AuthJwtKey),
-                let authDicData = authDicString.data(using: .utf8),
-                let authDic = try JSONSerialization.jsonObject(with: authDicData, options: []) as? [String: Any] {
-                return try Auth(dictionary: authDic)
-            }
-        } catch {
-            printLog(.error, text: "Failed reading auth token from keychain")
-        }
-        
-        return nil
-    }
-    
-    // MARK: - Refresh Access Token
-    
-    private func handleInvalidSession(method: NAHTTPMethod, endpoint: String, parameters: [[String : Any]]?, task: StitchTask<[String : Any]>) {
-        refreshAccessToken().response(onQueue: DispatchQueue.global(qos: .utility)) { [weak self] (result) in
-            guard let strongSelf = self else {
-                task.result = StitchResult.failure(StitchError.clientReleased)
-                return
-            }
-            
-            switch result {
-            case .failure(let error):
-                task.result = .failure(error)
-                
-            case .success:
-                // retry once
-                strongSelf.performRequest(method: method, endpoint: endpoint, parameters: parameters, refreshOnFailure: false)
-                    .response(onQueue: DispatchQueue.global(qos: .utility)) { (result) in
-                        switch result {
-                        case .failure(let error):
-                            task.result = .failure(error)
-                            
-                        case .success(let value):
-                            task.result = .success(value)
-                            
-                        }
-                }
-                
-            }
-        }
-    }
-    
-    private func refreshAccessToken() -> StitchTask<Void> {
-        return performRequest(method: .post, endpoint: "\(Consts.AuthPath)/\(Consts.NewAccessTokenPath)", parameters: nil, refreshOnFailure: false, useRefreshToken: true).continuationTask(parser: { [weak self] (json) -> Void in
-            guard let strongSelf = self else {
-                throw StitchError.clientReleased
-            }
-            
-            if let accessToken = json[Consts.AccessTokenKey] as? String {
-                strongSelf.auth = strongSelf.auth?.auth(with: accessToken)
-            }
-            else {
-                throw StitchError.responseParsingFailed(reason: "failed parsing access token from result: \(json).")
-            }
-        })
-    }
-    
-    // MARK: - Token operations
-    
-    private func save(token: String, withKey key: String) {
-        if isSimulator {
-            printLog(.debug, text: "Falling back to saving token in UserDefaults because of simulator bug")
-            userDefaults?.set(token, forKey: key)
-        } else {
-            do {
-                let keychainItem = KeychainPasswordItem(service: Consts.AuthKeychainServiceName, account: key)
-                try keychainItem.savePassword(token)
-            } catch {
-                printLog(.warning, text: "failed saving token to keychain: \(error)")
-            }
-        }
-    }
-    
-    private func deleteToken(withKey key: String) throws {
-        if isSimulator {
-            printLog(.debug, text: "Falling back to deleting token from UserDefaults because of simulator bug")
-            userDefaults?.removeObject(forKey: key)
-        } else {
-            do {
-                let keychainItem = KeychainPasswordItem(service: Consts.AuthKeychainServiceName, account: key)
-                try keychainItem.deleteItem()
-            } catch {
-                printLog(.warning, text: "failed deleting auth token from keychain: \(error)")
-                throw error
-            }
-        }
-    }
-    
-    private func readToken(withKey key: String) -> String? {
-        if isSimulator {
-            printLog(.debug, text: "Falling back to reading token from UserDefaults because of simulator bug")
-            return userDefaults?.object(forKey: key) as? String
-        } else {
-            do {
-                let keychainItem = KeychainPasswordItem(service: Consts.AuthKeychainServiceName, account: key)
-                let token = try keychainItem.readPassword()
-                return token
-            } catch {
-                printLog(.warning, text: "failed reading auth token from keychain: \(error)")
-                return nil
-            }
+
+    /**
+     * Execute a named function associated with a service
+     * -parameter name: name of the function
+     * -parameter serviceName: name of your service
+     * -parameter args: extended JSON arguments associated with the function
+     * -returns: return value of the associated function
+     */
+    public func executeServiceFunction(name: String,
+                                       service: String,
+                                       args: ExtendedJsonRepresentable...) -> StitchTask<Any> {
+        return httpClient.doRequest {
+            $0.method = .post
+            $0.endpoint = self.routes.functionsCallRoute
+            $0.parameters = ["name": name,
+                             "arguments": BSONArray(array: args),
+                             "service": service]
         }
     }
 
     // MARK: - Error handling
-    
-    private func parseError(from value: [String : Any]) -> StitchError? {
-        
-        guard let errMsg = value[Consts.ErrorKey] as? String else {
-            return nil
-        }
-        
-        printLog(.error, text: "request failed. error: \(errMsg)")
-        
-        if let errorCode = value[Consts.ErrorCodeKey] as? String {
-            return StitchError.serverError(reason: StitchError.ServerErrorReason(errorCode: errorCode, errorMessage: errMsg))
-        }
-        
-        return StitchError.serverError(reason: .other(message: errMsg))
-    }
-    
-    
     /**
      * Gets all available push providers for the current app.
      *
@@ -715,25 +386,36 @@ public class StitchClient: StitchClientType {
      * of the request.
      */
     public func getPushProviders() -> StitchTask<AvailablePushProviders> {
-        return performRequest(method: .get, endpoint: Consts.PushPath, parameters: nil).continuationTask { json in
-            return AvailablePushProviders.fromQuery(doc: try! Document(extendedJson: json))
+        return httpClient.doRequest {
+            $0.endpoint = self.routes.pushProvidersRoute
+            $0.isAuthenticatedRequest = false
+        }.then {
+            guard let array = $0 as? [Any] else {
+                throw StitchError.responseParsingFailed(reason: "\($0) was not of expected type array")
+            }
+            return try AvailablePushProviders.fromQuery(doc: BSONArray(array: array))
         }
     }
-    
+
     /**
      * Called when a user logs in with this client.
      */
     private func onLogin() {
         authDelegates.forEach { $0?.onLogin() }
     }
-    
+
     /**
      * Called when a user is logged out from this client.
      */
     private func onLogout() {
         authDelegates.forEach { $0?.onLogout() }
     }
-    
+
+    /**
+     Adds a delegate for auth events.
+     
+     - parameter delegate: The delegate that will receive auth events.
+     */
     public func addAuthDelegate(delegate: AuthDelegate) {
         self.authDelegates.append(delegate)
     }

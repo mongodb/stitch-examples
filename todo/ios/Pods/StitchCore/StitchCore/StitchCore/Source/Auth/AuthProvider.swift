@@ -1,15 +1,30 @@
 import Foundation
+import ExtendedJson
 
+/**
+    An AuthProvider is responsible for providing the necessary information for a specific
+    authentication request.
+ */
 public protocol AuthProvider {
+    /// The authentication type of this provider.
     var type: String {get}
-    var name: String {get}
-    var payload: [String : Any] {get}
+
+    /// The JSON payload containing authentication material.
+    var payload: Document {get}
 }
 
+/// Provider enum representing current state of `AuthProvider`s.
 public enum Provider {
-    case google, facebook, emailPassword, anonymous
-    
-    var name: String {
+    /// Google OAuth2 repr
+    case google,
+    /// Facebook OAuth2 repr
+         facebook,
+    /// Email and password authentication
+         emailPassword,
+    /// Anonymous Authentication
+         anonymous
+
+    var type: String {
         switch self {
         case .google:
             return "oauth2/google"
@@ -18,19 +33,19 @@ public enum Provider {
         case .emailPassword:
             return "local/userpass"
         case .anonymous:
-            return "anon/user"    
+            return "anon/user"
         }
     }
-    
-    init?(name: String) {
-        switch name {
-        case Provider.google.name:
+
+    init?(type: String) {
+        switch type {
+        case Provider.google.type:
             self = .google
-        case Provider.facebook.name:
+        case Provider.facebook.type:
             self = .facebook
-        case Provider.emailPassword.name:
+        case Provider.emailPassword.type:
             self = .emailPassword
-        case Provider.anonymous.name:
+        case Provider.anonymous.type:
             self = .anonymous
         default:
             return nil
