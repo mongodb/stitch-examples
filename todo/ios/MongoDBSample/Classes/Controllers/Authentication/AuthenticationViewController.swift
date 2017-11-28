@@ -81,10 +81,9 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 
                 GIDSignIn.sharedInstance().uiDelegate = self
                 GIDSignIn.sharedInstance().delegate = self
-//                GIDSignIn.sharedInstance().serverClientID = googleAuthInfo.clientId
+                GIDSignIn.sharedInstance().serverClientID = googleAuthInfo.config.clientId
                 
- //               GIDSignIn.sharedInstance().scopes = googleAuthInfo.scopes
-                
+                GIDSignIn.sharedInstance().scopes = googleAuthInfo.metadataFields?.map { $0.name }
                 strongSelf.googleSignInButton.isHidden = false
                 strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.googleSignInButton)
             }
