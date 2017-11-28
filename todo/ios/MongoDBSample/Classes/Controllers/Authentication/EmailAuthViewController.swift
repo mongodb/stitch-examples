@@ -43,10 +43,10 @@ class EmailAuthViewController: UIViewController {
     }
 
     func confirmEmail(token: String, tokenId: String) {
-        
+           /*
         activityIndicator.isHidden = false
         infoLabel.text = "Confirming Email..."
-        
+
         stitchClient?.emailConfirm(token: token, tokenId: tokenId)
             .response(completionHandler: { [weak self] (result) in
                 self?.activityIndicator.isHidden = true
@@ -58,11 +58,12 @@ class EmailAuthViewController: UIViewController {
                 self?.infoLabel.text = error.localizedDescription
                 break
             }
-        })
+        })*/
     }
     
     func resetPassword(token: String, tokenId: String) {
         
+        /*
         activityIndicator.isHidden = false
         infoLabel.text = "Resetting Password..."
         
@@ -78,6 +79,7 @@ class EmailAuthViewController: UIViewController {
                     break
                 }
             })
+ */
     }
     
     //MARK: - Actions
