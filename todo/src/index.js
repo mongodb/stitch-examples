@@ -73,10 +73,13 @@ var AuthControls = class extends React.Component {
   }
 
   componentDidMount() {
-    this.props.client.userProfile()
-    .then(userData=>{
-      this.setState({userData:userData.data})
-    })
+    let authed = !!this.props.client.authedId();
+    if (authed) {
+      this.props.client.userProfile()
+      .then(userData=>{
+        this.setState({userData:userData.data})
+      })
+    }
   }
 
   render() {
@@ -383,7 +386,7 @@ var Settings = class extends React.Component {
   }
 
   loadUser() {
-    users.find({}, null).execute().then(data => {
+    users.find({_id: stitchClient.authedId()}, null).execute().then(data => {
       if (data.length > 0) {
         this.setState({ user: data[0] });
       }
