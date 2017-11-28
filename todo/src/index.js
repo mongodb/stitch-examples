@@ -313,7 +313,7 @@ var AwaitVerifyCode = class extends React.Component {
  
 let formatPhoneNum = raw => {
   let number = raw.replace(/\D/g, "");
-  let intl = (number[1] === "+");
+  let intl = (raw[0] === "+");
   return intl ? "+" + number : "+1" + number;
 };
 
@@ -339,7 +339,7 @@ var NumberConfirm = class extends React.Component {
                 { _id: stitchClient.authedId(), number_status: "unverified" },
                 {
                   $set: {
-                    phone_number: this._number.value,
+                    phone_number: formatPhoneNum(this._number.value),
                     number_status: "pending",
                     verify_code: code
                   }
