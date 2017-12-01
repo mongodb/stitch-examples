@@ -1,5 +1,8 @@
 package com.mongodb.example.pushnotification;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,8 +23,8 @@ import com.mongodb.stitch.android.push.gcm.GCMPushClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TOPIC_HOLIDAYS = "com.mongodb.example.pushnotification.holidays";
-    public static final String TOPIC_QUOTES = "com.mongodb.example.pushnotification.quotes";
+    public static final String TOPIC_HOLIDAYS = "holidays";
+    public static final String TOPIC_QUOTES = "quotes";
 
     private static final String TAG = "StitchPushNotification";
 
@@ -61,7 +64,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Successfully registered client for GCM.", Toast.LENGTH_SHORT).show();
             }
         });
-
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            // For Android SDK 26 and above, it is necessary to create a channel to create notifications.
+            NotificationManager manager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel("Channel", "Default", NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
+        }
     }
 
 
