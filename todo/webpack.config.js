@@ -10,7 +10,8 @@ module.exports = {
       'process.env': {
         'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         'APP_ID': JSON.stringify(process.env.APP_ID),
-        'STITCH_URL': JSON.stringify(process.env.STITCH_URL)
+        'STITCH_URL': JSON.stringify(process.env.STITCH_URL),
+        'MONGODB_SERVICE': JSON.stringify(process.env.MONGODB_SERVICE)
       }
     })
   ],
@@ -18,17 +19,17 @@ module.exports = {
     loaders: [
     {
       test: /\.jsx?$/,
-      exclude: /node_modules/,
-      loader: 'babel'
+      exclude: /node_modules\/(?!(mongodb-extjson|bson))/,
+      loader: 'babel-loader'
     },
     {
       test: /\.scss$/,
-      loaders: ['style', 'css', 'resolve-url', 'sass?sourceMap']
+      loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader?sourceMap']
     },
     ]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['.js', '.jsx']
   },
   output: {
     path: __dirname + '/' + process.env.DISTROOT + '/dist',

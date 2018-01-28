@@ -7,12 +7,10 @@ const TOPPINGS = ["Pepperoni", "Mushrooms", "Onions", "Sausage", "Bacon", "Extra
 const SIZES = ["Personal", "Small", "Medium", "Large", "X-tra Large"];
 
 // Set-up DB Connection
-const client = new stitch.StitchClient("<YOUR APP ID>");
-const db = client.service("mongodb", "mongodb-atlas").db("SalesReporting");
-const salesData = db.collection("Receipts");
+const clientPromise = stitch.StitchClientFactory.create("<YOUR APP ID>");
 
 // Send sample data while within this loop
-function generateReceipts(){
+function generateReceipts(salesData){
   // Create a random transaction
   const receipt = {
     "timestamp" : Date.now(),
@@ -30,12 +28,17 @@ function generateReceipts(){
   // Insert into MongoDB
   salesData.insertOne(receipt).then(
     // Wait for a random amount of time
-    setTimeout(generateReceipts, chance.integer({min: 0, max: 3000}))
+    setTimeout(() => generateReceipts(salesData), chance.integer({min: 0, max: 3000}))
   );
 }
 
-// Authenticate anonymously and then begin to load data
-client.login().then(generateReceipts);
+clientPromise.then(client => {
+  const db = client.service("mongodb", "mongodb-atlas").db("SalesReporting");
+  const salesData = db.collection("Receipts");
 
-// Alternatively Use the API Key to load data more securely
-// client.authenticate("apiKey", "<YOUR API KEY>").then(generateReceipts);
+  // Authenticate anonymously and then begin to load data
+  client.login().then(() => generateReceipts(salesData));
+
+  // Alternatively Use the API Key to load data more securely
+  // client.authenticate("apiKey", "<YOUR API KEY>").then(() => generateReceipts(salesData));
+})

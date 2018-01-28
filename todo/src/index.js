@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { StitchClient } from "mongodb-stitch";
+import { StitchClientFactory } from "mongodb-stitch";
 import { browserHistory, Route } from "react-router";
 import { BrowserRouter, Link } from "react-router-dom";
 
@@ -11,19 +11,22 @@ if (process.env.APP_ID) {
   appId = process.env.APP_ID;
 }
 
+let mongodbService = "mongodb-atlas";
+if (process.env.MONGODB_SERVICE) {
+  mongodbService = process.env.MONGODB_SERVICE;
+}
+
 let options = {};
 if (process.env.STITCH_URL) {
   options.baseUrl = process.env.STITCH_URL;
 }
 
-let stitchClient = new StitchClient(appId, options);
-let db = stitchClient.service("mongodb", "mongodb-atlas").db("todo");
-let items = db.collection("items");
-let users = db.collection("users");
+let stitchClientPromise = StitchClientFactory.create(appId, options);
+
 let TodoItem = class extends React.Component {
   clicked() {
     this.props.onStartChange();
-    items
+    this.props.items
       .updateOne(
         { _id: this.props.item._id },
         { $set: { checked: !this.props.item.checked } }
@@ -70,12 +73,12 @@ var AuthControls = class extends React.Component {
   constructor(props){
     super(props)
     this.state = {userData:null}
+    this.stitchClient = props.stitchClient;
   }
 
   componentDidMount() {
-    let authed = !!this.props.client.authedId();
-    if (authed) {
-      this.props.client.userProfile()
+    if (this.stitchClient.isAuthenticated()) {
+      this.stitchClient.userProfile()
       .then(userData=>{
         this.setState({userData:userData.data})
       })
@@ -83,8 +86,8 @@ var AuthControls = class extends React.Component {
   }
 
   render() {
-    let authed = !!this.props.client.authedId();
-    let logout = () => this.props.client.logout().then(() => location.reload());
+    let authed = this.stitchClient.isAuthenticated();
+    let logout = () => this.stitchClient.logout().then(() => location.reload());
     return (
       <div>
         {authed
@@ -111,7 +114,7 @@ var AuthControls = class extends React.Component {
           ? <div className="login-links-panel">
               <h2>TODO</h2>
               <div
-                onClick={() => this.props.client.authenticate("google")}
+                onClick={() => this.stitchClient.authenticate("google")}
                 className="signin-button"
               >
                 <svg
@@ -144,7 +147,7 @@ var AuthControls = class extends React.Component {
                 <span className="signin-button-text">Sign in with Google</span>
               </div>
               <div
-                onClick={() => this.props.client.authenticate("facebook")}
+                onClick={() => this.stitchClient.authenticate("facebook")}
                 className="signin-button"
               >
                 <div className="facebook-signin-logo" />
@@ -156,19 +159,16 @@ var AuthControls = class extends React.Component {
           : null}
       </div>
     );
-    //<button disabled={authed} onClick={() => this.props.client.linkWithOAuth("google")}>Link with Google</button>
-    //<button disabled={authed} onClick={() => this.props.client.linkWithOAuth("facebook")}>Link with Facebook</button>
   }
 };
 
 var TodoList = class extends React.Component {
   loadList() {
-    let authed = !!stitchClient.authedId()
-    if (!authed) {
+    if (!this.stitchClient.isAuthenticated()) {
       return;
     }
     let obj = this;
-    items.find(null, null).execute().then(function(data) {
+    this.items.find(null, null).execute().then(function(data) {
       obj.setState({ items: data, requestPending: false });
     });
   }
@@ -179,6 +179,8 @@ var TodoList = class extends React.Component {
     this.state = {
       items: []
     };
+    this.stitchClient = props.stitchClient;
+    this.items = props.items;
   }
 
   componentWillMount() {
@@ -186,7 +188,7 @@ var TodoList = class extends React.Component {
   }
 
   checkHandler(id, status) {
-    items.updateOne({ _id: id }, { $set: { checked: status } }).then(() => {
+    this.items.updateOne({ _id: id }, { $set: { checked: status } }).then(() => {
       this.loadList();
     }, { rule: "checked" });
   }
@@ -200,8 +202,8 @@ var TodoList = class extends React.Component {
       return;
     }
     this.setState({ requestPending: true });
-    items
-      .insertOne({ text: event.target.value, owner_id: stitchClient.authedId() })
+    this.items
+      .insertOne({ text: event.target.value, owner_id: this.stitchClient.authedId() })
       .then(() => {
         this._newitem.value = "";
         this.loadList();
@@ -210,7 +212,7 @@ var TodoList = class extends React.Component {
 
   clear() {
     this.setState({ requestPending: true });
-    items.deleteMany({ checked: true }).then(() => {
+    this.items.deleteMany({ checked: true }).then(() => {
       this.loadList();
     });
   }
@@ -250,6 +252,7 @@ var TodoList = class extends React.Component {
                   <TodoItem
                     key={item._id.toString()}
                     item={item}
+                    items={this.items}
                     onChange={() => this.loadList()}
                     onStartChange={() => this.setPending()}
                   />
@@ -258,27 +261,17 @@ var TodoList = class extends React.Component {
         </ul>
       </div>
     );
-    return !!stitchClient.authedId() ? loggedInResult : null;
+    return this.stitchClient.isAuthenticated() ? loggedInResult : null;
   }
 };
 
-var Home = function() {
-  let authed = !!stitchClient.authedId();
+var Home = function(props) {
   return (
     <div>
-      <AuthControls client={stitchClient} />
-      <TodoList />
+      <AuthControls {...props}/>
+      <TodoList {...props}/>
     </div>
   );
-};
-
-function initUserInfo() {
-  return users
-    .updateOne(
-      { _id: stitchClient.authedId() },
-      { $setOnInsert: { phone_number: "", number_status: "unverified" } },
-      { upsert: true }
-    )
 };
 
 var AwaitVerifyCode = class extends React.Component {
@@ -287,7 +280,7 @@ var AwaitVerifyCode = class extends React.Component {
     if (e.keyCode == 13) {
       users
         .updateOne(
-          { _id: stitchClient.authedId(), verify_code: this._code.value },
+          { _id: this.props.stitchClient.authedId(), verify_code: this._code.value },
           { $set: { number_status: "verified" } }
         )
         .then(data => {
@@ -334,12 +327,12 @@ var NumberConfirm = class extends React.Component {
     if (e.keyCode == 13) {
       if (formatPhoneNum(this._number.value).length >= 10) {
         let code = generateCode(7);
-        stitchClient
+        this.props.stitchClient
           .executeFunction("sendConfirmation", this._number.value, code)
           .then(data => {
             users
               .updateOne(
-                { _id: stitchClient.authedId(), number_status: "unverified" },
+                { _id: this.props.stitchClient.authedId(), number_status: "unverified" },
                 {
                   $set: {
                     phone_number: formatPhoneNum(this._number.value),
@@ -383,10 +376,21 @@ var Settings = class extends React.Component {
     this.state = {
       user: null
     };
+    this.stitchClient = props.stitchClient;
+    this.users = props.users;
   }
 
+  initUserInfo() {
+    return this.users
+      .updateOne(
+        { _id: this.stitchClient.authedId() },
+        { $setOnInsert: { phone_number: "", number_status: "unverified" } },
+        { upsert: true }
+      )
+  };
+
   loadUser() {
-    users.find({_id: stitchClient.authedId()}, null).execute().then(data => {
+    this.users.find({_id: this.stitchClient.authedId()}, null).execute().then(data => {
       if (data.length > 0) {
         this.setState({ user: data[0] });
       }
@@ -394,7 +398,7 @@ var Settings = class extends React.Component {
   }
 
   componentWillMount() {
-    initUserInfo()
+    this.initUserInfo()
     .then (() => this.loadUser())
   }
 
@@ -407,7 +411,7 @@ var Settings = class extends React.Component {
             if (u.number_status === "pending") {
               return <AwaitVerifyCode onSubmit={() => this.loadUser()} />;
             } else if (u.number_status === "unverified") {
-              return <NumberConfirm onSubmit={() => this.loadUser()} />;
+              return <NumberConfirm onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} />;
             } else if (u.number_status === "verified") {
               return (
                 <div
@@ -421,12 +425,19 @@ var Settings = class extends React.Component {
   }
 };
 
-render(
-  <BrowserRouter>
-    <div>
-      <Route exact path="/" component={Home} />
-      <Route path="/settings" component={Settings} />
-    </div>
-  </BrowserRouter>,
-  document.getElementById("app")
-);
+stitchClientPromise.then(stitchClient => {
+  let db = stitchClient.service("mongodb", mongodbService).db("todo");
+  let items = db.collection("items");
+  let users = db.collection("users");
+  let props = {stitchClient, items, users};
+
+  render(
+    <BrowserRouter>
+      <div>
+        <Route exact path="/" render={routeProps => <Home {...props} {...routeProps}/>}/>
+        <Route path="/settings" render={routeProps => <Settings {...props} {...routeProps}/>}/>
+      </div>
+    </BrowserRouter>,
+    document.getElementById("app")
+  );
+})
