@@ -30,10 +30,9 @@ Ok, we have our basic page, time to add comments.
 Browse to your stitch application home page, on it you should see a script tag to load the stitch sdk and connect.
 Copy the first few lines that should look something like:
 
-            <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
+            <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v3/stable/stitch.min.js"></script>
             <script>
-               const client = new stitch.StitchClient('mdbw17s1-poiib');
-               const db = client.service('mongodb', 'mongodb-atlas').db('blog');
+               const clientPromise = stitch.StitchClientFactory.create('<STITCH APP ID>');
 
 For the `db` argument, change the name to `blog` from whatever was there before.
 
@@ -43,9 +42,17 @@ Next we are going to add an onLoad handler.
 
 Add a function in the script block:
 
+         let client;
+         let db;
          function displayCommentsOnLoad() {
-             client.login().then(displayComments)
+             clientPromise.then(stitchClient => {
+                 client = stitchClient;
+                 db = client.service('mongodb', 'mongodb-atlas').db('blog');
+                 return client.login().then(displayComments)
+             });
          }
+
+For the `db` argument, change the name to `blog` from whatever was there before.
 
 And make your body tag look like:
 
@@ -108,13 +115,18 @@ The entire thing looks like:
 
      <html>
          <head>
-             <script src="https://s3.amazonaws.com/stitch-sdks/js/library/stable/stitch.min.js"></script>
+             <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v3/stable/stitch.min.js"></script>
              <script>
-              const client = new stitch.StitchClient('<your-app-id>');
-              const db = client.service('mongodb', 'mongodb-atlas').db('blog');
+              const clientPromise = stitch.StitchClientFactory.create('<your-app-id>');
      
+              let client;
+              let db;
               function displayCommentsOnLoad() {
-                  client.login().then(displayComments);
+                  clientPromise.then(stitchClient => {
+                      client = stitchClient;
+                      db = client.service('mongodb', 'mongodb-atlas').db('blog');
+                      return client.login().then(displayComments)
+                  });
               }
      
               function displayComments() {
