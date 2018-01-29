@@ -12,7 +12,7 @@ Copy the first few lines that should look something like:
 
             <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v3/stable/stitch.min.js"></script>
             <script>
-               const clientPromise = stitch.StitchClientFactory.create('mdbw17s1-poiib');
+               const clientPromise = stitch.StitchClientFactory.create('<STITCH APP ID>');
 
 For the `db` argument, change the name to `blog` from whatever was there before.
 
