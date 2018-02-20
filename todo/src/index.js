@@ -278,7 +278,7 @@ var AwaitVerifyCode = class extends React.Component {
   checkCode(e) {
     let obj = this;
     if (e.keyCode == 13) {
-      users
+      this.props.users
         .updateOne(
           { _id: this.props.stitchClient.authedId(), verify_code: this._code.value },
           { $set: { number_status: "verified" } }
@@ -324,13 +324,13 @@ let generateCode = len => {
 
 var NumberConfirm = class extends React.Component {
   saveNumber(e) {
-    if (e.keyCode == 13) {
+    if (e.keyCode == 13) {  // Return key?
       if (formatPhoneNum(this._number.value).length >= 10) {
         let code = generateCode(7);
         this.props.stitchClient
           .executeFunction("sendConfirmation", this._number.value, code)
           .then(data => {
-            users
+            this.props.users
               .updateOne(
                 { _id: this.props.stitchClient.authedId(), number_status: "unverified" },
                 {
@@ -393,6 +393,8 @@ var Settings = class extends React.Component {
     this.users.find({_id: this.stitchClient.authedId()}, null).execute().then(data => {
       if (data.length > 0) {
         this.setState({ user: data[0] });
+      } else {
+        console.log("User not found");
       }
     });
   }
@@ -409,9 +411,9 @@ var Settings = class extends React.Component {
         {(u => {
           if (u != null) {
             if (u.number_status === "pending") {
-              return <AwaitVerifyCode onSubmit={() => this.loadUser()} />;
+              return <AwaitVerifyCode onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} users={this.users}/>;
             } else if (u.number_status === "unverified") {
-              return <NumberConfirm onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} />;
+              return <NumberConfirm onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} users={this.users}/>;
             } else if (u.number_status === "verified") {
               return (
                 <div
