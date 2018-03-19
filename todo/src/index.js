@@ -6,8 +6,7 @@ import { BrowserRouter, Link } from "react-router-dom";
 
 require("../static/todo.scss");
 
-//let appId = "<your-app-id>";
-let appId = "todo_web_app-kkqke";
+let appId = "<your-app-id>";
 if (process.env.APP_ID) {
   appId = process.env.APP_ID;
 }
@@ -427,10 +426,10 @@ var Settings = class extends React.Component {
 };
 
 stitchClientPromise.then(stitchClient => {
-  const db = stitchClient.service("mongodb", mongodbService).db("todo");
-  const items = db.collection("items");
-  const users = db.collection("users");
-  const props = {stitchClient, items, users};
+  let db = stitchClient.service("mongodb", mongodbService).db("todo");
+  let items = db.collection("items");
+  let users = db.collection("users");
+  let props = {stitchClient, items, users};
 
   render(
     <BrowserRouter>
