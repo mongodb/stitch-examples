@@ -278,7 +278,7 @@ var AwaitVerifyCode = class extends React.Component {
   checkCode(e) {
     let obj = this;
     if (e.keyCode == 13) {
-      users
+      this.props.users
         .updateOne(
           { _id: this.props.stitchClient.authedId(), verify_code: this._code.value },
           { $set: { number_status: "verified" } }
@@ -330,7 +330,7 @@ var NumberConfirm = class extends React.Component {
         this.props.stitchClient
           .executeFunction("sendConfirmation", this._number.value, code)
           .then(data => {
-            users
+            this.props.users
               .updateOne(
                 { _id: this.props.stitchClient.authedId(), number_status: "unverified" },
                 {
@@ -409,9 +409,9 @@ var Settings = class extends React.Component {
         {(u => {
           if (u != null) {
             if (u.number_status === "pending") {
-              return <AwaitVerifyCode onSubmit={() => this.loadUser()} />;
+              return <AwaitVerifyCode onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} users={this.users} />;
             } else if (u.number_status === "unverified") {
-              return <NumberConfirm onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} />;
+              return <NumberConfirm onSubmit={() => this.loadUser()} stitchClient={this.stitchClient} users={this.users} />;
             } else if (u.number_status === "verified") {
               return (
                 <div
