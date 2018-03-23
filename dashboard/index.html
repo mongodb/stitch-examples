@@ -16,8 +16,7 @@
     let stitchClient, cluster, data;
 
     // Replace this with your app's id
-    const appId = "<YOUR APP ID>"
-
+    const appId = "<YOUR APP ID>";
 
     // Define dimensions of graph using window size/time
     var m = [.15 * window.innerHeight, .15 * window.innerHeight, .1 * window.innerWidth, .1 * window.innerWidth],
@@ -87,7 +86,7 @@
     function buildGraph() {
       // Use Stitch to pull the latest data and then graph it
       var now = Date.now();
-      stitchClient.executeFunction("SalesTimeline", (now - duration), now).then(docs => {
+      stitchClient.executeFunction("salesTimeline", (now - duration), now).then(docs => {
         var SalesLine = docs.map(function (x) { return { timestamp: x["timestamp"], total: x["total"] } });
 
         // Plot the data and then call the refresh loop
@@ -104,7 +103,7 @@
         then = SalesLine[SalesLine.length - 1].timestamp;
 
       // Get any new sales data from Stitch
-      stitchClient.executeFunction("SalesTimeline", then, now).then(docs => {
+      stitchClient.executeFunction("salesTimeline", then, now).then(docs => {
         var newPts = docs.map(function (x) { return { timestamp: x["timestamp"], total: x["total"] } });
 
         if (newPts.length > 0) {

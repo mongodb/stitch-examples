@@ -1,3 +1,5 @@
+const appId = "<YOUR APP ID>";
+
 const stitch = require("mongodb-stitch"); // Set-up the MongoDB connection
 const chance = require("chance").Chance(); // Package for random variables
 
@@ -7,7 +9,7 @@ const TOPPINGS = ["Pepperoni", "Mushrooms", "Onions", "Sausage", "Bacon", "Extra
 const SIZES = ["Personal", "Small", "Medium", "Large", "X-tra Large"];
 
 // Set-up DB Connection
-const clientPromise = stitch.StitchClientFactory.create("<YOUR APP ID>");
+const clientPromise = stitch.StitchClientFactory.create(appId);
 
 // Send sample data while within this loop
 function generateReceipts(salesData){
