@@ -7,124 +7,14 @@
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
-<body onload="simpleAuth();">
-  <!--<body onload="emailAuth();">-->
-
+<body>
   <h1 align="center">Sales Dashboard</h1>
-  <div id="graph1" class="aGraph" style="position:absolute;top:0;left:0; float:left;"></div>
-  <script>
-    let stitchClient, cluster, data;
-
-    // Replace this with your app's id
-    const appId = "<YOUR APP ID>";
-
-    // Define dimensions of graph using window size/time
-    var m = [.15 * window.innerHeight, .15 * window.innerHeight, .1 * window.innerWidth, .1 * window.innerWidth],
-      w = .85 * window.innerWidth,
-      h = .4 * window.innerHeight;
-    var duration = 300000,
-      now = Date.now();
-
-    // X scale will fit all values within the set time interval to window size
-    // Y scale will fit values from 0-30 within window size
-    var x = d3.scaleTime().domain([now - duration, now]).range([0, w]),
-      y = d3.scaleLinear().domain([0, 30]).range([h, 0]);
-
-    // Create a line function that can convert data into X/Y points
-    // Assign the X/Y functions to plot our Timestamp/Total
-    var line = d3.line()
-      .x(function (d) { return x(d.timestamp); })
-      .y(function (d) { return y(d.total); })
-      .curve(d3.curveBasis)
-
-    // Add an SVG element with the desired dimensions and margin.
-    var graph = d3.select("#graph1").append("svg")
-      .attr("width", w + m[1] + m[3])
-      .attr("height", h + m[0] + m[2])
-    var g = graph.append("g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
-
-    // Add the x-axis
-    var xAxis = g.append("g")
-      .attr("class", "axis axis-x")
-      .attr("transform", "translate(0," + h + ")")
-      .call(x.axis = d3.axisBottom().scale(x));
-
-    // Add the y-axis
-    var yAxis = g.append("g")
-      .attr("class", "axis axis-y")
-      .attr("transform", "translate(-25,0)")
-      .call(y.axis = d3.axisLeft().scale(y));
-
-    // Simple login with anonymous authentication
-    function simpleAuth() {
-      stitch.StitchClientFactory
-        .create(appId)
-        .then(client => {
-          stitchClient = client;
-          cluster = client.service("mongodb", "mongodb-atlas");
-          data = cluster.db("SalesReporting").collection("Receipts");
-          stitchClient.login().then(function () { buildGraph() });
-        });
-    }
-
-    // Simple function taking authentication from the UI
-    function emailAuth() {
-      var userid = prompt("Enter your User ID:", "");
-      var password = prompt("Enter your Password:", "");
-
-      stitch.StitchClientFactory
-        .create(appId)
-        .then(client => {
-          stitchClient = client;
-          cluster = client.service("mongodb", "mongodb-atlas");
-          data = cluster.db("SalesReporting").collection("Receipts");
-          stitchClient.login(userid, password).then(function () { buildGraph() });
-        });
-    }
-
-    function buildGraph() {
-      // Use Stitch to pull the latest data and then graph it
-      var now = Date.now();
-      stitchClient.executeFunction("salesTimeline", (now - duration), now).then(docs => {
-        var SalesLine = docs.map(function (x) { return { timestamp: x["timestamp"], total: x["total"] } });
-
-        // Plot the data and then call the refresh loop
-        g.path = g.append("path").datum(SalesLine).attr("stroke", "mediumturquoise").attr("d", line);
-
-        // Call function to refresh the graph
-        setTimeout(function () { refreshGraph(SalesLine, g.path); }, 1000);
-      });
-    }
-
-    function refreshGraph(SalesLine, path) {
-      // Find the updated time range
-      var now = Date.now(),
-        then = SalesLine[SalesLine.length - 1].timestamp;
-
-      // Get any new sales data from Stitch
-      stitchClient.executeFunction("salesTimeline", then, now).then(docs => {
-        var newPts = docs.map(function (x) { return { timestamp: x["timestamp"], total: x["total"] } });
-
-        if (newPts.length > 0) {
-          // Add new Sales points and remove old points
-          for (var pt in newPts) {
-            path.datum().push(newPts[pt])
-            path.attr("d", line)
-          }
-
-          // Slide x-axis left
-          x.domain([now - duration, now])
-          xAxis.transition().duration(1000).call(x.axis)
-
-          // Slide path
-          path.transition().duration(1000).attr("d", line)
-          while (path.datum()[0].timestamp < (now - duration)) { path.datum().shift() }
-        }
-        setTimeout(function () { refreshGraph(SalesLine, path); }, 1000);
-      });
-    }
-  </script>
+  <div id="graph1"
+       class="aGraph"
+       style="position:absolute;top:0;left:0; float:left;"
+  />
+    
+  <script src="./dashboard.js"></script>
 </body>
 
 </html>
