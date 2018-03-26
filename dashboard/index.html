@@ -2,17 +2,38 @@
 <html>
 
 <head>
+  <!-- Stitch JavaScript SDK -->
   <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v3/stable/stitch.min.js"></script>
+  <!-- d3.js - Data Visulation Library -->
   <script src="https://d3js.org/d3.v4.js"></script>
+  <!-- Bootstrap 4 css -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <!-- Custom css -->
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-  <h1 align="center">Sales Dashboard</h1>
-  <div id="graph1"
-       class="aGraph"
-       style="position:absolute;top:0;left:0; float:left;"
-  />
+  <h1 align="center" class="page-title">Sales Dashboard</h1>
+  <div class="dashboard-container">
+    <div class="popular-toppings">
+      <h2 class="centered">Popular Toppings</h2>
+
+      <table id="toppingstable" class="table">
+        <tr>
+          <th class="fixed-width">Topping</th>
+          <th class="fixed-width"># Recent Orders</th>
+        </tr>
+        
+      </table>
+
+    </div>
+
+    <div id="sales-timeline">
+        <h2 class="centered">Sales Over Time</h2>
+      <div id="graph1" class="aGraph" />
+    </div>
+  </div>
     
   <script src="./dashboard.js"></script>
 </body>

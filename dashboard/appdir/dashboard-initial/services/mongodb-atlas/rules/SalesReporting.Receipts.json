@@ -1,36 +1,8 @@
 {
     "namespace": "SalesReporting.Receipts",
-    "filters": [
-        {
-            "match_expression": {
-                "owner_id": "%%user.id"
-            },
-            "when": {
-                "%%true": true
-            }
-        }
-    ],
-    "fields": {
-        "owner_id": {
-            "valid": {
-                "%or": [
-                    {
-                        "%%prev": "%%user.id"
-                    },
-                    {
-                        "%%prev": {
-                            "%exists": false
-                        }
-                    }
-                ]
-            }
-        }
-    },
-    "other_fields": {},
-    "write": {
-        "owner_id": "%%user.id"
-    },
-    "read": {
-        "owner_id": "%%user.id"
-    }
+    "filters": [ ],
+    "fields": { },
+    "other_fields": { },
+    "write": { },
+    "read": { }
 }

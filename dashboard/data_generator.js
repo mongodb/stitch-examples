@@ -1,4 +1,5 @@
-const appId = "docsuserdashboard-jwazj";
+const appId = "<YOUR APP ID>";
+const dashboardApiKey = "<YOUR API KEY>";
 
 const stitch = require("mongodb-stitch"); // Set-up the MongoDB connection
 const chance = require("chance").Chance(); // Package for random variables
@@ -19,23 +20,30 @@ const TOPPINGS = [
 ];
 const SIZES = ["Personal", "Small", "Medium", "Large", "X-tra Large"];
 
-// Set-up DB Connection
-const clientPromise = stitch.StitchClientFactory.create(appId);
-clientPromise.then(client => {
-  const db = client.service("mongodb", "mongodb-atlas").db("SalesReporting");
-  const salesData = db.collection("Receipts");
+// Instantiate variables
+let stitchClient;
+let salesData;
 
-  // Authenticate anonymously and then begin to load data
-  client.login().then(() => generateReceipts(salesData));
+// Create and authenticate a new StitchClient
+stitch.StitchClientFactory.create(appId)
+  .then(client => {
+    stitchClient = client;
+    return stitchClient.login(); // Log in anonymously
 
-  // Alternatively Use the API Key to load data more securely
-  // client.authenticate("apiKey", "<YOUR API KEY>").then(() => generateReceipts(salesData));
-});
+    // API Key authentication
+    // return stitchClient.authenticate("apiKey", dashboardApiKey)
+  })
+  // Connect to a MongoDB Atlas collection and begin generating customer orders
+  .then(() => {
+    salesData = stitchClient
+      .service("mongodb", "mongodb-atlas")
+      .db("SalesReporting")
+      .collection("Receipts");
+    generateReceipts();
+  });
 
-
-// Send sample data while within this recursive loop
-function generateReceipts(salesData) {
-  // Create a random transaction
+function generateReceipts() {
+  // Create a random pizza order
   const receipt = {
     timestamp: Date.now(),
     customerName: chance.name({ nationality: "en" }),
@@ -46,19 +54,22 @@ function generateReceipts(salesData) {
     total: parseFloat(chance.normal({ mean: 20, dev: 3 }).toFixed(2))
   };
 
-  // Print to the console
+  // Print the order to the console
   console.log(receipt);
 
-  // Insert into MongoDB
+  // Insert the order into MongoDB
   salesData
     .insertOne(receipt)
-    .then(() => randomDelay(() => generateReceipts(salesData))) // Wait then generate a new receipt
+    .then(() =>
+      // Wait then recursively generate a new receipt
+      randomDelay(generateReceipts)
+    )
     .catch(err =>
       console.error("\nERROR", err.json.errorCode, " ", err.json.error)
     );
 }
 
 function randomDelay(fn) {
-  // Wait for a random amount of time
-  setTimeout(fn, chance.integer({ min: 0, max: 3000 }));
+  // Wait for a random amount of time before executing the given function
+  setTimeout(fn, chance.integer({ min: 0, max: 1000 }));
 }

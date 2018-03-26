@@ -1,17 +1,18 @@
-const appId = "docsuserdashboard-jwazj";
-
+const appId = "<YOUR APP ID>";
+const dashboardApiKey = "<YOUR API KEY>";
+const webhookUrl = "<YOUR WEBHOOK URL>";
 let stitchClient, cluster, data;
 
 // Define dimensions of graph using window size/time
 let margins = [
-  0.15 * window.innerHeight,
-  0.15 * window.innerHeight,
-  0.1 * window.innerWidth,
-  0.1 * window.innerWidth
+  0.05 * window.innerHeight,
+  0.05 * window.innerHeight,
+  0.03 * window.innerWidth,
+  0.06 * window.innerWidth
 ];
-let width = 0.85 * window.innerWidth;
-let height = 0.4 * window.innerHeight;
-var duration = 300000;
+let width = 0.4 * window.innerWidth;
+let height = 0.6 * window.innerHeight;
+var duration = 120000;
 var now = Date.now();
 
 // X scale will fit all values within the set time interval to window size
@@ -37,7 +38,7 @@ var line = d3
 var graph = d3
   .select("#graph1")
   .append("svg")
-  .attr("width", width + margins[1] + margins[3])
+  .attr("width", width)
   .attr("height", height + margins[0] + margins[2]);
 const g = graph
   .append("g")
@@ -50,6 +51,12 @@ var xAxis = g
   .attr("transform", "translate(0," + height + ")")
   .call((xScale.axis = d3.axisBottom().scale(xScale)));
 
+// Add x-axis label
+g.append('text')
+ .attr("transform", "translate(" + (width / 2) + "," + (height + 50) + ")")
+ .style("text-anchor", "middle")
+ .text("Time of Order Submission")
+
 // Add the y-axis
 var yAxis = g
   .append("g")
@@ -57,31 +64,102 @@ var yAxis = g
   .attr("transform", "translate(-25,0)")
   .call((yScale.axis = d3.axisLeft().scale(yScale)));
 
-simpleAuth();
+// Add y-axis label
+g.append('text')
+ .attr("transform", "rotate(-90)")
+ .attr("y", 0 - margins[2])
+ .attr("x", 0 - (height / 2))
+//  .attr("transform", "translate(" + (-1 * margins[2]) + "," + (height / 2) + ")")
+ .style("text-anchor", "middle")
+ .text("Order Total ($)")
 
-// Simple login with anonymous authentication
+
+// Log in to Stitch with anonymous authentication
 function simpleAuth() {
   stitch.StitchClientFactory.create(appId).then(client => {
     stitchClient = client;
     cluster = client.service("mongodb", "mongodb-atlas");
     data = cluster.db("SalesReporting").collection("Receipts");
 
-    stitchClient.login().then(buildGraph);
+    stitchClient.login().then(build);
   });
 }
 
-// Simple login taking email/password authentication from the UI
-function emailAuth() {
-  var userid = prompt("Enter your User ID:", "");
-  var password = prompt("Enter your Password:", "");
-
-  stitch.StitchClientFactory.create(appId).then(client => {
+// Authenticate with Stitch using an API Key
+function apiKeyAuth() {
+  stitch.StitchClientFactory.create(appId)
+  .then(client => {
     stitchClient = client;
-    cluster = client.service("mongodb", "mongodb-atlas");
+    cluster = stitchClient.service("mongodb", "mongodb-atlas");
     data = cluster.db("SalesReporting").collection("Receipts");
 
-    stitchClient.login(userid, password).then(buildGraph);
+    stitchClient
+      .authenticate(
+        "apiKey",
+        dashboardApiKey
+      )
+      .then(build);
   });
+}
+
+function build() {
+  buildTable()
+  buildGraph()
+}
+
+function buildTable() {
+  var toppingElements = [];
+  fetchPopularToppings()
+  .then(toppings => {
+    for (const topping of toppings) {
+      buildRow(topping);
+    }
+  });
+}
+
+function fetchPopularToppings() {
+  return fetch(webhookUrl, {
+    method: "POST",
+    mode: "cors"
+  }).then(res => res.json());
+}
+
+function buildRow(topping, index) {
+  let tr = document.createElement("tr");
+  let name = document.createElement("td");
+  let count = document.createElement("td");
+  tr.className = "table-data";
+  count.className = "centered";
+
+  tr.appendChild(name);
+  tr.appendChild(count);
+  name.innerText = topping._id;
+  count.innerText = topping.count["$numberInt"];
+
+  const table = document.getElementById("toppingstable");
+  if (!index) {
+    table.appendChild(tr);
+  } else {
+    let nextRow = table.querySelector(".table-data:nth-child(" + (index + 2) + ")")
+    table.insertBefore(tr, nextRow);
+  }
+}
+
+function refreshTable() {
+  const prevData = document.querySelectorAll(".table-data");
+  const newData = fetchPopularToppings()
+  .then(toppings => {
+    for (const [index, tr] of prevData.entries()) {
+      const prevTopping = tr.children[0].innerText;
+      const prevCount = tr.children[1].innerText;
+      const prevIndex = prevData
+      const current = toppings.filter(t => t._id == prevTopping)[0]
+      if (current._id == prevTopping && current.count["$numberInt"] != prevCount) {
+        buildRow(current, index);
+        tr.parentElement.removeChild(tr);
+      }
+    }
+  })
 }
 
 function buildGraph() {
@@ -101,10 +179,13 @@ function buildGraph() {
         .datum(SalesLine)
         .attr("stroke", "mediumturquoise")
         .attr("d", line);
-
-      // Refresh the graph after 1 second
-      setTimeout(() => refreshGraph(SalesLine, g.path), 1000);
+      
+      setTimeout(() => {
+        refreshTable();
+        refreshGraph(SalesLine, g.path);
+      }, 1000);
     });
+    
 }
 
 function refreshGraph(SalesLine, path) {
@@ -143,6 +224,12 @@ function refreshGraph(SalesLine, path) {
         path.datum().shift();
       }
     }
-    setTimeout(() => refreshGraph(SalesLine, g.path), 1000);
+    setTimeout(() => {
+      refreshTable();
+      refreshGraph(SalesLine, g.path);
+    }, 1000);
   });
 }
+
+simpleAuth();
+// apiKeyAuth();
