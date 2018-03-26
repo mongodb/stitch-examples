@@ -4,7 +4,7 @@
   "description": "Dashboard Tutorial for MongoDB Stitch",
   "main": "data_generator.js",
   "scripts": {
-    "start": "http-server &"
+    "start": "http-server -p 8080"
   },
   "author": "Drew DiPalma",
   "license": "MIT",

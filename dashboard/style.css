@@ -7,3 +7,27 @@ path { stroke-width: 3;fill: none;}
 .x.axis .minor {stroke-opacity: .5;}
 .x.axis path {display: none;}
 .y.axis line, .y.axis path {fill: none; stroke-width: 1; stroke: #000;}
+
+.centered { text-align: center; }
+.fixed-width { width: 50%; }
+.page-title { margin-bottom: 50px; }
+.table { margin-top: 60px; }
+
+.dashboard-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.salesTimeline {
+  width: 600px;
+  flex-grow: 1;
+}
+  
+.popular-toppings {
+  min-width: 350px;
+  flex-grow: 0;
+  margin: 0 20px;
+}
