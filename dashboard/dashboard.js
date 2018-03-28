@@ -1,6 +1,6 @@
 const appId = "<YOUR APP ID>";
-const dashboardApiKey = "<YOUR API KEY>";
 const webhookUrl = "<YOUR WEBHOOK URL>";
+const dashboardApiKey = "<YOUR STITCH API KEY>";
 let stitchClient, cluster, data;
 
 // Define dimensions of graph using window size/time
@@ -38,7 +38,7 @@ var line = d3
 var graph = d3
   .select("#graph1")
   .append("svg")
-  .attr("width", width)
+  .attr("width", width + 100)
   .attr("height", height + margins[0] + margins[2]);
 const g = graph
   .append("g")
@@ -69,7 +69,6 @@ g.append('text')
  .attr("transform", "rotate(-90)")
  .attr("y", 0 - margins[2])
  .attr("x", 0 - (height / 2))
-//  .attr("transform", "translate(" + (-1 * margins[2]) + "," + (height / 2) + ")")
  .style("text-anchor", "middle")
  .text("Order Total ($)")
 

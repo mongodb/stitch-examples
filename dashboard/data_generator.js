@@ -1,5 +1,5 @@
 const appId = "<YOUR APP ID>";
-const dashboardApiKey = "<YOUR API KEY>";
+const dashboardApiKey = "<YOUR STITCH API KEY>"; // API Key for the provider created in step C.4
 
 const stitch = require("mongodb-stitch"); // Set-up the MongoDB connection
 const chance = require("chance").Chance(); // Package for random variables
