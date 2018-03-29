@@ -24,23 +24,30 @@ const SIZES = ["Personal", "Small", "Medium", "Large", "X-tra Large"];
 let stitchClient;
 let salesData;
 
-// Create and authenticate a new StitchClient
+// Create and authenticate a new StitchClient then begin generating data
 stitch.StitchClientFactory.create(appId)
   .then(client => {
     stitchClient = client;
-    return stitchClient.login(); // Log in anonymously
-
-    // API Key authentication
-    // return stitchClient.authenticate("apiKey", dashboardApiKey)
-  })
-  // Connect to a MongoDB Atlas collection and begin generating customer orders
-  .then(() => {
     salesData = stitchClient
       .service("mongodb", "mongodb-atlas")
       .db("SalesReporting")
       .collection("Receipts");
-    generateReceipts();
-  });
+
+    return simpleAuth();
+    // return apiKeyAuth()
+  })
+  .then(generateReceipts)
+  .catch(err => console.error(err));
+
+// Log in to Stitch with anonymous authentication
+function simpleAuth() {
+  return stitchClient.login();
+}
+
+// Authenticate with Stitch using an API Key
+function apiKeyAuth(client) {
+  return client.authenticate("apiKey", dashboardApiKey);
+}
 
 function generateReceipts() {
   // Create a random pizza order
@@ -60,16 +67,14 @@ function generateReceipts() {
   // Insert the order into MongoDB
   salesData
     .insertOne(receipt)
-    .then(() =>
-      // Wait then recursively generate a new receipt
-      randomDelay(generateReceipts)
-    )
+    // Delay before generating a new receipt
+    .then(() => randomDelay(generateReceipts))
     .catch(err =>
       console.error("\nERROR", err.json.errorCode, " ", err.json.error)
     );
 }
 
 function randomDelay(fn) {
-  // Wait for a random amount of time before executing the given function
+  // Wait for up to one second before executing the given function
   setTimeout(fn, chance.integer({ min: 0, max: 1000 }));
 }

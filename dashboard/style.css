@@ -13,6 +13,8 @@ path { stroke-width: 3;fill: none;}
 .page-title { margin-bottom: 50px; }
 .table { margin-top: 60px; }
 
+#auth-type-identifier { margin-bottom: 30px; }
+
 .dashboard-container {
   width: 100vw;
   height: 100vh;

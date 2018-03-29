@@ -15,26 +15,32 @@
 
 <body>
   <h1 align="center" class="page-title">Sales Dashboard</h1>
+  <h3 align="center" id="auth-type-identifier"></h3>
+  
   <div class="dashboard-container">
+    
+    <!-- Show popular toppings data from the getRecentTopopings webhook -->
     <div class="popular-toppings">
       <h2 class="centered">Popular Toppings</h2>
-
       <table id="toppingstable" class="table">
         <tr>
           <th class="fixed-width">Topping</th>
           <th class="fixed-width"># Recent Orders</th>
         </tr>
-        
       </table>
-
     </div>
 
+    <!-- Chart order totals in real time with data from the salesTimeline function  -->
     <div id="sales-timeline">
-        <h2 class="centered">Sales Over Time</h2>
+      <h2 class="centered">Recent Pizza Sales</h2>
       <div id="graph1" class="aGraph" />
     </div>
+
   </div>
     
+  <!-- chart.js contains d3.js configuration code -->
+  <script src="./chart.js"></script>
+  <!-- dashboard.js contains code for querying data and updating the chart -->
   <script src="./dashboard.js"></script>
 </body>
 
