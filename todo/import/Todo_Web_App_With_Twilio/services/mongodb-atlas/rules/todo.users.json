@@ -1,0 +1,19 @@
+{
+    "namespace": "todo.users",
+    "other_fields": {},
+    "write": {
+        "%or": [
+            {
+                "%%prevRoot._id": "%%user.id"
+            },
+            {
+                "%%prevRoot": {
+                    "%exists": false
+                }
+            }
+        ]
+    },
+    "read": {
+        "_id": "%%user.id"
+    }
+}

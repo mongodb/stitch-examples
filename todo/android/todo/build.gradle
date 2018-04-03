@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
     defaultConfig {
         applicationId "com.mongodb.stitch.sdk.examples.todo"
         minSdkVersion 19
@@ -29,12 +28,14 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots"
     }
+    google()
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'org.mongodb:stitch:0.1.0-SNAPSHOT'
-    compile 'com.google.android.gms:play-services-auth:10.2.1'
-    compile 'com.facebook.android:facebook-android-sdk:4.21.1'
-    compile 'com.android.support:design:25.0.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'org.mongodb:stitch:3.0.0'
+    //implementation 'com.google.android.gms:play-services-auth:10.2.1'
+    implementation 'com.facebook.android:facebook-android-sdk:4.21.1'
+    // implementation 'com.android.support:design:25.0.0'
+    implementation 'com.google.android.gms:play-services:12.0.1'
 }

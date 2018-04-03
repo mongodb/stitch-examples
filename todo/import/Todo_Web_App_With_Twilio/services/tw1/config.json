@@ -1,0 +1,7 @@
+{
+    "name": "tw1",
+    "type": "twilio",
+    "config": {
+        "sid": "<<replace_me>>"
+    }
+}

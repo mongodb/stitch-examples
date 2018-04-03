@@ -90,9 +90,9 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
                 update.put("$set", set);
 
                 _itemState.put(item.getId(), b);
-                _itemSource.updateOne(query, update).addOnCompleteListener(new OnCompleteListener<Void>() {
+                _itemSource.updateOne(query, update).addOnCompleteListener(new OnCompleteListener<Document>() {
                     @Override
-                    public void onComplete(@NonNull final Task<Void> task) {
+                    public void onComplete(@NonNull final Task<Document> task) {
 
                         // Our intent may no longer be valid, so clear the state
                         _itemState.remove(item.getId());
