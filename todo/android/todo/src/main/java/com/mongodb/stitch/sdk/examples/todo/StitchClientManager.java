@@ -1,6 +1,7 @@
 package com.mongodb.stitch.sdk.examples.todo;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.mongodb.stitch.android.StitchClient;
@@ -46,7 +47,7 @@ class StitchClientManager {
     }
 
     private StitchClientManager(Context ctx) {
-        StitchClientFactory.create(ctx, "<your-client-app-id>").addOnSuccessListener(new OnSuccessListener<StitchClient>() {
+        StitchClientFactory.create(ctx, ctx.getString(R.string.app_id)).addOnSuccessListener(new OnSuccessListener<StitchClient>() {
             @Override
             public void onSuccess(StitchClient stitchClient) {
                 _shared.stitchClient = stitchClient;

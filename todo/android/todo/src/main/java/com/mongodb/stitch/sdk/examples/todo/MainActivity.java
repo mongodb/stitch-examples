@@ -35,6 +35,7 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.mongodb.stitch.android.AuthListener;
 import com.mongodb.stitch.android.StitchClient;
+import com.mongodb.stitch.android.StitchClientFactory;
 import com.mongodb.stitch.android.auth.AvailableAuthProviders;
 import com.mongodb.stitch.android.auth.UserProfile;
 import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
@@ -48,6 +49,7 @@ import org.bson.Document;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
@@ -79,17 +81,15 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
 
         StitchClientManager.initialize(this.getApplicationContext());
         StitchClientManager.registerListener(this);
-
-        _client.addAuthListener(new MyAuthListener(this));
-        _mongoClient = new MongoClient(_client, "mongodb-atlas");
-        initLogin();
     }
 
     @Override
     public void onReady(StitchClient stitchClient) {
-        //AUTH HERE
-
         this._client = stitchClient;
+        this._client.addAuthListener(new MyAuthListener(this));
+
+        _mongoClient = new MongoClient(_client, "mongodb-atlas");
+        initLogin();
     }
 
     private static class MyAuthListener implements AuthListener {
@@ -106,37 +106,12 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         }
 
         @Override
-        public void onLogout(){
-
-        }
-        /*@Override
-        public void onLogout(final String lastProvider) {
+        public void onLogout() {
             final MainActivity activity = _main.get();
 
             final List<Task<Void>> futures = new ArrayList<>();
             if (activity != null) {
                 activity._handler.removeCallbacks(activity._refresher);
-
-                switch (lastProvider) {
-                    case GoogleAuthProviderInfo.FQ_NAME:
-                        if (activity._googleApiClient != null && activity._googleApiClient.isConnected()) {
-                            final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
-                            com.google.android.gms.auth.api.Auth.GoogleSignInApi.signOut(
-                                    activity._googleApiClient).setResultCallback(new ResultCallback<Status>() {
-                                @Override
-                                public void onResult(@NonNull final Status ignored) {
-                                    future.setResult(null);
-                                }
-                            });
-                            futures.add(future.getTask());
-                        }
-                        break;
-                    case FacebookAuthProviderInfo.FQ_NAME:
-                        if (activity._fbInitOnce) {
-                            LoginManager.getInstance().logOut();
-                        }
-                        break;
-                }
 
                 Tasks.whenAll(futures).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -145,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
                     }
                 });
             }
-        }*/
+        }
     }
 
     private static class ListRefresher implements Runnable {
@@ -215,22 +190,21 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
     }
 
     private void initLogin() {
-        _client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
+        this._client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
             @Override
-            public void onComplete(@NonNull final Task<AvailableAuthProviders> task) {
-                        if (task.isSuccessful()) {
-                            setupLogin(task.getResult());
-                        } else {
-                            Log.e(TAG, "Error getting auth info", task.getException());
-                            // Maybe retry here...
-                        }
+            public void onComplete(Task<AvailableAuthProviders> task) {
+                if (task.isSuccessful()) {
+                    setupLogin(task.getResult());
+                } else {
+                    Log.e(TAG, "Error getting auth info", task.getException());
+                    // Maybe retry here...
+                }
             }
         });
     }
 
     private void initTodoView() {
         setContentView(R.layout.activity_main_todo_list);
-
         // Set up items
         _itemAdapter = new TodoListAdapter(
                 this,
@@ -445,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
                                     });
                             LoginManager.getInstance().logInWithReadPermissions(
                                     MainActivity.this,
-                                    null);
+                                    Arrays.asList("public_profile"));
                         }
                     });
                     findViewById(R.id.fb_login_button_frame).setVisibility(View.VISIBLE);

@@ -36,6 +36,6 @@ dependencies {
     implementation 'org.mongodb:stitch:3.0.0'
     //implementation 'com.google.android.gms:play-services-auth:10.2.1'
     implementation 'com.facebook.android:facebook-android-sdk:4.21.1'
-    // implementation 'com.android.support:design:25.0.0'
-    implementation 'com.google.android.gms:play-services:12.0.1'
+    implementation 'com.android.support:design:25.0.0'
+    implementation 'com.google.android.gms:play-services-auth:11.6.0'
 }
