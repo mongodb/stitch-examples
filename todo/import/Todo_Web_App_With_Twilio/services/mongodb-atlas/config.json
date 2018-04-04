@@ -1,7 +1,0 @@
-{
-    "name": "mongodb-atlas",
-    "type": "mongodb-atlas",
-    "config": {
-        "clusterName": "Cluster0"
-    }
-}
