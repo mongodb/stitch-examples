@@ -1,44 +1,69 @@
 const appId = "<YOUR APP ID>";
-const webhookUrl = "<YOUR WEBHOOK URL>";
-const dashboardApiKey = "<YOUR STITCH API KEY>";
 
-var stitchClient, cluster, data;
+const statusMessage = document.getElementById("auth-type-identifier");
+const loginForm = document.getElementById("login-form");
+const logoutButton = document.getElementById("logout-button");
+
+var stitchClient;
 stitch.StitchClientFactory.create(appId)
   .then(client => {
     stitchClient = client;
-    cluster = client.service("mongodb", "mongodb-atlas");
-    data = cluster.db("SalesReporting").collection("Receipts");
-
-    return simpleAuth();
-    // return apiKeyAuth();
+    if (stitchClient.authedId()) {
+      stitchClient.logout()
+    }
   })
-  .then(build)
   .catch(err => console.error(err));
 
-// Log in to Stitch with anonymous authentication
-function simpleAuth() {
-  return stitchClient.login();
-}
-
-// Authenticate with Stitch using an API Key
-function apiKeyAuth(client) {
-  return client.authenticate("apiKey", dashboardApiKey);
-}
-
-function fetchPopularToppings() {
-  return fetch(webhookUrl, { method: "POST", mode: "cors" })
-    .then(res => res.json())
+function handleLogin() {
+  getLoginFormInfo()
+    .then(user => emailPasswordAuth(user.email, user.password))
+    .then(() => build(Date.now()))
     .catch(err => console.error(err));
+}
+
+// Authenticate with Stitch as an email/password user
+function emailPasswordAuth(email, password) {
+  if (stitchClient.authedId()) {
+    return hideLoginForm()
+  }
+  return stitchClient.login(email, password)
+           .then(hideLoginForm)
+           .catch(err => console.error('e', err))
+}
+
+function getPopularToppings() {
+  return stitchClient.executeFunction("getPopularToppings");
 }
 
 function getSalesTimeline(start, end) {
   return stitchClient.executeFunction("salesTimeline", start, end);
 }
 
-function build() {
+function getLoginFormInfo() {
+  const emailEl = document.getElementById("emailInput");
+  const passwordEl = document.getElementById("passwordInput");
+  // Parse out input text
+  const email = emailEl.value;
+  const password = passwordEl.value;
+  // Remove text from login boxes
+  emailEl.value = "";
+  passwordEl.value = "";
+  return new Promise(resolve => resolve({ email: email, password: password }));
+}
+
+const hideLoginForm = () => {
+  return stitchClient.userProfile().then(user => {
+    // Hide login form
+    loginForm.classList.add("hidden");
+    // Set login status message
+    statusMessage.innerText = "Logged in as: " + user.data.email;
+  });
+};
+
+function build(now) {
   // buildTable() and buildGraph() come from chart.js
-  let now = Date.now();
-  let tablePromise = fetchPopularToppings()
+
+  let tablePromise = getPopularToppings()
     .then(buildTable)
     .catch(err => console.error(err));
   let graphPromise = getSalesTimeline(now - duration, now)
@@ -50,18 +75,17 @@ function build() {
       let salesLine = graphPromiseValue.salesLine;
       let path = graphPromiseValue.path;
 
-      setTimeout(() => refresh(salesLine, path), 1000);
+      setTimeout(() => refresh(salesLine, path, Date.now()), 1000);
     })
     .catch(err => console.error(err));
 }
 
-function refresh(salesLine, path) {
+function refresh(salesLine, path, now) {
   // refreshTable() and refreshGraph() come from chart.js
 
   let then = salesLine[salesLine.length - 1].timestamp * 1;
-  let now = Date.now();
 
-  let refreshTablePromise = fetchPopularToppings()
+  let refreshTablePromise = getPopularToppings()
     .then(refreshTable)
     .catch(err => console.error(err));
   let refreshGraphPromise = getSalesTimeline(then, now).then(newSalesTimeline =>
@@ -73,7 +97,7 @@ function refresh(salesLine, path) {
       let refreshSalesLine = refreshGraphPromiseValues.salesLine;
       let refreshPath = refreshGraphPromiseValues.path;
 
-      setTimeout(() => refresh(refreshSalesLine, refreshPath), 1000);
+      setTimeout(() => refresh(refreshSalesLine, refreshPath, Date.now()), 1000);
     })
     .catch(err => console.error(err));
 }

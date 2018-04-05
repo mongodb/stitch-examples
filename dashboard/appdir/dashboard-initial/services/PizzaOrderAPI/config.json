@@ -1,5 +1,5 @@
 {
-    "name": "ToppingsAPI",
+    "name": "PizzaOrderAPI",
     "type": "http",
     "config": {}
 }

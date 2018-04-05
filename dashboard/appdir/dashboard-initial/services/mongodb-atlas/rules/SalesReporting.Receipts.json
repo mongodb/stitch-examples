@@ -1,8 +1,77 @@
 {
     "namespace": "SalesReporting.Receipts",
-    "filters": [ ],
-    "fields": { },
-    "other_fields": { },
-    "write": { },
-    "read": { }
+    "fields": {
+        "_id": {
+            "read": {
+                "%%true": true
+            }
+        },
+        "cardNumber": {
+            "read": {
+                "%%true": false
+            },
+            "valid": {}
+        },
+        "customerName": {
+            "read": {
+                "%%true": false
+            },
+            "valid": {}
+        },
+        "location": {
+            "read": {
+                "%%true": false
+            },
+            "valid": {}
+        },
+        "size": {
+            "read": {
+                "%%true": true
+            },
+            "valid": {}
+        },
+        "timestamp": {
+            "read": {
+                "%%true": true
+            },
+            "valid": {}
+        },
+        "topping": {
+            "read": {
+                "%%true": true
+            },
+            "valid": {}
+        },
+        "total": {
+            "read": {
+                "%%true": true
+            },
+            "valid": {}
+        }
+    },
+    "other_fields": {},
+    "write": {
+        "cardNumber": {
+            "%exists": true
+        },
+        "customerName": {
+            "%exists": true
+        },
+        "location": {
+            "%exists": true
+        },
+        "size": {
+            "%exists": true
+        },
+        "timestamp": {
+            "%exists": true
+        },
+        "topping": {
+            "%exists": true
+        },
+        "total": {
+            "%exists": true
+        }
+    },
+    "valid": {}
 }
