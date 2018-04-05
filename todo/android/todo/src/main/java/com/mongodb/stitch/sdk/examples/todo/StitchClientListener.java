@@ -10,3 +10,4 @@ public interface StitchClientListener {
     // lifetime with an initialized StitchClient
     void onReady(StitchClient stitchClient);
 }
+
