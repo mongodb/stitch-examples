@@ -9,15 +9,22 @@ path { stroke-width: 3;fill: none;}
 .y.axis line, .y.axis path {fill: none; stroke-width: 1; stroke: #000;}
 
 .centered { text-align: center; }
+.hidden { display: none; }
 .fixed-width { width: 50%; }
 .page-title { margin-bottom: 50px; }
 .table { margin-top: 60px; }
 
 #auth-type-identifier { margin-bottom: 30px; }
+#login-form { width: 500px; }
+.login-container {
+  display: flex;
+  justify-content: center;
+}
 
 .dashboard-container {
   width: 100vw;
   height: 100vh;
+  margin-top: 40px;
   display: flex;
   flex-direction: row;
   justify-content: center;

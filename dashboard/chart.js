@@ -6,7 +6,7 @@ const margins = [
   0.06 * window.innerWidth
 ];
 const width = 0.4 * window.innerWidth;
-const height = 0.6 * window.innerHeight;
+const height = 0.4 * window.innerHeight;
 const duration = 120000; // 120000 milliseconds == 2 minutes
 let now = Date.now();
 
@@ -49,7 +49,7 @@ const xAxis = g
 // Add x-axis label
 g
   .append("text")
-  .attr("transform", "translate(" + width / 2 + "," + (height + 50) + ")")
+  .attr("transform", "translate(" + width / 2.5 + "," + (height + 50) + ")")
   .style("text-anchor", "middle")
   .text("Time of Order Submission");
 
@@ -83,7 +83,8 @@ function buildTable(toppings) {
 function buildRow(table, topping, index) {
   // Pre-process topping data
   if (topping._id) {
-    topping = { name: topping._id, count: topping.count["$numberInt"] };
+    topping.name = topping._id;
+    delete topping._id;
   }
   // Create a new table row with two columns
   let tr = document.createElement("tr");
@@ -129,7 +130,7 @@ function refreshTable(newToppings) {
   const refreshTablePromise = new Promise((resolve, reject) => {
     const toppingList = newToppings.map(topping => ({
       name: topping._id,
-      count: topping.count["$numberInt"]
+      count: topping.count
     }));
     resolve(toppingList);
   }).then(toppings => {
