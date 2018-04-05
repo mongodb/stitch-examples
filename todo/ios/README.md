@@ -28,7 +28,7 @@ Go to *Authentication* on the left side nav and enable at least one of authentic
 * [Google](#Google Authentication)
 * [Facebook](#Facebook Authentication)
 * Email/Password
-* Anonynous
+* Anonymous
 
 
 ### Google Authentication
