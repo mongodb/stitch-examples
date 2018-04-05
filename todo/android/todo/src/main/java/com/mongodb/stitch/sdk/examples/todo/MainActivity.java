@@ -24,6 +24,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -105,6 +107,22 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
             final List<Task<Void>> futures = new ArrayList<>();
             if (activity != null) {
                 activity._handler.removeCallbacks(activity._refresher);
+
+                if (activity._googleApiClient != null) {
+                    final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
+                    GoogleSignInApi.signOut(
+                            activity._googleApiClient).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull final Status ignored) {
+                            future.setResult(null);
+                        }
+                    });
+                    futures.add(future.getTask());
+                }
+
+                if (activity._fbInitOnce) {
+                    LoginManager.getInstance().logOut();
+                }
 
                 Tasks.whenAll(futures).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -306,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
     }
 
     private Task<Void> refreshList() {
-        return getItemsCollection().find(new Document("owner_id", _client.getUserId()),100).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
+        return getItemsCollection().find(new Document("owner_id", _client.getUserId()), 100).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
                 if (task.isSuccessful()) {
@@ -421,9 +439,6 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
                 if (info.hasGoogle()) {
                     final GoogleSignInOptions.Builder gsoBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestServerAuthCode(info.getGoogle().getConfig().getClientId(), false);
-                   /* for (final Scope scope: info.getGoogle().getConfig()..getScopes()) {
-                        gsoBuilder.requestScopes(scope);
-                    }*/
                     final GoogleSignInOptions gso = gsoBuilder.build();
 
                     if (_googleApiClient != null) {
