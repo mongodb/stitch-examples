@@ -25,7 +25,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,26 +34,23 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.mongodb.stitch.android.AuthListener;
 import com.mongodb.stitch.android.StitchClient;
-import com.mongodb.stitch.android.auth.Auth;
 import com.mongodb.stitch.android.auth.AvailableAuthProviders;
-import com.mongodb.stitch.android.auth.UserProfile;
 import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
 import com.mongodb.stitch.android.auth.oauth2.facebook.FacebookAuthProvider;
-import com.mongodb.stitch.android.auth.oauth2.facebook.FacebookAuthProviderInfo;
 import com.mongodb.stitch.android.auth.oauth2.google.GoogleAuthProvider;
-import com.mongodb.stitch.android.auth.oauth2.google.GoogleAuthProviderInfo;
 import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
 import org.bson.Document;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
 import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements StitchClientListener {
 
     private static final String TAG = "TodoApp";
     private static final long REFRESH_INTERVAL_MILLIS = 1000;
@@ -78,8 +74,15 @@ public class MainActivity extends AppCompatActivity {
         _handler = new Handler();
         _refresher = new ListRefresher(this);
 
-        _client = StitchClient.fromProperties(this);
-        _client.addAuthListener(new MyAuthListener(this));
+        StitchClientManager.initialize(this.getApplicationContext());
+        StitchClientManager.registerListener(this);
+    }
+
+    @Override
+    public void onReady(StitchClient stitchClient) {
+        this._client = stitchClient;
+        this._client.addAuthListener(new MyAuthListener(this));
+
         _mongoClient = new MongoClient(_client, "mongodb-atlas");
         initLogin();
     }
@@ -98,32 +101,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onLogout(final String lastProvider) {
+        public void onLogout() {
             final MainActivity activity = _main.get();
 
             final List<Task<Void>> futures = new ArrayList<>();
             if (activity != null) {
                 activity._handler.removeCallbacks(activity._refresher);
 
-                switch (lastProvider) {
-                    case GoogleAuthProviderInfo.FQ_NAME:
-                        if (activity._googleApiClient != null && activity._googleApiClient.isConnected()) {
-                            final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
-                            com.google.android.gms.auth.api.Auth.GoogleSignInApi.signOut(
-                                    activity._googleApiClient).setResultCallback(new ResultCallback<Status>() {
-                                @Override
-                                public void onResult(@NonNull final Status ignored) {
-                                    future.setResult(null);
-                                }
-                            });
-                            futures.add(future.getTask());
+                if (activity._googleApiClient != null) {
+                    final TaskCompletionSource<Void> future = new TaskCompletionSource<>();
+                    GoogleSignInApi.signOut(
+                            activity._googleApiClient).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull final Status ignored) {
+                            future.setResult(null);
                         }
-                        break;
-                    case FacebookAuthProviderInfo.FQ_NAME:
-                        if (activity._fbInitOnce) {
-                            LoginManager.getInstance().logOut();
-                        }
-                        break;
+                    });
+                    futures.add(future.getTask());
+                }
+
+                if (activity._fbInitOnce) {
+                    LoginManager.getInstance().logOut();
                 }
 
                 Tasks.whenAll(futures).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -189,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
         if (result.isSuccess()) {
             final GoogleAuthProvider googleProvider =
                     GoogleAuthProvider.fromAuthCode(result.getSignInAccount().getServerAuthCode());
-            _client.logInWithProvider(googleProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+            _client.logInWithProvider(googleProvider).addOnCompleteListener(new OnCompleteListener<String>() {
                 @Override
-                public void onComplete(@NonNull final Task<Auth> task) {
+                public void onComplete(@NonNull final Task<String> task) {
                     if (task.isSuccessful()) {
                         initTodoView();
                     } else {
@@ -203,22 +201,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initLogin() {
-        _client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
+        this._client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
             @Override
-            public void onComplete(@NonNull final Task<AvailableAuthProviders> task) {
-                        if (task.isSuccessful()) {
-                            setupLogin(task.getResult());
-                        } else {
-                            Log.e(TAG, "Error getting auth info", task.getException());
-                            // Maybe retry here...
-                        }
+            public void onComplete(Task<AvailableAuthProviders> task) {
+                if (task.isSuccessful()) {
+                    setupLogin(task.getResult());
+                } else {
+                    Log.e(TAG, "Error getting auth info", task.getException());
+                    // Maybe retry here...
+                }
             }
         });
     }
 
     private void initTodoView() {
         setContentView(R.layout.activity_main_todo_list);
-
         // Set up items
         _itemAdapter = new TodoListAdapter(
                 this,
@@ -281,13 +278,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void addItem(final String text) {
         final Document doc = new Document();
-        doc.put("owner_id", _client.getAuth().getUserId());
+        doc.put("owner_id", _client.getUserId());
         doc.put("text", text);
         doc.put("checked", false);
 
-        getItemsCollection().insertOne(doc).addOnCompleteListener(new OnCompleteListener<Void>() {
+        getItemsCollection().insertOne(doc).addOnCompleteListener(new OnCompleteListener<Document>() {
             @Override
-            public void onComplete(@NonNull final Task<Void> task) {
+            public void onComplete(@NonNull final Task<Document> task) {
                 if (task.isSuccessful()) {
                     refreshList();
                 } else {
@@ -299,12 +296,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void clearChecked() {
         final Document query = new Document();
-        query.put("owner_id", _client.getAuth().getUserId());
+        query.put("owner_id", _client.getUserId());
         query.put("checked", true);
 
-        getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Void>() {
+        getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Document>() {
             @Override
-            public void onComplete(@NonNull final Task<Void> task) {
+            public void onComplete(@NonNull final Task<Document> task) {
                 if (task.isSuccessful()) {
                     refreshList();
                 } else {
@@ -327,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Task<Void> refreshList() {
-        return getItemsCollection().find(new Document("owner_id", _client.getAuth().getUserId())).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
+        return getItemsCollection().find(new Document("owner_id", _client.getUserId()), 100).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
                 if (task.isSuccessful()) {
@@ -354,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
         final List<Task<Void>> initFutures = new ArrayList<>();
 
         if (info.hasFacebook()) {
-            FacebookSdk.setApplicationId(info.getFacebook().getApplicationId());
+            FacebookSdk.setApplicationId(info.getFacebook().getConfig().getClientId());
             final TaskCompletionSource<Void> fbInitFuture = new TaskCompletionSource<>();
             FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
                 @Override
@@ -390,9 +387,9 @@ public class MainActivity extends AppCompatActivity {
                             if (AccessToken.getCurrentAccessToken() != null) {
                                 final FacebookAuthProvider fbProvider =
                                         FacebookAuthProvider.fromAccessToken(AccessToken.getCurrentAccessToken().getToken());
-                                _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                                _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<String>() {
                                     @Override
-                                    public void onComplete(@NonNull final Task<Auth> task) {
+                                    public void onComplete(@NonNull final Task<String> task) {
                                         if (task.isSuccessful()) {
                                             initTodoView();
                                         } else {
@@ -411,9 +408,9 @@ public class MainActivity extends AppCompatActivity {
                                             final FacebookAuthProvider fbProvider =
                                                     FacebookAuthProvider.fromAccessToken(loginResult.getAccessToken().getToken());
 
-                                            _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                                            _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<String>() {
                                                 @Override
-                                                public void onComplete(@NonNull final Task<Auth> task) {
+                                                public void onComplete(@NonNull final Task<String> task) {
                                                     if (task.isSuccessful()) {
                                                         initTodoView();
                                                     } else {
@@ -433,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
                                     });
                             LoginManager.getInstance().logInWithReadPermissions(
                                     MainActivity.this,
-                                    info.getFacebook().getScopes());
+                                    Arrays.asList("public_profile"));
                         }
                     });
                     findViewById(R.id.fb_login_button_frame).setVisibility(View.VISIBLE);
@@ -441,10 +438,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (info.hasGoogle()) {
                     final GoogleSignInOptions.Builder gsoBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestServerAuthCode(info.getGoogle().getClientId(), false);
-                    for (final Scope scope: info.getGoogle().getScopes()) {
-                        gsoBuilder.requestScopes(scope);
-                    }
+                            .requestServerAuthCode(info.getGoogle().getConfig().getClientId(), false);
                     final GoogleSignInOptions gso = gsoBuilder.build();
 
                     if (_googleApiClient != null) {
@@ -477,9 +471,9 @@ public class MainActivity extends AppCompatActivity {
                     findViewById(R.id.anonymous_login_button).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(final View ignored) {
-                            _client.logInWithProvider(new AnonymousAuthProvider()).addOnCompleteListener(new OnCompleteListener<Auth>() {
+                            _client.logInWithProvider(new AnonymousAuthProvider()).addOnCompleteListener(new OnCompleteListener<String>() {
                                 @Override
-                                public void onComplete(@NonNull final Task<Auth> task) {
+                                public void onComplete(@NonNull final Task<String> task) {
                                     if (task.isSuccessful()) {
                                         initTodoView();
                                     } else {
@@ -495,3 +489,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+
