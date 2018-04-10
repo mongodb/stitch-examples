@@ -61,13 +61,32 @@ public struct FacebookAuthProviderInfo: AuthProviderType {
         case name, type, config, metadataFields = "metadata_fields"
     }
 }
+public struct CustomAuthProviderInfo: AuthProviderType {
+    public struct Config: Codable {
+        public let clientId: String
+    }
+    public struct MetadataField: Codable {
+        public let name: String
+        public let required: Bool
+    }
 
-private enum AuthProviderTypes: String {
+    public let config: Config?
+    public let metadataFields: [MetadataField]?
+    public let name: String
+    public let type: String
+
+    enum CodingKeys: String, CodingKey {
+        case name, type, config, metadataFields = "metadata_fields"
+    }
+}
+
+public enum AuthProviderTypes: String, Codable {
     case google = "oauth2-google"
     case facebook = "oauth2-facebook"
     case apiKey = "api-key"
     case emailPass = "local-userpass"
     case anonymous = "anon-user"
+    case custom = "custom-token"
 }
 
 /// Struct containing information about available providers
@@ -82,6 +101,8 @@ public struct AuthProviderInfo {
     public private(set) var emailPasswordAuthProviderInfo: EmailPasswordAuthProviderInfo?
     /// Info about the `ApiKeyAuthProvider`
     public private(set) var apiKeyAuthProviderInfo: ApiKeyAuthProviderInfo?
+    /// Info for any custom auth providers
+    public private(set) var customAuthProviderInfos = [CustomAuthProviderInfo]()
 
     public init(from infos: [[String: Any]]) throws {
         try infos.forEach { info in
@@ -102,6 +123,9 @@ public struct AuthProviderInfo {
                 try JSONDecoder().decode(EmailPasswordAuthProviderInfo.self, from: data)
             case .anonymous: anonymousAuthProviderInfo =
                 try JSONDecoder().decode(AnonymousAuthProviderInfo.self, from: data)
+            case .custom:
+                customAuthProviderInfos.append(
+                    try JSONDecoder().decode(CustomAuthProviderInfo.self, from: data))
             }
         }
     }

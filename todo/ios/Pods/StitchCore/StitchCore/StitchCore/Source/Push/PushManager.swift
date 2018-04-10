@@ -6,7 +6,20 @@ import Foundation
  */
 public class PushManager: AuthDelegate {
     private let stitchClient: StitchClient
-    private var clients: [String: PushClient] = [:]
+    private var clients: [PushClientKey: PushClient] = [:]
+
+    private struct PushClientKey: Hashable {
+        let clientAppId: String
+        let providerName: PushProviderName
+
+        var hashValue: Int {
+            return "\(clientAppId) \(providerName)".hashValue
+        }
+
+        static func == (left: PushClientKey, right: PushClientKey) -> Bool {
+            return left.clientAppId == left.clientAppId && left.providerName == right.providerName
+        }
+    }
 
     init(client: StitchClient) {
         self.stitchClient = client
@@ -18,22 +31,22 @@ public class PushManager: AuthDelegate {
         - returns: A [[PushClient]] representing the given provider.
      */
     func forProvider(info: PushProviderInfo) throws -> PushClient {
-        var client: PushClient? = nil
+        let key = PushClientKey(clientAppId: stitchClient.appId, providerName: info.providerName)
+        if let client = clients[key] {
+            return client
+        }
 
+        var pClient: PushClient! = nil
         switch info {
-        case let gcmInfo as StitchGCMPushProviderInfo: client =
-            StitchGCMPushClient(stitchClient: self.stitchClient,
-                                info: gcmInfo)
+        case let gcmInfo as StitchGCMPushProviderInfo:
+            pClient = StitchGCMPushClient(stitchClient: self.stitchClient,
+                                          info: gcmInfo)
         default:
             throw StitchError.illegalAction(message: "unknown push provider info \(info)")
         }
 
-        if let cl = clients[stitchClient.appId] {
-            return cl
-        } else {
-            clients[stitchClient.appId] = client
-            return client!
-        }
+        clients[key] = pClient
+        return pClient
     }
 
     /**

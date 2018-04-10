@@ -7,7 +7,7 @@ import ExtendedJson
  */
 public protocol AuthProvider {
     /// The authentication type of this provider.
-    var type: String {get}
+    var type: AuthProviderTypes {get}
 
     /// The JSON payload containing authentication material.
     var payload: Document {get}

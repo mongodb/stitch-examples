@@ -1,7 +1,19 @@
 import Foundation
 
+protocol AuthResponse: Codable {
+    var userId: String { get }
+}
+
+internal struct LinkInfo: AuthResponse {
+    enum CodingKeys: String, CodingKey {
+        case userId = "user_id"
+    }
+
+    var userId: String
+}
+
 /// Auth represents the current authorization state of the client
-internal struct AuthInfo: Codable {
+internal struct AuthInfo: AuthResponse {
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token",
         userId = "user_id",

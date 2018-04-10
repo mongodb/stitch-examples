@@ -7,6 +7,7 @@ import Foundation
 
 import StitchCore
 import ExtendedJson
+import PromiseKit
 
 public struct Collection {
     private struct Consts {
@@ -40,7 +41,7 @@ public struct Collection {
     @discardableResult
     public func find(query: Document,
                      projection: Document? = nil,
-                     limit: Int) -> StitchTask<[Document]> {
+                     limit: Int) -> Promise<[Document]> {
         var options: Document = [
             Consts.queryKey: query,
             Consts.databaseKey: database.name,
@@ -54,7 +55,7 @@ public struct Collection {
         return database.client.stitchClient.executeServiceFunction(name: "find",
                                                                      service: database.client.serviceName,
                                                                      args: options)
-        .then {
+        .flatMap {
             guard let array = $0 as? [Any] else {
                 throw StitchError.responseParsingFailed(reason: "\($0) was not array")
             }
@@ -72,7 +73,7 @@ public struct Collection {
     @discardableResult
     public func updateOne(query: Document,
                           update: Document,
-                          upsert: Bool = false) -> StitchTask<Document> {
+                          upsert: Bool = false) -> Promise<Document> {
         return database.client.stitchClient.executeServiceFunction(name: "updateOne",
                                                                     service: database.client.serviceName,
                                                                     args: [Consts.queryKey: query,
@@ -80,7 +81,7 @@ public struct Collection {
                                                                            Consts.upsertKey: upsert,
                                                                            Consts.databaseKey: database.name,
                                                                            Consts.collectionKey: self.name] as Document)
-        .then {
+        .flatMap {
             guard let doc = try Document.fromExtendedJson(xjson: $0) as? Document else {
                 throw BsonError.parseValueFailure(value: $0,
                                                    attemptedType: Document.self)
@@ -93,7 +94,7 @@ public struct Collection {
     @discardableResult
     public func updateMany(query: Document,
                            update: Document,
-                           upsert: Bool = false) -> StitchTask<Document> {
+                           upsert: Bool = false) -> Promise<Document> {
         return database.client.stitchClient.executeServiceFunction(name: "updateMany",
                                                                     service: database.client.serviceName,
                                                                     args: [Consts.updateKey: update,
@@ -101,7 +102,7 @@ public struct Collection {
                                                                            Consts.multiKey: true,
                                                                            Consts.databaseKey: database.name,
                                                                            Consts.collectionKey: self.name] as Document)
-        .then {
+        .flatMap {
             guard let doc = try Document.fromExtendedJson(xjson: $0) as? Document else {
                 throw BsonError.parseValueFailure(value: $0,
                                                   attemptedType: Document.self)
@@ -112,13 +113,13 @@ public struct Collection {
     }
 
     @discardableResult
-    public func insertOne(document: Document) ->  StitchTask<ObjectId> {
+    public func insertOne(document: Document) ->  Promise<ObjectId> {
         return database.client.stitchClient.executeServiceFunction(name: "insertOne",
                                                                     service: database.client.serviceName,
                                                                     args: ["document": document,
                                                                            Consts.databaseKey: database.name,
                                                                            Consts.collectionKey: self.name] as Document)
-        .then {
+        .flatMap {
             guard let doc = try Document.fromExtendedJson(xjson: $0) as? Document,
                 let insertedId = doc["insertedId"] as? ObjectId else {
                 throw BsonError.parseValueFailure(value: $0,
@@ -130,13 +131,13 @@ public struct Collection {
     }
 
     @discardableResult
-    public func insertMany(documents: [Document]) ->  StitchTask<[ObjectId]> {
+    public func insertMany(documents: [Document]) ->  Promise<[ObjectId]> {
         return database.client.stitchClient.executeServiceFunction(name: "insertMany",
                                                                    service: database.client.serviceName,
                                                                    args: ["documents": BSONArray(array: documents),
                                                                           Consts.databaseKey: database.name,
                                                                           Consts.collectionKey: self.name] as Document)
-            .then {
+            .flatMap {
                 guard let doc = try Document.fromExtendedJson(xjson: $0) as? Document,
                     let insertedIds = doc["insertedIds"] as? BSONArray else {
                         throw BsonError.parseValueFailure(value: $0,
@@ -154,14 +155,14 @@ public struct Collection {
     }
 
     @discardableResult
-    public func deleteOne(query: Document) -> StitchTask<Document> {
+    public func deleteOne(query: Document) -> Promise<Document> {
         return database.client.stitchClient.executeServiceFunction(name: "deleteOne",
                                                                    service: database.client.serviceName,
                                                                    args: [Consts.queryKey: query,
                                                                           Consts.singleDocKey: true,
                                                                           Consts.databaseKey: database.name,
                                                                           Consts.collectionKey: self.name] as Document)
-            .then {
+            .flatMap {
                 guard let doc = try Document.fromExtendedJson(xjson: $0) as? Document else {
                     throw BsonError.parseValueFailure(value: $0,
                                                       attemptedType: Document.self)
@@ -172,14 +173,14 @@ public struct Collection {
     }
 
     @discardableResult
-    public func deleteMany(query: Document) -> StitchTask<Document> {
+    public func deleteMany(query: Document) -> Promise<Document> {
         return database.client.stitchClient.executeServiceFunction(name: "deleteMany",
                                                                     service: database.client.serviceName,
                                                                     args: [Consts.queryKey: query,
                                                                            Consts.singleDocKey: false,
                                                                            Consts.databaseKey: database.name,
                                                                            Consts.collectionKey: self.name] as Document)
-            .then {
+            .flatMap {
                 guard let doc = try Document.fromExtendedJson(xjson: $0) as? Document else {
                     throw BsonError.parseValueFailure(value: $0,
                                                       attemptedType: Document.self)
@@ -190,7 +191,7 @@ public struct Collection {
     }
 
     @discardableResult
-    public func count(query: Document, projection: Document? = nil) -> StitchTask<Int> {
+    public func count(query: Document, projection: Document? = nil) -> Promise<Int> {
         var opts: Document = [Consts.queryKey: query,
                               Consts.countKey: true,
                               Consts.databaseKey: database.name,
@@ -203,7 +204,7 @@ public struct Collection {
         return database.client.stitchClient.executeServiceFunction(name: "count",
                                                                    service: database.client.serviceName,
                                                                    args: opts)
-        .then {
+        .flatMap {
             guard let count = try Int.fromExtendedJson(xjson: $0) as? Int else {
                 throw BsonError.parseValueFailure(value: $0,
                                                   attemptedType: Int.self)
@@ -214,13 +215,13 @@ public struct Collection {
     }
 
     @discardableResult
-    public func aggregate(docs: [Document]) -> StitchTask<BSONArray> {
+    public func aggregate(docs: [Document]) -> Promise<BSONArray> {
         return database.client.stitchClient.executeServiceFunction(name: "aggregate",
                                                                     service: database.client.serviceName,
                                                                     args: [Consts.pipelineKey: BSONArray(array: docs),
                                                                            Consts.databaseKey: database.name,
                                                                            Consts.collectionKey: self.name] as Document)
-        .then {
+        .flatMap {
             guard let bson = try BSONArray.fromExtendedJson(xjson: $0) as? BSONArray else {
                 throw BsonError.parseValueFailure(value: $0,
                                                   attemptedType: BSONArray.self)

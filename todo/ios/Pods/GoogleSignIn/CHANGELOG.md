@@ -1,3 +1,6 @@
+# 2018-1-8 -- v4.1.2
+- Add `pod try` support for the GoogleSignIn CocoaPod.
+
 # 2017-10-17 -- v4.1.1
 - Fixes an issue that `GIDSignInUIDelegate`'s `signInWillDispatch:error:` was
   not called on iOS 11. Please note that it is intended that neither

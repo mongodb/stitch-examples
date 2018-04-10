@@ -1,10 +1,11 @@
 import Foundation
 import ExtendedJson
+import PromiseKit
+
+public typealias UserId = String
 
 /// Protocol to lay out basic methods and fields for a StitchClient.
 public protocol StitchClientType {
-    typealias UserId = String
-
     // MARK: - Properties
     /// Id of this application
     var appId: String { get }
@@ -21,7 +22,7 @@ public protocol StitchClientType {
         - returns: A task containing whether or not registration was successful.
      */
     @discardableResult
-    func register(email: String, password: String) -> StitchTask<Void>
+    func register(email: String, password: String) -> Promise<Void>
 
     /**
      * Confirm a newly registered email in this context
@@ -30,7 +31,7 @@ public protocol StitchClientType {
      * - returns: A task containing whether or not the email was confirmed successfully
      */
     @discardableResult
-    func emailConfirm(token: String, tokenId: String) -> StitchTask<Void>
+    func emailConfirm(token: String, tokenId: String) -> Promise<Void>
 
     /**
      * Send a confirmation email for a newly registered user
@@ -38,7 +39,7 @@ public protocol StitchClientType {
      * - returns: A task containing whether or not the email was sent successfully.
      */
     @discardableResult
-    func sendEmailConfirm(toEmail email: String) -> StitchTask<Void>
+    func sendEmailConfirm(toEmail email: String) -> Promise<Void>
 
     /**
      * Reset a given user's password
@@ -47,7 +48,7 @@ public protocol StitchClientType {
      * - returns: A task containing whether or not the reset was successful
      */
     @discardableResult
-    func resetPassword(token: String, tokenId: String) -> StitchTask<Void>
+    func resetPassword(token: String, tokenId: String, password: String) -> Promise<Void>
 
     /**
      * Send a reset password email to a given email address
@@ -55,7 +56,7 @@ public protocol StitchClientType {
      * - returns: A task containing whether or not the reset email was sent successfully
      */
     @discardableResult
-    func sendResetPassword(toEmail email: String) -> StitchTask<Void>
+    func sendResetPassword(toEmail email: String) -> Promise<Void>
 
     /**
      Logs the current user in anonymously.
@@ -63,7 +64,7 @@ public protocol StitchClientType {
      - Returns: A task containing whether or not the login as successful
      */
     @discardableResult
-    func anonymousAuth() -> StitchTask<UserId>
+    func anonymousAuth() -> Promise<UserId>
 
     /**
         Logs the current user in using a specific auth provider.
@@ -73,7 +74,7 @@ public protocol StitchClientType {
         - Returns: A task containing whether or not the login as successful
      */
     @discardableResult
-    func login(withProvider provider: AuthProvider) -> StitchTask<UserId>
+    func login(withProvider provider: AuthProvider) -> Promise<UserId>
 
     /**
      * Logs out the current user.
@@ -81,7 +82,7 @@ public protocol StitchClientType {
      * - returns: A task that can be resolved upon completion of logout.
      */
     @discardableResult
-    func logout() -> StitchTask<Void>
+    func logout() -> Promise<Void>
 
     // MARK: - Requests
 

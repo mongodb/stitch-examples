@@ -1,5 +1,6 @@
 import Foundation
 import ExtendedJson
+import PromiseKit
 
 let prefConfigs: String = "apns.configs"
 
@@ -30,7 +31,7 @@ public protocol PushClient {
         - returns: A task that can be resolved upon registering
     */
     @discardableResult
-    func registerToken(token: String) -> StitchTask<Void>
+    func registerToken(token: String) -> Promise<Void>
 
     /**
         Deregisters the client from the provider and Stitch.
@@ -38,7 +39,7 @@ public protocol PushClient {
         - returns: A task that can be resolved upon deregistering
     */
     @discardableResult
-    func deregister() -> StitchTask<Void>
+    func deregister() -> Promise<Void>
 }
 
 extension PushClient {
@@ -62,14 +63,11 @@ extension PushClient {
         let userDefaults = UserDefaults(suiteName: Consts.UserDefaultsName)!
 
         var configs = [String: Any]()
-        do {
-            let configOpt = userDefaults.value(forKey: prefConfigs)
 
-            if let config = configOpt as? [String: Any] {
-                configs = config
-            }
-        } catch _ {
-            configs = [:]
+        let configOpt = userDefaults.value(forKey: prefConfigs)
+
+        if let config = configOpt as? [String: Any] {
+            configs = config
         }
 
         configs[info.serviceName] = nil

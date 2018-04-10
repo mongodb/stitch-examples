@@ -4,9 +4,7 @@ import ExtendedJson
 /// EmailPasswordAuthProvider provides a way to authenticate using an email and password.
 public struct EmailPasswordAuthProvider: AuthProvider {
     /// The authentication type for email/pass login.
-    public var type: String {
-        return "local-userpass"
-    }
+    public var type: AuthProviderTypes = AuthProviderTypes.emailPass
 
     /// The JSON payload containing the username and password.
     public var payload: Document {

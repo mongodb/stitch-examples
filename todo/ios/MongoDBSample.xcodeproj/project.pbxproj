@@ -19,8 +19,8 @@
 		369D1E4D1E6AF64D00ADE4DB /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */; };
 		369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */; };
 		36B1D4931EE36F88006B15B7 /* EmailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */; };
+		3C177F35207C0DCD00710E55 /* UIStitchDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C177F34207C0DCD00710E55 /* UIStitchDelegate.swift */; };
 		F4228C231EF96924009AB09F /* MongoDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4228C221EF96924009AB09F /* MongoDBManager.swift */; };
-		F474B43E1EF8C04300193E24 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,7 +46,6 @@
 		367E0C761E4429C700EE2C00 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		367E0C771E4429C700EE2C00 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		367E0C961E45D43B00EE2C00 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		367E0CA41E45E4EA00EE2C00 /* MongoDBSample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MongoDBSample-Bridging-Header.h"; sourceTree = "<group>"; };
 		369D1E471E6AF62B00ADE4DB /* AuthenticationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationViewController.swift; sourceTree = "<group>"; };
 		369D1E491E6AF64D00ADE4DB /* TodoListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoListViewController.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoListViewController.swift; sourceTree = SOURCE_ROOT; };
 		369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItem.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItem.swift; sourceTree = SOURCE_ROOT; };
@@ -55,10 +54,11 @@
 		36A025C41EF2E35600450FB1 /* StitchCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchCore.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchCore/build/Debug-iphoneos/StitchCore.framework"; sourceTree = "<group>"; };
 		36A025C51EF2E35600450FB1 /* StitchLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchLogger.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchLogger/build/Debug-iphoneos/StitchLogger.framework"; sourceTree = "<group>"; };
 		36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAuthViewController.swift; sourceTree = "<group>"; };
+		3C177F34207C0DCD00710E55 /* UIStitchDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStitchDelegate.swift; sourceTree = "<group>"; };
+		3C177F36207D143F00710E55 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		90C50230166CE80DBF894C8E /* Pods-MongoDBSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F4228C221EF96924009AB09F /* MongoDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MongoDBManager.swift; sourceTree = "<group>"; };
-		F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,10 +103,10 @@
 		367E0C671E44294F00EE2C00 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3C177F36207D143F00710E55 /* GoogleService-Info.plist */,
 				367E0C761E4429C700EE2C00 /* Assets.xcassets */,
 				367E0C771E4429C700EE2C00 /* Info.plist */,
 				360EAC911EB012450014A7E3 /* Stitch-Info.plist */,
-				F474B43D1EF8C04300193E24 /* GoogleService-Info.plist */,
 				367E0C681E44298900EE2C00 /* Storyboards */,
 			);
 			path = Resources;
@@ -152,7 +152,6 @@
 		367E0CA31E45E4D000EE2C00 /* BridgingHeader */ = {
 			isa = PBXGroup;
 			children = (
-				367E0CA41E45E4EA00EE2C00 /* MongoDBSample-Bridging-Header.h */,
 			);
 			path = BridgingHeader;
 			sourceTree = "<group>";
@@ -202,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				F4228C221EF96924009AB09F /* MongoDBManager.swift */,
+				3C177F34207C0DCD00710E55 /* UIStitchDelegate.swift */,
 			);
 			name = Classes;
 			path = Controllers;
@@ -219,8 +219,8 @@
 				367E0C4F1E4428BE00EE2C00 /* Frameworks */,
 				367E0C501E4428BE00EE2C00 /* Resources */,
 				31A82E2F3027AB256A4543FF /* [CP] Embed Pods Frameworks */,
-				2E878528D0828FAAFA278868 /* [CP] Copy Pods Resources */,
 				36D649781ECA0B7000ECC1F8 /* Embed Frameworks */,
+				11813A9A632046439DF7B87E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -273,7 +273,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				367E0C741E4429BA00EE2C00 /* LaunchScreen.storyboard in Resources */,
-				F474B43E1EF8C04300193E24 /* GoogleService-Info.plist in Resources */,
 				360EAC921EB012450014A7E3 /* Stitch-Info.plist in Resources */,
 				367E0C781E4429C700EE2C00 /* Assets.xcassets in Resources */,
 				367E0C751E4429BA00EE2C00 /* Main.storyboard in Resources */,
@@ -283,7 +282,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2E878528D0828FAAFA278868 /* [CP] Copy Pods Resources */ = {
+		11813A9A632046439DF7B87E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -294,7 +293,7 @@
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -318,8 +317,10 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/MongoDBService/MongoDBService.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/StitchCore/StitchCore.framework",
 				"${BUILT_PRODUCTS_DIR}/StitchLogger/StitchLogger.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -333,8 +334,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MongoDBService.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchLogger.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -367,6 +370,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4228C231EF96924009AB09F /* MongoDBManager.swift in Sources */,
+				3C177F35207C0DCD00710E55 /* UIStitchDelegate.swift in Sources */,
 				369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */,
 				369D1E4C1E6AF64D00ADE4DB /* TodoListViewController.swift in Sources */,
 				3661C1831E6E09310081530D /* CheckBox.swift in Sources */,

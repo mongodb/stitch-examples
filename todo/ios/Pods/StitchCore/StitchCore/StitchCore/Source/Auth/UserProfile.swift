@@ -17,12 +17,21 @@ public struct Identity: Codable {
     let providerType: String
 }
 
+public struct Role: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case roleName = "role_name", groupId = "group_id"
+    }
+
+    let roleName: String
+    let groupId: String
+}
+
 /**
     UserProfile represents an authenticated user.
  */
 public struct UserProfile: Codable {
     private enum CodingKeys: String, CodingKey {
-        case id = "user_id", type, identities, data
+        case id = "user_id", type, identities, data, roles
     }
 
     /// The Unique ID of this user within Stitch.
@@ -33,4 +42,5 @@ public struct UserProfile: Codable {
     public let identities: [Identity]
     /// The extra data associated with this user.
     public let data: [String: String]
+    internal let roles: [Role]?
 }

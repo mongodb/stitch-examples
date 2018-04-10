@@ -33,8 +33,8 @@ public struct DecodedJWT: Codable {
         do {
             self.token = jwt
             self.payload = try DecodedJWT.jwtDecodePayload(jwt: jwt)
-        } catch let e as DecodeError {
-            throw e
+        } catch let error as DecodeError {
+            throw error
         }
     }
 

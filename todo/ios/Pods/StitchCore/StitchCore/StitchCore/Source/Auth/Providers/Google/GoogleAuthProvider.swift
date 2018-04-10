@@ -4,9 +4,7 @@ import ExtendedJson
 /// GoogleAuthProvider provides a way to authenticate via Google's OAuth 2.0 provider.
 public struct GoogleAuthProvider: AuthProvider {
     /// The authentication type for google login.
-    public var type: String {
-        return "oauth2-google"
-    }
+    public var type: AuthProviderTypes = AuthProviderTypes.google
 
     /// The JSON payload containing the authCode.
     public var payload: Document {

@@ -43,6 +43,7 @@ public enum StitchError: Error {
                  - errorCode: String based error code that should coincide with `ServerErrorReason`
                  - errorMessage: More precise error message
          */
+        // swiftlint:disable:next cyclomatic_complexity
         init(errorCode: String, errorMessage: String) {
             switch errorCode {
             case "InvalidSession":

@@ -13,7 +13,9 @@ protocol AuthenticationViewControllerDelegate {
     func authenticationViewControllerDidLogin()
 }
 
-class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSignInDelegate, LoginButtonDelegate, UITextFieldDelegate {
+class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSignInDelegate, LoginButtonDelegate, UITextFieldDelegate, UIStitchDelegate {
+    
+   
     
     @IBOutlet weak var authOptionsStackView: UIStackView!
     @IBOutlet weak var skipButton: UIButton!
@@ -35,7 +37,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        register(uiStitchDelegate: self)
         // Google
         googleSignInButton.isHidden = true
         authOptionsStackView.removeArrangedSubview(googleSignInButton)
@@ -51,17 +53,21 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
         skipButton.isHidden = true
         authOptionsStackView.removeArrangedSubview(skipButton)
         
+    }
+    
+    func onReady(_ stitchClient: StitchClient) {
+
+        self.stitchClient = stitchClient
         // fetch auth providers
-        stitchClient?.fetchAuthProviders().then { (authProviderInfo: AuthProviderInfo) in
+        stitchClient.fetchAuthProviders().done { (authProviderInfo: AuthProviderInfo) in
             
             self.handleAuthenticationProviders(authInfo: authProviderInfo)
-            
+           
             }.catch { error in
                 print("failed to get Authentication Providers. error: \(error)")
-                
         }
-        
     }
+    
     
     //MARK: - Helpers
     
@@ -76,12 +82,12 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 authAvailable = true
                 
                 var configureError: NSError?
-                GGLContext.sharedInstance().configureWithError(&configureError)
+                //GGLContext.sharedInstance().configureWithError(&configureError)
                 assert(configureError == nil, "Error configuring Google services: \(configureError)")
                 
+                GIDSignIn.sharedInstance().clientID = googleAuthInfo.config.clientId
                 GIDSignIn.sharedInstance().uiDelegate = self
                 GIDSignIn.sharedInstance().delegate = self
-                GIDSignIn.sharedInstance().serverClientID = googleAuthInfo.config.clientId
                 
                 GIDSignIn.sharedInstance().scopes = googleAuthInfo.metadataFields?.map { $0.name }
                 strongSelf.googleSignInButton.isHidden = false
@@ -128,6 +134,16 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     }
     
     // MARK: - Actions
+   
+    @IBAction func newGoogleSigninPressed(_ sender: UIButton) {
+        
+    }
+    
+    
+   /* @IBAction private func newGoogleSignin(_ sender: UIButton) {
+        //GIDSignIn.sharedInstance().signIn()
+        show(show: false, errorMessage: nil)
+    }*/
     
     @IBAction private func googleSignInPressed(_ sender: GIDSignInButton) {
         show(show: false, errorMessage: nil)
@@ -135,7 +151,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     
     @IBAction private func skipButtonPressed(_ sender: Any) {
         
-        stitchClient?.anonymousAuth().then { (userId: String) in
+        stitchClient!.anonymousAuth().done { (userId: String) in
             self.delegate?.authenticationViewControllerDidLogin()
             
             }.catch { error in
@@ -197,7 +213,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 return
             }
             
-            stitchClient.login(withProvider: GoogleAuthProvider(authCode: user.serverAuthCode)).then { (userId: String) in
+            stitchClient.login(withProvider: GoogleAuthProvider(authCode: user.authentication.idToken)).done { (userId: String) in
                 MongoDBManager.shared.provider = Provider.google
                 self.delegate?.authenticationViewControllerDidLogin()
                 }.catch { error in
@@ -227,9 +243,10 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 return
             }
             
-            stitchClient.login(withProvider: FacebookAuthProvider(accessToken: token.authenticationToken)).then { (userId: String) in
-                MongoDBManager.shared.provider = Provider.facebook
-                self.delegate?.authenticationViewControllerDidLogin()
+            stitchClient.login(withProvider: FacebookAuthProvider(accessToken: token.authenticationToken))
+                .done {(userId: String) in
+                    MongoDBManager.shared.provider = Provider.facebook
+                    self.delegate?.authenticationViewControllerDidLogin()
                 }.catch { error in
                     print("failed logging in Stitch with Facebook. error: \(error)")
                     LoginManager().logOut()

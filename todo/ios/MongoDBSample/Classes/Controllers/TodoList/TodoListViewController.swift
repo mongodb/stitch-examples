@@ -11,22 +11,10 @@ import ExtendedJson
 import MongoDBService
 
 
-class TodoListViewController: UIViewController, AuthenticationViewControllerDelegate, EmailAuthViewControllerDelegate, TodoItemTableViewCellDelegate, UITableViewDataSource {
+class TodoListViewController: UIViewController, UIStitchDelegate, AuthenticationViewControllerDelegate, EmailAuthViewControllerDelegate, TodoItemTableViewCellDelegate, UITableViewDataSource {
     
-    private struct Consts {
-        
-        static var AppId: String {
-            let path = Bundle.main.path(forResource: "Stitch-Info", ofType: "plist")
-            let infoDic = NSDictionary(contentsOfFile: path!) as? [String: AnyObject]
-            let appId = infoDic!["APP_ID"] as! String
-            assert(appId != "<Your-App-ID>", "Insert your App ID in Stitch-Info.plist")
-            return appId
-        }
-    }
-    
-    private let stitchClient = StitchClient(appId: Consts.AppId)
-    
-    private var mongoClient: MongoDBClient
+    private var stitchClient : StitchClient?
+    private var mongoClient: MongoDBClient?
     
     private var authVC: AuthenticationViewController?
     private var emailAuthVC: EmailAuthViewController?
@@ -38,21 +26,15 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     
     
     var collection: MongoDBService.Collection {
-        return mongoClient.database(named: "todo").collection(named: "items")
+        return mongoClient!.database(named: "todo").collection(named: "items")
     }
     
     // MARK: - Init
     
-    required init?(coder aDecoder: NSCoder) {
+    
+    func onReady(_ stitchClient: StitchClient) {
+        self.stitchClient = stitchClient
         mongoClient = MongoDBClient(stitchClient: stitchClient, serviceName: "mongodb-atlas")
-        super.init(coder: aDecoder)
-    }
-    
-    // MARK: - Lifecycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
         todoItemsTableView.tableFooterView = UIView(frame: .zero)
         
         if !stitchClient.isAuthenticated {
@@ -67,6 +49,18 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
         }
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        mongoClient = nil;
+        super.init(coder: aDecoder)
+    }
+    
+    // MARK: - Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        register(uiStitchDelegate: self)
+    }
+    
     // MARK: - Actions
     
     @IBAction func refreshButtonClicked(_ sender: Any) {
@@ -74,17 +68,17 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     }
     
     @IBAction private func logoutButtonPressed(_ sender: Any) {
-        stitchClient.logout().then { Void in
+        stitchClient!.logout().done {Void in
             self.handleLogout(provider: MongoDBManager.shared.provider)
         }
     }
     
     @IBAction func clearButtonPressed(_ sender: Any) {
         var document = Document()
-        document["owner_id"] = stitchClient.auth?.userId
+        document["owner_id"] = stitchClient!.auth?.userId
         document["checked"] = true
         
-        collection.deleteMany(query: document).then{ (result: Document) in
+        collection.deleteMany(query: document).done{ (result: Document) in
             self.refreshList()
         }
     }
@@ -125,29 +119,30 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     
     // MARK: - Helpers
     
-    private func update(item: ObjectId, checked: Bool) -> StitchTask<Document> {
+    private func update(item: ObjectId, checked: Bool) {
         let query = Document(key: "_id", value: item)
         let set = Document(key: "checked", value: checked)
         let update = Document(key: "$set", value: set)
-        return collection.updateOne(query: query, update: update)
+        collection.updateOne(query: query, update: update).done{ (result: Document) in
+        }.catch {error in
+            print("failed inserting item: \(error.localizedDescription)")
+        }
     }
     
     private func add(item text: String) {
         var itemDoc = Document()
-        itemDoc["owner_id"] = stitchClient.auth?.userId
+        itemDoc["owner_id"] = stitchClient!.auth?.userId
         itemDoc["text"] = text
         itemDoc["checked"] = false
-        collection.insertOne(document: itemDoc).then{ (result: ObjectId) in
+        collection.insertOne(document: itemDoc).done{ (result: ObjectId) in
             self.refreshList()
             }.catch {error in
                 print("failed inserting item: \(error.localizedDescription)")
-
             }
-        
     }
     
     func refreshList() {
-        collection.find(query: Document(key: "owner_id", value: (stitchClient.auth?.userId)!), limit: 0).then{ (documents: [Document]) in
+        collection.find(query: Document(key: "owner_id", value: (stitchClient!.auth?.userId)!), limit: 0).done{ (documents: [Document]) in
             var todoItems: [TodoItem] = []
             for document in documents {
                 if let item = TodoItem(document: document) {
@@ -187,11 +182,9 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     func todoItem(cell: TodoItemTableViewCell, checkBoxValueChanged checked: Bool) {
         if let indexPath = todoItemsTableView.indexPath(for: cell),
             indexPath.row < todoItems.count {
-            let todoItem = todoItems[indexPath.row]
-            update(item: todoItem.objectId, checked: checked).catch { err in
-                print(err)
+                let todoItem = todoItems[indexPath.row]
+                update(item: todoItem.objectId, checked: checked)
             }
-        }
     }
     
     // MARK: - Auth

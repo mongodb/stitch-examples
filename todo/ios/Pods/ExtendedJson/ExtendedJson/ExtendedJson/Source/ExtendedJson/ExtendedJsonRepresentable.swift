@@ -218,6 +218,8 @@ extension ExtendedJsonRepresentable {
             return try String.fromExtendedJson(xjson: value!)
         case is Bool:
             return try Bool.fromExtendedJson(xjson: value!)
+        case let value as ExtendedJsonRepresentable:
+            return value
         default:
             throw BsonError.parseValueFailure(value: value, attemptedType: Document.self)
         }

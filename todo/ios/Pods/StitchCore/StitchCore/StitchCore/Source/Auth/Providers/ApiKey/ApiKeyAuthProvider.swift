@@ -12,8 +12,8 @@ import ExtendedJson
 public struct ApiKeyAuthProvider: AuthProvider {
     private let key: String
 
-    public var type: String = "api"
-    public var name: String = "key"
+    public var type: AuthProviderTypes = AuthProviderTypes.apiKey
+    public var name: String = "api-key"
 
     public var payload: Document {
         return ["key": key]

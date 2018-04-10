@@ -1120,7 +1120,7 @@ finishedRefreshWithFetcher:(GTMOAuth2Fetcher *)fetcher
   // the server expects the expiration
   NSDate *date = nil;
   NSNumber *expiresIn = self.expiresIn;
-  if (expiresIn) {
+  if (expiresIn != nil) {
     unsigned long deltaSeconds = [expiresIn unsignedLongValue];
     if (deltaSeconds > 0) {
       date = [NSDate dateWithTimeIntervalSinceNow:deltaSeconds];
