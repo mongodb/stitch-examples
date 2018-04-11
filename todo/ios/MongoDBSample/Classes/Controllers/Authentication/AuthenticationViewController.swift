@@ -85,7 +85,8 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 //GGLContext.sharedInstance().configureWithError(&configureError)
                 assert(configureError == nil, "Error configuring Google services: \(configureError)")
                 
-                GIDSignIn.sharedInstance().clientID = googleAuthInfo.config.clientId
+                GIDSignIn.sharedInstance().clientID = "<iOS-application-client-id>"
+                GIDSignIn.sharedInstance().serverClientID = "<Web-application-client-id>"
                 GIDSignIn.sharedInstance().uiDelegate = self
                 GIDSignIn.sharedInstance().delegate = self
                 
@@ -134,17 +135,6 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     }
     
     // MARK: - Actions
-   
-    @IBAction func newGoogleSigninPressed(_ sender: UIButton) {
-        
-    }
-    
-    
-   /* @IBAction private func newGoogleSignin(_ sender: UIButton) {
-        //GIDSignIn.sharedInstance().signIn()
-        show(show: false, errorMessage: nil)
-    }*/
-    
     @IBAction private func googleSignInPressed(_ sender: GIDSignInButton) {
         show(show: false, errorMessage: nil)
     }
@@ -213,7 +203,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 return
             }
             
-            stitchClient.login(withProvider: GoogleAuthProvider(authCode: user.authentication.idToken)).done { (userId: String) in
+            stitchClient.login(withProvider: GoogleAuthProvider(authCode: user.serverAuthCode)).done { (userId: String) in
                 MongoDBManager.shared.provider = Provider.google
                 self.delegate?.authenticationViewControllerDidLogin()
                 }.catch { error in
