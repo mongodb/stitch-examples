@@ -9,7 +9,7 @@ path { stroke-width: 3;fill: none;}
 .y.axis line, .y.axis path {fill: none; stroke-width: 1; stroke: #000;}
 
 .centered { text-align: center; }
-.hidden { display: none; }
+.hidden { display: none !important; }
 .fixed-width { width: 50%; }
 .page-title { margin-bottom: 50px; }
 .table { margin-top: 60px; }

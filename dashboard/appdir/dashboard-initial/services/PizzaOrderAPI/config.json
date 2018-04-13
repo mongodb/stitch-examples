@@ -1,5 +1,6 @@
 {
     "name": "PizzaOrderAPI",
     "type": "http",
-    "config": {}
+    "config": {},
+    "version": 1
 }
