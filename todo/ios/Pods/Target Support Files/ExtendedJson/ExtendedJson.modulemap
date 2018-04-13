@@ -1,6 +1,0 @@
-framework module ExtendedJson {
-  umbrella header "ExtendedJson-umbrella.h"
-
-  export *
-  module * { export * }
-}
