@@ -82,7 +82,7 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 authAvailable = true
                 
                 var configureError: NSError?
-                //GGLContext.sharedInstance().configureWithError(&configureError)
+                GGLContext.sharedInstance().configureWithError(&configureError)
                 assert(configureError == nil, "Error configuring Google services: \(configureError)")
                 
                 GIDSignIn.sharedInstance().clientID = "<iOS-application-client-id>"

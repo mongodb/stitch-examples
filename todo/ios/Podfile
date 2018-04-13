@@ -3,10 +3,8 @@ platform :ios, '9.0'
 target 'MongoDBSample' do
   use_frameworks!
 
-  pod 'Firebase/Core'
   pod 'FacebookLogin'
   pod 'GoogleSignIn'
-  
   pod 'StitchLogger'
   pod 'ExtendedJson', '~> 2.0.4'
   pod 'StitchCore', '~> 3.0.2'

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		040ACF5C8A9A83C133374801 /* Pods_MongoDBSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */; };
 		360EAC921EB012450014A7E3 /* Stitch-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 360EAC911EB012450014A7E3 /* Stitch-Info.plist */; };
 		3661C1831E6E09310081530D /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3661C1821E6E09310081530D /* CheckBox.swift */; };
 		367E0C741E4429BA00EE2C00 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 367E0C701E4429BA00EE2C00 /* LaunchScreen.storyboard */; };
@@ -37,7 +36,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		27571CA35553C012100B4BF8 /* Pods-MongoDBSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.release.xcconfig"; sourceTree = "<group>"; };
 		360EAC911EB012450014A7E3 /* Stitch-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Stitch-Info.plist"; sourceTree = "<group>"; };
 		3661C1821E6E09310081530D /* CheckBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CheckBox.swift; path = MongoDBSample/Classes/Controllers/TodoList/CheckBox.swift; sourceTree = SOURCE_ROOT; };
 		367E0C521E4428BE00EE2C00 /* MongoDBSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MongoDBSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,13 +48,8 @@
 		369D1E491E6AF64D00ADE4DB /* TodoListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoListViewController.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoListViewController.swift; sourceTree = SOURCE_ROOT; };
 		369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItem.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItem.swift; sourceTree = SOURCE_ROOT; };
 		369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItemTableViewCell.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItemTableViewCell.swift; sourceTree = SOURCE_ROOT; };
-		36A025C31EF2E35600450FB1 /* ExtendedJson.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExtendedJson.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/ExtendedJson/build/Debug-iphoneos/ExtendedJson.framework"; sourceTree = "<group>"; };
-		36A025C41EF2E35600450FB1 /* StitchCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchCore.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchCore/build/Debug-iphoneos/StitchCore.framework"; sourceTree = "<group>"; };
-		36A025C51EF2E35600450FB1 /* StitchLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StitchLogger.framework; path = "MongoDBSample/MongoSDK/mongo-baas-core-ios/StitchLogger/build/Debug-iphoneos/StitchLogger.framework"; sourceTree = "<group>"; };
 		36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAuthViewController.swift; sourceTree = "<group>"; };
 		3C177F34207C0DCD00710E55 /* UIStitchDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStitchDelegate.swift; sourceTree = "<group>"; };
-		716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		90C50230166CE80DBF894C8E /* Pods-MongoDBSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.debug.xcconfig"; sourceTree = "<group>"; };
 		F4228C221EF96924009AB09F /* MongoDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MongoDBManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,7 +58,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				040ACF5C8A9A83C133374801 /* Pods_MongoDBSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,8 +170,6 @@
 		52E58D9E87FB3468EEA8EC5B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				90C50230166CE80DBF894C8E /* Pods-MongoDBSample.debug.xcconfig */,
-				27571CA35553C012100B4BF8 /* Pods-MongoDBSample.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -187,10 +177,6 @@
 		92273AC6F5ECAA8120F3435A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				36A025C31EF2E35600450FB1 /* ExtendedJson.framework */,
-				36A025C41EF2E35600450FB1 /* StitchCore.framework */,
-				36A025C51EF2E35600450FB1 /* StitchLogger.framework */,
-				716498F2D4DD489D3CEDBEA6 /* Pods_MongoDBSample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -318,7 +304,6 @@
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/StitchCore/StitchCore.framework",
 				"${BUILT_PRODUCTS_DIR}/StitchLogger/StitchLogger.framework",
-				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -335,7 +320,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchLogger.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -494,7 +478,6 @@
 		};
 		367E0C651E4428BE00EE2C00 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 90C50230166CE80DBF894C8E /* Pods-MongoDBSample.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -517,7 +500,6 @@
 		};
 		367E0C661E4428BE00EE2C00 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27571CA35553C012100B4BF8 /* Pods-MongoDBSample.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
