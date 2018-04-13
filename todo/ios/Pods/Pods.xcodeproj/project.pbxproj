@@ -227,19 +227,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3C9879A42080F30E00CCEE18 /* StitchLogger.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = StitchLogger.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/StitchLogger.framework"; sourceTree = "<absolute>"; };
-		3C9879A52080F30E00CCEE18 /* StitchCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = StitchCore.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/StitchCore.framework"; sourceTree = "<absolute>"; };
-		3C9879A62080F30E00CCEE18 /* PromiseKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PromiseKit.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/PromiseKit.framework"; sourceTree = "<absolute>"; };
-		3C9879A72080F30E00CCEE18 /* MongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MongoDBService.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/MongoDBService.framework"; sourceTree = "<absolute>"; };
-		3C9879A82080F30E00CCEE18 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GTMSessionFetcher.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/GTMSessionFetcher.framework"; sourceTree = "<absolute>"; };
-		3C9879A92080F30E00CCEE18 /* GTMOAuth2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GTMOAuth2.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/GTMOAuth2.framework"; sourceTree = "<absolute>"; };
-		3C9879AA2080F30E00CCEE18 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GoogleToolboxForMac.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/GoogleToolboxForMac.framework"; sourceTree = "<absolute>"; };
-		3C9879AB2080F30E00CCEE18 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FBSDKLoginKit.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FBSDKLoginKit.framework"; sourceTree = "<absolute>"; };
-		3C9879AC2080F30E00CCEE18 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FBSDKCoreKit.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FBSDKCoreKit.framework"; sourceTree = "<absolute>"; };
-		3C9879AD2080F30E00CCEE18 /* FacebookLogin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FacebookLogin.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FacebookLogin.framework"; sourceTree = "<absolute>"; };
-		3C9879AE2080F30E00CCEE18 /* FacebookCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FacebookCore.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FacebookCore.framework"; sourceTree = "<absolute>"; };
-		3C9879AF2080F30E00CCEE18 /* ExtendedJson.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ExtendedJson.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/ExtendedJson.framework"; sourceTree = "<absolute>"; };
-		3C9879B02080F30E00CCEE18 /* Bolts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Bolts.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/Bolts.framework"; sourceTree = "<absolute>"; };
+		3C9879B12080F6F100CCEE18 /* StitchLogger.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = StitchLogger.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/StitchLogger.framework"; sourceTree = "<absolute>"; };
+		3C9879B22080F6F100CCEE18 /* StitchCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = StitchCore.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/StitchCore.framework"; sourceTree = "<absolute>"; };
+		3C9879B32080F6F100CCEE18 /* PromiseKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PromiseKit.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/PromiseKit.framework"; sourceTree = "<absolute>"; };
+		3C9879B42080F6F100CCEE18 /* MongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MongoDBService.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/MongoDBService.framework"; sourceTree = "<absolute>"; };
+		3C9879B52080F6F100CCEE18 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GTMSessionFetcher.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/GTMSessionFetcher.framework"; sourceTree = "<absolute>"; };
+		3C9879B62080F6F100CCEE18 /* GTMOAuth2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GTMOAuth2.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/GTMOAuth2.framework"; sourceTree = "<absolute>"; };
+		3C9879B72080F6F100CCEE18 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GoogleToolboxForMac.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/GoogleToolboxForMac.framework"; sourceTree = "<absolute>"; };
+		3C9879B82080F6F100CCEE18 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FBSDKLoginKit.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FBSDKLoginKit.framework"; sourceTree = "<absolute>"; };
+		3C9879B92080F6F100CCEE18 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FBSDKCoreKit.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FBSDKCoreKit.framework"; sourceTree = "<absolute>"; };
+		3C9879BA2080F6F100CCEE18 /* FacebookLogin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FacebookLogin.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FacebookLogin.framework"; sourceTree = "<absolute>"; };
+		3C9879BB2080F6F100CCEE18 /* FacebookCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FacebookCore.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/FacebookCore.framework"; sourceTree = "<absolute>"; };
+		3C9879BC2080F6F100CCEE18 /* ExtendedJson.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ExtendedJson.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/ExtendedJson.framework"; sourceTree = "<absolute>"; };
+		3C9879BD2080F6F100CCEE18 /* Bolts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Bolts.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/Bolts.framework"; sourceTree = "<absolute>"; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		E59E3300097117D5CB8659916697EF6B /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_MongoDBSample.framework; path = "/Users/caleb/Documents/git/mongocaleb/stitch-examples/todo/ios/Pods/../build/Debug-iphoneos/Pods_MongoDBSample.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -501,7 +501,7 @@
 			);
 			name = Bolts;
 			productName = Bolts;
-			productReference = 3C9879B02080F30E00CCEE18 /* Bolts.framework */;
+			productReference = 3C9879BD2080F6F100CCEE18 /* Bolts.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		593E9479C06FB200807D11AB29EB50BD /* FBSDKCoreKit */ = {
@@ -520,7 +520,7 @@
 			);
 			name = FBSDKCoreKit;
 			productName = FBSDKCoreKit;
-			productReference = 3C9879AC2080F30E00CCEE18 /* FBSDKCoreKit.framework */;
+			productReference = 3C9879B92080F6F100CCEE18 /* FBSDKCoreKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		5B5AC3C06B783F8674FDB4C0F900B56A /* FBSDKLoginKit */ = {
@@ -539,7 +539,7 @@
 			);
 			name = FBSDKLoginKit;
 			productName = FBSDKLoginKit;
-			productReference = 3C9879AB2080F30E00CCEE18 /* FBSDKLoginKit.framework */;
+			productReference = 3C9879B82080F6F100CCEE18 /* FBSDKLoginKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		681BE6E3D02A43F9BA63777AC435C8FD /* GTMSessionFetcher */ = {
@@ -556,7 +556,7 @@
 			);
 			name = GTMSessionFetcher;
 			productName = GTMSessionFetcher;
-			productReference = 3C9879A82080F30E00CCEE18 /* GTMSessionFetcher.framework */;
+			productReference = 3C9879B52080F6F100CCEE18 /* GTMSessionFetcher.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		7335E9C9689F3B8A16F063A884748533 /* FacebookLogin */ = {
@@ -577,7 +577,7 @@
 			);
 			name = FacebookLogin;
 			productName = FacebookLogin;
-			productReference = 3C9879AD2080F30E00CCEE18 /* FacebookLogin.framework */;
+			productReference = 3C9879BA2080F6F100CCEE18 /* FacebookLogin.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		944200E3CDBA19AB8523C4AB2ED3B95B /* MongoDBService */ = {
@@ -598,7 +598,7 @@
 			);
 			name = MongoDBService;
 			productName = MongoDBService;
-			productReference = 3C9879A72080F30E00CCEE18 /* MongoDBService.framework */;
+			productReference = 3C9879B42080F6F100CCEE18 /* MongoDBService.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		9C95F64291FFB19D639A392E6255D96F /* StitchLogger */ = {
@@ -615,7 +615,7 @@
 			);
 			name = StitchLogger;
 			productName = StitchLogger;
-			productReference = 3C9879A42080F30E00CCEE18 /* StitchLogger.framework */;
+			productReference = 3C9879B12080F6F100CCEE18 /* StitchLogger.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		AF69D8B7EB00C5FDB96F90700AC25A79 /* PromiseKit */ = {
@@ -632,7 +632,7 @@
 			);
 			name = PromiseKit;
 			productName = PromiseKit;
-			productReference = 3C9879A62080F30E00CCEE18 /* PromiseKit.framework */;
+			productReference = 3C9879B32080F6F100CCEE18 /* PromiseKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B1C4AAFAF49036C7007633DAA3C806AD /* GTMOAuth2 */ = {
@@ -651,7 +651,7 @@
 			);
 			name = GTMOAuth2;
 			productName = GTMOAuth2;
-			productReference = 3C9879A92080F30E00CCEE18 /* GTMOAuth2.framework */;
+			productReference = 3C9879B62080F6F100CCEE18 /* GTMOAuth2.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		DBB3A049E118856CB251C91F789675F0 /* ExtendedJson */ = {
@@ -669,7 +669,7 @@
 			);
 			name = ExtendedJson;
 			productName = ExtendedJson;
-			productReference = 3C9879AF2080F30E00CCEE18 /* ExtendedJson.framework */;
+			productReference = 3C9879BC2080F6F100CCEE18 /* ExtendedJson.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		DDBCFDE490CDFDABF6F16A26F346932D /* FacebookCore */ = {
@@ -688,7 +688,7 @@
 			);
 			name = FacebookCore;
 			productName = FacebookCore;
-			productReference = 3C9879AE2080F30E00CCEE18 /* FacebookCore.framework */;
+			productReference = 3C9879BB2080F6F100CCEE18 /* FacebookCore.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		F05BBF0ABCBAB1D55C2FE0C052A8CF62 /* GoogleToolboxForMac */ = {
@@ -705,7 +705,7 @@
 			);
 			name = GoogleToolboxForMac;
 			productName = GoogleToolboxForMac;
-			productReference = 3C9879AA2080F30E00CCEE18 /* GoogleToolboxForMac.framework */;
+			productReference = 3C9879B72080F6F100CCEE18 /* GoogleToolboxForMac.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		F1E84C0C5EEAA8E1FC62308C37D356C9 /* StitchCore */ = {
@@ -725,7 +725,7 @@
 			);
 			name = StitchCore;
 			productName = StitchCore;
-			productReference = 3C9879A52080F30E00CCEE18 /* StitchCore.framework */;
+			productReference = 3C9879B22080F6F100CCEE18 /* StitchCore.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */

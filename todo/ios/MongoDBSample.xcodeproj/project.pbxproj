@@ -19,6 +19,7 @@
 		369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */; };
 		36B1D4931EE36F88006B15B7 /* EmailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */; };
 		3C177F35207C0DCD00710E55 /* UIStitchDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C177F34207C0DCD00710E55 /* UIStitchDelegate.swift */; };
+		5A16D8552E2489B0685A97BF /* Pods_MongoDBSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEF5EA40BDB6BD11C6B865E0 /* Pods_MongoDBSample.framework */; };
 		F4228C231EF96924009AB09F /* MongoDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4228C221EF96924009AB09F /* MongoDBManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		28C33C2ABF9BE58E6A60CA80 /* Pods-MongoDBSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.release.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.release.xcconfig"; sourceTree = "<group>"; };
 		360EAC911EB012450014A7E3 /* Stitch-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Stitch-Info.plist"; sourceTree = "<group>"; };
 		3661C1821E6E09310081530D /* CheckBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CheckBox.swift; path = MongoDBSample/Classes/Controllers/TodoList/CheckBox.swift; sourceTree = SOURCE_ROOT; };
 		367E0C521E4428BE00EE2C00 /* MongoDBSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MongoDBSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +52,8 @@
 		369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItemTableViewCell.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItemTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAuthViewController.swift; sourceTree = "<group>"; };
 		3C177F34207C0DCD00710E55 /* UIStitchDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStitchDelegate.swift; sourceTree = "<group>"; };
+		45713EA09324062197D8A670 /* Pods-MongoDBSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.debug.xcconfig"; sourceTree = "<group>"; };
+		AEF5EA40BDB6BD11C6B865E0 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4228C221EF96924009AB09F /* MongoDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MongoDBManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A16D8552E2489B0685A97BF /* Pods_MongoDBSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +175,8 @@
 		52E58D9E87FB3468EEA8EC5B /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				45713EA09324062197D8A670 /* Pods-MongoDBSample.debug.xcconfig */,
+				28C33C2ABF9BE58E6A60CA80 /* Pods-MongoDBSample.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -177,6 +184,7 @@
 		92273AC6F5ECAA8120F3435A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AEF5EA40BDB6BD11C6B865E0 /* Pods_MongoDBSample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -202,9 +210,9 @@
 				367E0C4E1E4428BE00EE2C00 /* Sources */,
 				367E0C4F1E4428BE00EE2C00 /* Frameworks */,
 				367E0C501E4428BE00EE2C00 /* Resources */,
-				31A82E2F3027AB256A4543FF /* [CP] Embed Pods Frameworks */,
 				36D649781ECA0B7000ECC1F8 /* Embed Frameworks */,
-				11813A9A632046439DF7B87E /* [CP] Copy Pods Resources */,
+				6CB51E5C76B56308AC894B01 /* [CP] Embed Pods Frameworks */,
+				3B20B9450783C28BBF3743F2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -266,7 +274,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		11813A9A632046439DF7B87E /* [CP] Copy Pods Resources */ = {
+		3B20B9450783C28BBF3743F2 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -284,7 +292,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		31A82E2F3027AB256A4543FF /* [CP] Embed Pods Frameworks */ = {
+		6CB51E5C76B56308AC894B01 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -478,6 +486,7 @@
 		};
 		367E0C651E4428BE00EE2C00 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 45713EA09324062197D8A670 /* Pods-MongoDBSample.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -500,6 +509,7 @@
 		};
 		367E0C661E4428BE00EE2C00 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28C33C2ABF9BE58E6A60CA80 /* Pods-MongoDBSample.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
