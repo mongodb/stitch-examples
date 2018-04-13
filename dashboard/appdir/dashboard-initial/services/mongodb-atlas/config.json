@@ -3,5 +3,6 @@
     "type": "mongodb-atlas",
     "config": {
         "clusterName": "Cluster0"
-    }
+    },
+    "version": 1
 }

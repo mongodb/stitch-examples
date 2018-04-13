@@ -28,6 +28,7 @@ function emailPasswordAuth(email, password) {
   }
   return stitchClient.login(email, password)
            .then(hideLoginForm)
+           .then(revealDashboardContainer)
            .catch(err => console.error('e', err))
 }
 
@@ -39,27 +40,11 @@ function getSalesTimeline(start, end) {
   return stitchClient.executeFunction("salesTimeline", start, end);
 }
 
-function getLoginFormInfo() {
-  const emailEl = document.getElementById("emailInput");
-  const passwordEl = document.getElementById("passwordInput");
-  // Parse out input text
-  const email = emailEl.value;
-  const password = passwordEl.value;
-  // Remove text from login boxes
-  emailEl.value = "";
-  passwordEl.value = "";
-  return new Promise(resolve => resolve({ email: email, password: password }));
-}
 
-const hideLoginForm = () => {
-  return stitchClient.userProfile().then(user => {
-    // Hide login form
-    loginForm.classList.add("hidden");
-    // Set login status message
-    statusMessage.innerText = "Logged in as: " + user.data.email;
-  });
-};
 
+/* 
+  Instantiate and refresh the data in the dashboard
+*/
 function build(now) {
   // buildTable() and buildGraph() come from chart.js
 
@@ -100,4 +85,33 @@ function refresh(salesLine, path, now) {
       setTimeout(() => refresh(refreshSalesLine, refreshPath, Date.now()), 1000);
     })
     .catch(err => console.error(err));
+}
+
+
+
+/* UI Management Functions */
+function getLoginFormInfo() {
+  const emailEl = document.getElementById("emailInput");
+  const passwordEl = document.getElementById("passwordInput");
+  // Parse out input text
+  const email = emailEl.value;
+  const password = passwordEl.value;
+  // Remove text from login boxes
+  emailEl.value = "";
+  passwordEl.value = "";
+  return new Promise(resolve => resolve({ email: email, password: password }));
+}
+
+function hideLoginForm() {
+  return stitchClient.userProfile().then(user => {
+    // Hide login form
+    loginForm.classList.add("hidden");
+    // Set login status message
+    statusMessage.innerText = "Logged in as: " + user.data.email;
+  });
+};
+
+function revealDashboardContainer() {
+  const container = document.getElementById("dashboard-container");
+  container.classList.remove("hidden");
 }
