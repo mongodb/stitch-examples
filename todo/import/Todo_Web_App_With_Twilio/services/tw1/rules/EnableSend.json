@@ -1,0 +1,6 @@
+{
+    "name": "EnableSend",
+    "actions": [
+        "send"
+    ]
+}

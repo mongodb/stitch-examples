@@ -1,0 +1,34 @@
+{
+    "namespace": "todo.items",
+    "filters": [
+        {
+            "match_expression": {
+                "owner_id": "%%user.id"
+            },
+            "when": {
+                "%%true": true
+            }
+        }
+    ],
+    "fields": {
+        "owner_id": {
+            "valid": "%%user.id"
+        }
+    },
+    "other_fields": {},
+    "write": {
+        "%or": [
+            {
+                "%%prevRoot.owner_id": "%%user.id"
+            },
+            {
+                "%%prevRoot": {
+                    "%exists": false
+                }
+            }
+        ]
+    },
+    "read": {
+        "owner_id": "%%user.id"
+    }
+}
