@@ -8,10 +8,10 @@ class WebcamCapture extends React.Component {
         super(props);
         console.log(props);
     }
-    
-    setRef = (webcam) => {
+
+    setRef = webcam => {
         this.webcam = webcam;
-    }
+    };
 
     capture = () => {
         const imageSrc = this.webcam.getScreenshot();
@@ -20,9 +20,9 @@ class WebcamCapture extends React.Component {
 
     render() {
         if (!this.props.active) {
-            return "";
+            return '';
         }
-        
+
         return (
             <div>
                 <Webcam
@@ -38,52 +38,84 @@ class WebcamCapture extends React.Component {
     }
 }
 
-
 class App extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.client = props.client;
-        this.db = this.client.service('mongodb', 'mongodb-atlas').db('security-system');
-        
-        this.state = { doCapture : false, images : [] };
+        this.db = this.client
+            .service('mongodb', 'mongodb-atlas')
+            .db('security-system');
+
+        this.state = { doCapture: false, images: [] };
 
         this.startCapture = this.startCapture.bind(this);
         this.stopCapture = this.stopCapture.bind(this);
         this.loadImages = this.loadImages.bind(this);
+        this.removeImage = this.removeImage.bind(this);
 
         this.loadImages();
     }
 
     startCapture() {
-        this.setState( { doCapture : true } );
+        this.setState({ doCapture: true });
     }
 
     stopCapture(imageSrc) {
-        this.setState( { doCapture : false } );
-        this.db.collection("images").insertOne( { owner_id : this.client.authedId(), image : imageSrc } ).then( this.loadImages );
+        this.setState({ doCapture: false });
+        this.db
+            .collection('images')
+            .insertOne({
+                owner_id: this.client.authedId(),
+                image: imageSrc,
+                active: true,
+            })
+            .then(this.loadImages);
     }
 
     loadImages() {
-        this.db.collection("images").find( {} ).execute().then( imageDocs => {
-            this.setState( { images : imageDocs.map( doc => { return doc; } ) } );
-        } );
+        this.db
+            .collection('images')
+            .find({ active: true })
+            .execute()
+            .then(imageDocs => {
+                this.setState({
+                    images: imageDocs.map(doc => {
+                        return doc;
+                    }),
+                });
+            });
     }
-    
+
+    removeImage(id) {
+        let q = { _id: id };
+        this.db
+            .collection('images')
+            .updateOne(q, { $set: { active: false } })
+            .then(this.loadImages);
+    }
+
     render() {
-        const images = this.state.images.map( function(img) {
-            return <div key={img._id}>
-                <img src={img.image}/>
-            </div>;
-        } );
-        
         return (
             <div className="App">
                 <header className="App-header">
                     <h1 className="App-title">My Security System</h1>
                 </header>
-                {images}
+                <div>
+                    <span>People who can login</span>
+                    {this.state.images.map(img => (
+                        <div key={img._id}>
+                            <img width="100" src={img.image} />
+                            <button onClick={() => this.removeImage(img._id)}>
+                                Delete
+                            </button>
+                        </div>
+                    ))}
+                </div>
                 <button onClick={this.startCapture}>Add new picture</button>
-                <WebcamCapture active={this.state.doCapture} stopCapture={this.stopCapture}/>
+                <WebcamCapture
+                    active={this.state.doCapture}
+                    stopCapture={this.stopCapture}
+                />
             </div>
         );
     }
