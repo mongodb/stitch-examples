@@ -25,13 +25,7 @@ class WebcamCapture extends React.Component {
 
         return (
             <div>
-                <Webcam
-                    audio={false}
-                    height={350}
-                    ref={this.setRef}
-                    screenshotFormat="image/jpeg"
-                    width={350}
-                />
+                <Webcam audio={false} height={350} ref={this.setRef} screenshotFormat="image/jpeg" width={350} />
                 <button onClick={this.capture}>Capture photo</button>
             </div>
         );
@@ -42,9 +36,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.client = props.client;
-        this.db = this.client
-            .service('mongodb', 'mongodb-atlas')
-            .db('security-system');
+        this.db = this.client.service('mongodb', 'mongodb-atlas').db('security-system');
 
         this.state = { doCapture: false, images: [] };
 
@@ -105,17 +97,12 @@ class App extends Component {
                     {this.state.images.map(img => (
                         <div key={img._id}>
                             <img width="100" src={img.image} />
-                            <button onClick={() => this.removeImage(img._id)}>
-                                Delete
-                            </button>
+                            <button onClick={() => this.removeImage(img._id)}>Delete</button>
                         </div>
                     ))}
                 </div>
                 <button onClick={this.startCapture}>Add new picture</button>
-                <WebcamCapture
-                    active={this.state.doCapture}
-                    stopCapture={this.stopCapture}
-                />
+                <WebcamCapture active={this.state.doCapture} stopCapture={this.stopCapture} />
             </div>
         );
     }
