@@ -12,7 +12,10 @@ Most of the 3rd-party components were chosen because of the cleanliness of their
 
 The system is composed of these parts:
 
-* **MongoDB Atlas**, for storing data
+* **MongoDB Atlas**, for storing data:
+    - User profiles, which contain the unique URLs that trigger their hardware
+    - Authorized user images, used for facial recognition
+    - Audit logs
 * **MongoDB Stitch**, the star of the show
 * A D-Link Connected Home Camera
 * A Lockitron Bolt with WiFi bridge
@@ -25,9 +28,26 @@ The system is composed of these parts:
 ### Component Diagram
 
 
-## Getting Started
+## How to set up and run this project
+
+There are quite a few moving parts, as you can see from the above list.
+
+### Hardware
+
+We chose our hardware based on the availability of IFTTT services.
+
+#### Camera
+A [D-Link Connected Home Camera](http://us.dlink.com/product-category/home-solutions/connected-home/cameras/) of some kind. We used the [DCS-935L HD WiFi Camera](http://us.dlink.com/products/connect/hd-wi-fi-camera/).
+
+#### Lock
+As of the initial writing of this README, Smartlocks aren't as far along as the rest of the smarthome components, but the best one we found was the [Lockitron Bolt](https://lockitron.com). The Bolt's WiFi bridge can be a little sensitive to interference, but in most home settings it works well.
+
+#### Button
+There are plenty of options here, we're using the [Logitech POP SmartButton](https://www.logitech.com/en-us/product/pop-smart-button).
 
 ### Atlas
+
+All the data for this project lives in a MongoDB Atlas cluster. The collections are:
 
 * Start by Creating an [Atlas Account/Project](https://docs.atlas.mongodb.com/getting-started/#a-create-an-service-user-account)
 + Deploy a [Atlas Cluster](https://docs.atlas.mongodb.com/getting-started/#b-create-an-service-free-tier-cluster) (Use M0 for a free cluster)
