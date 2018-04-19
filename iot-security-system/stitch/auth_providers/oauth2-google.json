@@ -1,9 +1,9 @@
 {
-    "id": "5ad763b4cfb737ad8f8b13b4",
+    "id": "5ad8c359b8b9984867fe6de0",
     "name": "oauth2-google",
     "type": "oauth2-google",
     "config": {
-        "clientId": "1027066153613-66b0h9bgrvq61jubl24bbo5mkrd98adj.apps.googleusercontent.com"
+        "clientId": "<YOUR GOOGLE OAUTH CLIENT ID>"
     },
     "disabled": false,
     "metadata_fields": [
