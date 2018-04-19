@@ -1,4 +1,4 @@
-# The Face-Recognizing IoT Security System #
+# Web App for Face-Recognizing IoT Security System #
 
 * Web Application Components 
     - Authentication with Google 
