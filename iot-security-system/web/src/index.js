@@ -7,7 +7,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 async function startup() {
-    let client = await StitchClientFactory.create('security-system-ukndi');
+    let client = await StitchClientFactory.create('<YOUR STITCH APP ID>');
     if (client.authedId() == null) {
         await client.authenticate('google');
         return;
