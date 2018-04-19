@@ -12,7 +12,6 @@ async function startup() {
         await client.authenticate('google');
         return;
     }
-    console.log(client.authedId());
 
     ReactDOM.render(<App client={client} />, document.getElementById('root'));
     registerServiceWorker();
