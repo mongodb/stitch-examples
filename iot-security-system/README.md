@@ -27,14 +27,9 @@ The system is composed of these parts:
 
 ### Component Diagram
 
+### Hardware you'll need
 
-## How to set up and run this project
-
-There are quite a few moving parts, as you can see from the above list.
-
-### Hardware
-
-We chose our hardware based on the availability of IFTTT services.
+We chose our hardware based on the availability of IFTTT services (see below). Once you have your devices, you'll need to set them up with their respective smartphone apps, create accounts with the vendors, and all the stuff you normally do when setting up smarthome devices.
 
 #### Camera
 A [D-Link Connected Home Camera](http://us.dlink.com/product-category/home-solutions/connected-home/cameras/) of some kind. We used the [DCS-935L HD WiFi Camera](http://us.dlink.com/products/connect/hd-wi-fi-camera/).
@@ -43,7 +38,14 @@ A [D-Link Connected Home Camera](http://us.dlink.com/product-category/home-solut
 As of the initial writing of this README, Smartlocks aren't as far along as the rest of the smarthome components, but the best one we found was the [Lockitron Bolt](https://lockitron.com). The Bolt's WiFi bridge can be a little sensitive to interference, but in most home settings it works well.
 
 #### Button
-There are plenty of options here, we're using the [Logitech POP SmartButton](https://www.logitech.com/en-us/product/pop-smart-button).
+There are plenty of options here, we're using the [Logitech POP SmartButton](https://www.logitech.com/en-us/product/pop-smart-button). When you perform the setup for the POP, after you've initialized the WiFi bridge, you'll get a choice for "AppleHome" or "Continue". Choose "Continue".
+
+You will also need to [add IFTTT as a 'device' in your Pop app](http://support.logitech.com/en_us/article/Working-with-IFTTT?product=a0q31000009vuqLAAQ). 
+
+
+## How to set up and run this project
+
+There are quite a few moving parts, as you can see from the above list.
 
 ### Atlas
 
@@ -54,11 +56,11 @@ All the data for this project lives in a MongoDB Atlas cluster. The collections 
 + Get your Atlas ['Project ID'](https://docs.atlas.mongodb.com/tutorial/manage-project-settings/) and [Configure API Access](https://docs.atlas.mongodb.com/configure-api-access/) so you can import the Stitch Application
 
 ### Google App
+
+Stitch supports many external auth methods; to keep things simple we're just using Google. That means you have to have an application on the Google Cloud Platform, which will let you create a client ID, which Stitch will need to perform OAuth for the security system users.
+
 + Get an [OAuth 2.0 client ID](https://support.google.com/cloud/answer/6158849?hl=en)
-
-### [IFTTT](https://ifttt.com/)
-
-+ Do we want to add anything here?
++ Keep that client ID and the client secret handy, you're going to plug them into Stitch config files.
 
 ### [Face++](https://www.faceplusplus.com)
 
@@ -99,3 +101,27 @@ All the data for this project lives in a MongoDB Atlas cluster. The collections 
 - `yarn && npm start`
 - Sign in with google account
 
+### [IFTTT](https://ifttt.com/) & Hardware
+
+Earlier versions of this project involved a bunch of custom components that required writing a bunch of really boring REST API calls. While it's great that you *can* use REST APIs to talk to some IoT devices, why do that if IFTTT can handle that plumbing for you?
+
+Asusming you've already set up the hardware, you'll use the same steps for them all:
+
+1. [Log into IFTTT](https://ifttt.com/).
+2. Click on your profile image in the upper-right and choose 'New Applet'.
+3. Click on the big, blue "+ this".
+4. Search for your device. For example, "Pop". Click on the service.
+5. Click on the big "Connect" Button on the service page, and follow the flow to autorize IFTTT to your device.
+6. Now you're back on the service page... which is not actually where you want to be. Go back to the "New Applet" flow from your profile icon, and click the big blue "+ this" again, and *again* search for your device, and choose it.
+7. *Now* you're on the page where you can choose a trigger.
+
+Now things diverge a little.
+
+#### For the POP:
+
+1. Choose 'Short Press' (you can choose whatever you want, really, it's your security system).
+2. Choose the POP you're using by the name you gave it in the Logitech POP app.
+3. Set the Trigger option to 'Always' and the Trigger source to 'Any'.
+4. Click the big blue "+ that"
+5. Search for Webhook, and choose that service
+6. 
