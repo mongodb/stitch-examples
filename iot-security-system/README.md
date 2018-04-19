@@ -1,6 +1,6 @@
 # The Face-Recognizing IoT Security System #
 
-The Stitch IoT Face-Recognizing Security System takes off the shelf SmartHome parts -- a camera, a deadbolt, and a generic button -- and turns them into a face-recognizing security system with a total of 200 lines of code (modulo some JSON config).
+The Stitch IoT Face-Recognizing Security System takes off the shelf SmartHome parts -- a camera, a deadbolt, and a generic button -- and turns them into a face-recognizing security system with a total of 200 lines of code (modulo some JSON config). Once a user's face is in the system, they can press the button, which triggers the camera to take a picture. If the picture contains a recognized face, the deadbolt unlocks.
 
 We built this project as a demonstration of how easy it is to build, using Stitch, a system that orchestrates a complex interaction of components, without having to spin up an application server. It is both a starting point for hobbyists or professionals who want to develop smart home solutions, and a tutorial for those looking to see Stitch in action.
 
@@ -66,8 +66,8 @@ Stitch supports many external auth methods; to keep things simple we're just usi
 
 + Sign-up (Use 'Canada' as phone number country code)
 + Click 'Send button' and fill out rest of form
-+ Get a free API key
-+ We will use the "Compare API"
++ Get a free API key, keep it handy for configuring Stitch.
++ We will use the "Compare API", you can check out the docs if you like.
 
 ### Stitch
 + Create a [Stitch Application](https://docs.mongodb.com/stitch/getting-started/create-stitch-app/#c-add-a-stitch-app)
@@ -93,14 +93,6 @@ Stitch supports many external auth methods; to keep things simple we're just usi
     + settings: Contains settings for Users within the system 
 - Note, access to the database and collection is set-up upon importing the application.
 
-
-### Web App
-- install npm
-- install yarn
-- replace Stitch App name with yours
-- `yarn && npm start`
-- Sign in with google account
-
 ### [IFTTT](https://ifttt.com/) & Hardware
 
 Earlier versions of this project involved a bunch of custom components that required writing a bunch of really boring REST API calls. While it's great that you *can* use REST APIs to talk to some IoT devices, why do that if IFTTT can handle that plumbing for you?
@@ -115,13 +107,39 @@ Asusming you've already set up the hardware, you'll use the same steps for them 
 6. Now you're back on the service page... which is not actually where you want to be. Go back to the "New Applet" flow from your profile icon, and click the big blue "+ this" again, and *again* search for your device, and choose it.
 7. *Now* you're on the page where you can choose a trigger.
 
-Now things diverge a little.
+Now things diverge a little. First, you have to set up the camera and the lock.
 
-#### For the POP:
+#### TD-Link Connected Home Camera
+
+**Instructions coming soon**
+
+#### Lockitron Bolt
+
+**Instructions coming soon**
+
+Once you have the camera and the lock set up, you have to get the management web UI running.
+
+### Web App
+
+While it's fun to hard-code access_tokens into your toy apps, it's not a good look. We've got a really ugly web UI that initializes the system and manages the images for training facial recognition. To get it running,
+
+1. Make sure you have a recent `node/npm` installed
+2. Make sure you have `yarn` installed
+3. Navigate to the `src/web` subdirectory of this project and open `index.js`
+3. Replace `<YOUR STITCH APP ID>` with the app-id you got from Stitch.
+4. Run `yarn && npm start`, which will automatically open a browser window to `http://localhost/` when it's done launching.
+5. The first time it runs, you'll be redirected to Google to authenticate. After that, you'll be redirected back to the management UI.
+6. 
+
+
+#### POP SmartButton:
 
 1. Choose 'Short Press' (you can choose whatever you want, really, it's your security system).
 2. Choose the POP you're using by the name you gave it in the Logitech POP app.
 3. Set the Trigger option to 'Always' and the Trigger source to 'Any'.
 4. Click the big blue "+ that"
 5. Search for Webhook, and choose that service
-6. 
+
+#### Final config
+
+**Coming soon**
