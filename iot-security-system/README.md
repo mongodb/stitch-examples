@@ -51,8 +51,12 @@ There are quite a few moving parts, as you can see from the above list.
 
 All the data for this project lives in a MongoDB Atlas cluster. The collections are:
 
-* Start by Creating an [Atlas Account/Project](https://docs.atlas.mongodb.com/getting-started/#a-create-an-service-user-account)
++ Start by Creating an [Atlas Account/Project](https://docs.atlas.mongodb.com/getting-started/#a-create-an-service-user-account)
 + Deploy a [Atlas Cluster](https://docs.atlas.mongodb.com/getting-started/#b-create-an-service-free-tier-cluster) (Use M0 for a free cluster)
+    * Used to store the following information in the security-system database
+        - images: Containing a set of user images and their corresponding status/information
+        - settings: Contains settings for Users within the system
+    * Note, access to the database and collection is set-up upon importing the application.
 + Get your Atlas ['Project ID'](https://docs.atlas.mongodb.com/tutorial/manage-project-settings/) and [Configure API Access](https://docs.atlas.mongodb.com/configure-api-access/) so you can import the Stitch Application
 
 ### Google App
@@ -86,13 +90,6 @@ Stitch supports many external auth methods; to keep things simple we're just usi
     * Use your secrets.json to link services to your specific accounts
     * Automatically re-write ID fields in your files with IDs specific to your Application
     * Assign an app-id (Used to link an SDK to your application)
-
-### MongoDB
-- Used to store the following information in the security-system database
-    + images: Containing a set of user images and their corresponding status/information
-    + settings: Contains settings for Users within the system 
-- Note, access to the database and collection is set-up upon importing the application.
-
 
 ### Web App
 - install npm
