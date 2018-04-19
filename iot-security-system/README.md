@@ -18,7 +18,9 @@
         + Get an OAuth 2.0 client ID
     - Stitch
         + fill in placeholder values
-            * ...
+            * secrets.json
+            * auth_providers/oauth2-google.json
+            * services/mongodb-atlas/config.json
         + cli-import
             * import will
                 - automatically re-write many id fields as it imports
@@ -35,5 +37,6 @@
     - Web App
         + install npm
         + install yarn
+        + replace Stitch App name with yours
         + `yarn && npm start`
         + Sign in with google account
