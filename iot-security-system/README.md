@@ -91,21 +91,6 @@ Stitch supports many external auth methods; to keep things simple we're just usi
     * Automatically re-write ID fields in your files with IDs specific to your Application
     * Assign an app-id (Used to link an SDK to your application)
 
-<<<<<<< HEAD
-### MongoDB
-- Used to store the following information in the security-system database
-    + images: Containing a set of user images and their corresponding status/information
-    + settings: Contains settings for Users within the system 
-- Note, access to the database and collection is set-up upon importing the application.
-=======
-### Web App
-- install npm
-- install yarn
-- replace Stitch App name with yours
-- `yarn && npm start`
-- Sign in with google account
->>>>>>> 43e01a71bcf8cbbd70c24a1e2e056bf77660bc87
-
 ### [IFTTT](https://ifttt.com/) & Hardware
 
 Earlier versions of this project involved a bunch of custom components that required writing a bunch of really boring REST API calls. While it's great that you *can* use REST APIs to talk to some IoT devices, why do that if IFTTT can handle that plumbing for you?
@@ -142,8 +127,6 @@ While it's fun to hard-code access_tokens into your toy apps, it's not a good lo
 3. Replace `<YOUR STITCH APP ID>` with the app-id you got from Stitch.
 4. Run `yarn && npm start`, which will automatically open a browser window to `http://localhost/` when it's done launching.
 5. The first time it runs, you'll be redirected to Google to authenticate. After that, you'll be redirected back to the management UI.
-6. 
-
 
 #### POP SmartButton:
 
