@@ -1,0 +1,36 @@
+{
+    "namespace": "security-system.settings",
+    "filters": [
+        {
+            "match_expression": {
+                "_id": "%%user.id"
+            },
+            "when": {
+                "%%true": true
+            }
+        }
+    ],
+    "fields": {
+        "owner_id": {
+            "valid": {
+                "%or": [
+                    {
+                        "%%prev": "%%user.id"
+                    },
+                    {
+                        "%%prev": {
+                            "%exists": false
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "other_fields": {},
+    "write": {
+        "_id": "%%user.id"
+    },
+    "read": {
+        "_id": "%%user.id"
+    }
+}

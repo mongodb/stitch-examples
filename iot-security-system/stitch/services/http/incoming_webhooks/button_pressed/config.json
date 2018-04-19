@@ -1,0 +1,11 @@
+{
+    "name": "button_pressed",
+    "run_as_user_id": "",
+    "run_as_user_id_script_source": "",
+    "options": {
+        "httpMethod": "GET",
+        "secret": "abc",
+        "secretAsQueryParam": true
+    },
+    "respond_result": false
+}

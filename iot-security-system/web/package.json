@@ -1,0 +1,22 @@
+{
+    "name": "security-system-web",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "mongodb-stitch": "^3.1.1",
+        "react": "^16.3.2",
+        "react-dom": "^16.3.2",
+        "react-webcam": "^0.4.3"
+    },
+    "devDependencies": {
+        "react-scripts": "1.1.4",
+        "prettier": "1.10.2"
+    },
+    "scripts": {
+        "start": "HOST=localhost react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject",
+        "format": "prettier --config .prettierrc --write src/*.js"
+    }
+}
