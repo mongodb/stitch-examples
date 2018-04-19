@@ -9,13 +9,21 @@
         + MongoDB
         + Face++
         + React Web App
-        + 
+        + Google App
 * Getting Started
     - Atlas
         + Create atlas...
         + get atlas 'project ID'
+    - Google App
+        + Get an OAuth 2.0 client ID
     - Stitch
-        + 
+        + fill in placeholder values
+            * ...
+        + cli-import
+            * import will
+                - automatically re-write many id fields as it imports
+                - assign app-id
+                - ...
     - MongoDB
         + users collection
         + ...
