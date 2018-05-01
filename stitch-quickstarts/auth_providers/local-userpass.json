@@ -1,0 +1,11 @@
+{
+    "name": "local-userpass",
+    "type": "local-userpass",
+    "config": {
+        "emailConfirmationSubject": "Confirm your email",
+        "emailConfirmationUrl": "https://docs-mongodbcom-staging.corp.mongodb.com/stitch/nick/quickstarts/quickstarts/user-management/confirm-email.html",
+        "resetPasswordSubject": "Reset your password",
+        "resetPasswordUrl": "https://docs-mongodbcom-staging.corp.mongodb.com/stitch/nick/quickstarts/quickstarts/user-management/reset-password.html"
+    },
+    "disabled": false
+}

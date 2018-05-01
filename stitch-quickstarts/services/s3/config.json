@@ -1,0 +1,9 @@
+{
+    "name": "s3",
+    "type": "aws-s3",
+    "config": {
+        "accessKeyId": "<access key>",
+        "region": "us-east-1"
+    },
+    "version": 1
+}

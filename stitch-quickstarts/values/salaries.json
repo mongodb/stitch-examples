@@ -1,0 +1,126 @@
+{
+    "name": "salaries",
+    "value": [
+        {
+            "$numberInt": "80000"
+        },
+        {
+            "$numberInt": "85000"
+        },
+        {
+            "$numberInt": "90000"
+        },
+        {
+            "$numberInt": "95000"
+        },
+        {
+            "$numberInt": "100000"
+        },
+        {
+            "$numberInt": "105000"
+        },
+        {
+            "$numberInt": "110000"
+        },
+        {
+            "$numberInt": "115000"
+        },
+        {
+            "$numberInt": "120000"
+        },
+        {
+            "$numberInt": "125000"
+        },
+        {
+            "$numberInt": "130000"
+        },
+        {
+            "$numberInt": "135000"
+        },
+        {
+            "$numberInt": "140000"
+        },
+        {
+            "$numberInt": "145000"
+        },
+        {
+            "$numberInt": "150000"
+        },
+        {
+            "$numberInt": "155000"
+        },
+        {
+            "$numberInt": "160000"
+        },
+        {
+            "$numberInt": "165000"
+        },
+        {
+            "$numberInt": "170000"
+        },
+        {
+            "$numberInt": "175000"
+        },
+        {
+            "$numberInt": "180000"
+        },
+        {
+            "$numberInt": "185000"
+        },
+        {
+            "$numberInt": "190000"
+        },
+        {
+            "$numberInt": "195000"
+        },
+        {
+            "$numberInt": "200000"
+        },
+        {
+            "$numberInt": "205000"
+        },
+        {
+            "$numberInt": "210000"
+        },
+        {
+            "$numberInt": "215000"
+        },
+        {
+            "$numberInt": "220000"
+        },
+        {
+            "$numberInt": "225000"
+        },
+        {
+            "$numberInt": "230000"
+        },
+        {
+            "$numberInt": "235000"
+        },
+        {
+            "$numberInt": "240000"
+        },
+        {
+            "$numberInt": "245000"
+        },
+        {
+            "$numberInt": "250000"
+        },
+        {
+            "$numberInt": "255000"
+        },
+        {
+            "$numberInt": "260000"
+        },
+        {
+            "$numberInt": "265000"
+        },
+        {
+            "$numberInt": "270000"
+        },
+        {
+            "$numberInt": "275000"
+        }
+    ],
+    "private": false
+}

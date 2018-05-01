@@ -1,0 +1,11 @@
+{
+    "name": "roles",
+    "value": [
+        "Engineer",
+        "Sr. Engineer",
+        "Director",
+        "PM",
+        "Jr. Engineer"
+    ],
+    "private": false
+}

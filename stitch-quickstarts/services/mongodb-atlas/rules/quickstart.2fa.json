@@ -1,0 +1,10 @@
+{
+    "namespace": "quickstart.2fa",
+    "other_fields": {},
+    "write": {
+        "%%true": true
+    },
+    "read": {
+        "%%true": true
+    }
+}
