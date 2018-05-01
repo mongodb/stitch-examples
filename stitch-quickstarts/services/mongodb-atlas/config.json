@@ -1,0 +1,8 @@
+{
+    "name": "mongodb-atlas",
+    "type": "mongodb-atlas",
+    "config": {
+        "clusterName": "StitchDemoCluster"
+    },
+    "version": 1
+}

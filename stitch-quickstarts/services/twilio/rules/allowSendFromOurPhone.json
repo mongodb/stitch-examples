@@ -1,0 +1,9 @@
+{
+    "name": "allowSendFromOurPhone",
+    "actions": [
+        "send"
+    ],
+    "when": {
+        "%%args.from": "%%values.ourPhoneNumber"
+    }
+}

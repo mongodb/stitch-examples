@@ -1,0 +1,13 @@
+{
+    "namespace": "HR.employees",
+    "other_fields": {},
+    "write": {
+        "%%true": true
+    },
+    "read": {
+        "%%true": true
+    },
+    "valid": {
+        "%%true": true
+    }
+}

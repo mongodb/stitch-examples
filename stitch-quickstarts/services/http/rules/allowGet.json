@@ -1,0 +1,14 @@
+{
+    "name": "allowGet",
+    "actions": [
+        "get"
+    ],
+    "when": {
+        "%%args.url.host": {
+            "%in": [
+                "stitch-quickstarts.s3.amazonaws.com",
+                "lookups.twilio.com"
+            ]
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "namespace": "quickstart.messages",
+    "other_fields": {},
+    "write": {
+        "%%true": true
+    },
+    "read": {
+        "%%true": true
+    }
+}

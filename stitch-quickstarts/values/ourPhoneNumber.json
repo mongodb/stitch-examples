@@ -1,0 +1,5 @@
+{
+    "name": "ourPhoneNumber",
+    "value": "<twilio phone number>",
+    "private": false
+}

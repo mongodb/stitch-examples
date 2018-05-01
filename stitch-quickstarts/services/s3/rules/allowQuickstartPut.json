@@ -1,0 +1,17 @@
+{
+    "name": "allowQuickstartPut",
+    "actions": [
+        "put"
+    ],
+    "when": {
+        "%%args.bucket": "stitch-quickstarts",
+        "%%args.acl": "public-read",
+        "%%args.contentType": {
+            "%in": [
+                "image/png",
+                "image/jpeg",
+                "image/gif"
+            ]
+        }
+    }
+}
