@@ -21,7 +21,7 @@ exports = function(payload, response) {
         return todos.updateOne(
           { "phoneNumber": fromPhone },
           { "$push": { "messages": message } },
-          {  "upsert": true }
+          { "upsert": true }
         );
       })
      .then(() => response.setBody("Successfully added your message!"));
