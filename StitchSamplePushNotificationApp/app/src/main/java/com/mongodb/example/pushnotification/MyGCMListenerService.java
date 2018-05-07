@@ -4,7 +4,9 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.mongodb.stitch.android.push.PushMessage;
 import com.mongodb.stitch.android.push.gcm.GCMListenerService;
@@ -33,6 +35,9 @@ public class MyGCMListenerService extends GCMListenerService {
         notificationBuilder.setContentTitle("Stitch Sample Push Notification App")
                 .setContentText(notificationMsg)
                 .setSmallIcon(R.mipmap.ic_launcher);
+
+        notificationBuilder.setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL);
 
         manager.notify(1, notificationBuilder.build());
     }

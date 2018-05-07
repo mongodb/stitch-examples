@@ -4,4 +4,5 @@
     <string name="subscribe_quotes">quotes</string>
     <string name="subscribe_events">events</string>
     <string name="btn_subscribe">Update Subscriptions</string>
+    <string name="app_id">STITCH-APP-ID</string>
 </resources>
