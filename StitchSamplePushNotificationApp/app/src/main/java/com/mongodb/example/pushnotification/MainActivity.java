@@ -21,7 +21,8 @@ import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
 import com.mongodb.stitch.android.push.AvailablePushProviders;
 import com.mongodb.stitch.android.push.gcm.GCMPushClient;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements StitchClientListener {
 
     public static final String TOPIC_HOLIDAYS = "holidays";
     public static final String TOPIC_QUOTES = "quotes";
@@ -30,16 +31,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "StitchPushNotification";
 
     private StitchClient stitchClient;
-
     private GCMPushClient pushClient;
-
     private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        stitchClient = new StitchClient(this, "STITCH-APP-ID");
+
+        StitchClientManager.initialize(this.getApplicationContext());
+        StitchClientManager.registerListener(this);
+    }
+
+    @Override
+    public void onReady(StitchClient _client) {
+        this.stitchClient = _client;
 
         progressBar = (ProgressBar)findViewById(R.id.progress_bar);
         progressBar.setIndeterminate(true);
@@ -51,17 +57,18 @@ public class MainActivity extends AppCompatActivity {
             // For Android SDK 26 and above, it is necessary to create a channel to create notifications.
             NotificationManager manager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            NotificationChannel channel = new NotificationChannel("channel_id", "channel_name", NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel("channel_id",
+                    "channel_name", NotificationManager.IMPORTANCE_HIGH);
             manager.createNotificationChannel(channel);
         }
 
         // Log in and unsubscribe from topics.
-        stitchClient.logInWithProvider(new AnonymousAuthProvider()
-        ).continueWithTask(new Continuation<String, Task<AvailablePushProviders>>() {
-            @Override
-            public Task<AvailablePushProviders> then(@NonNull Task<String> task) throws Exception {
-                return stitchClient.getPushProviders();
-            }
+        stitchClient.logInWithProvider(new AnonymousAuthProvider())
+                .continueWithTask(new Continuation<String, Task<AvailablePushProviders>>() {
+                    @Override
+                    public Task<AvailablePushProviders> then(@NonNull Task<String> task) throws Exception {
+                        return stitchClient.getPushProviders();
+                    }
         }).continueWithTask(new Continuation<AvailablePushProviders, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull Task<AvailablePushProviders> task) throws Exception {
