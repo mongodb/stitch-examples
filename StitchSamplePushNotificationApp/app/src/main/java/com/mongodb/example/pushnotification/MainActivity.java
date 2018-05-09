@@ -17,11 +17,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.mongodb.stitch.android.StitchClient;
 
-import com.mongodb.stitch.android.auth.AvailableAuthProviders;
 import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
 import com.mongodb.stitch.android.push.AvailablePushProviders;
 import com.mongodb.stitch.android.push.gcm.GCMPushClient;
-import com.mongodb.stitch.android.services.mongodb.MongoClient;
+
 
 public class MainActivity extends AppCompatActivity implements StitchClientListener {
 
