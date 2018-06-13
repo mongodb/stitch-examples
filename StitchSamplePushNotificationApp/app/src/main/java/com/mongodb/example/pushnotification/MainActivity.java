@@ -15,14 +15,17 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.mongodb.stitch.android.StitchClient;
 
-import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
-import com.mongodb.stitch.android.push.AvailablePushProviders;
-import com.mongodb.stitch.android.push.gcm.GCMPushClient;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.mongodb.stitch.android.core.Stitch;
+import com.mongodb.stitch.android.core.StitchAppClient;
+import com.mongodb.stitch.android.core.auth.StitchUser;
+import com.mongodb.stitch.android.services.fcm.FcmServicePushClient;
+import com.mongodb.stitch.core.auth.providers.anonymous.AnonymousCredential;
 
 
-public class MainActivity extends AppCompatActivity implements StitchClientListener {
+public class MainActivity extends AppCompatActivity {
 
     public static final String TOPIC_HOLIDAYS = "holidays";
     public static final String TOPIC_QUOTES = "quotes";
@@ -30,8 +33,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
 
     private static final String TAG = "StitchPushNotification";
 
-    private StitchClient stitchClient;
-    private GCMPushClient pushClient;
+    private StitchAppClient stitchClient;
     private ProgressBar progressBar;
 
     @Override
@@ -39,13 +41,10 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        StitchClientManager.initialize(this.getApplicationContext());
-        StitchClientManager.registerListener(this);
-    }
+        this.stitchClient = Stitch.getDefaultAppClient();
 
-    @Override
-    public void onReady(StitchClient _client) {
-        this.stitchClient = _client;
+        final FcmServicePushClient pushClient =
+                this.stitchClient.getPush().getClient(FcmServicePushClient.Factory, "gcm");
 
         progressBar = (ProgressBar)findViewById(R.id.progress_bar);
         progressBar.setIndeterminate(true);
@@ -63,44 +62,38 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         }
 
         // Log in and unsubscribe from topics.
-        stitchClient.logInWithProvider(new AnonymousAuthProvider())
-                .continueWithTask(new Continuation<String, Task<AvailablePushProviders>>() {
-                    @Override
-                    public Task<AvailablePushProviders> then(@NonNull Task<String> task) throws Exception {
-                        return stitchClient.getPushProviders();
-                    }
-        }).continueWithTask(new Continuation<AvailablePushProviders, Task<Void>>() {
+        stitchClient.getAuth().loginWithCredential(new AnonymousCredential()
+        ).continueWithTask(new Continuation<StitchUser, Task<Void>>() {
+           @Override
+           public Task<Void> then(@NonNull Task<StitchUser> task) throws Exception {
+               return pushClient.register(FirebaseInstanceId.getInstance().getToken());
+           }
+       }).continueWithTask(new Continuation<Void, Task<Void>>() {
             @Override
-            public Task<Void> then(@NonNull Task<AvailablePushProviders> task) throws Exception {
-                pushClient = (GCMPushClient) stitchClient.getPush().forProvider(task.getResult().getGCM());
-                return pushClient.register();
+            public Task<Void> then(@NonNull Task<Void> task) throws Exception {
+                return FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_HOLIDAYS);
             }
         }).continueWithTask(new Continuation<Void, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull Task<Void> task) throws Exception {
-                return pushClient.unsubscribeFromTopic(TOPIC_HOLIDAYS);
+                return FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_QUOTES);
             }
         }).continueWithTask(new Continuation<Void, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull Task<Void> task) throws Exception {
-                return pushClient.unsubscribeFromTopic(TOPIC_QUOTES);
-            }
-        }).continueWithTask(new Continuation<Void, Task<Void>>() {
-            @Override
-            public Task<Void> then(@NonNull Task<Void> task) throws Exception {
-                return pushClient.unsubscribeFromTopic(TOPIC_EVENTS);
+                return FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_EVENTS);
             }
         }).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull final Task<Void> task) {
                 if (!task.isSuccessful()) {
                     Log.d(TAG, "Registration failed: " + task.getException());
-                    Toast.makeText(getApplicationContext(), "Error registering client for GCM.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Error registering client for Firebase.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 Log.d(TAG, "Registration completed");
-                Toast.makeText(getApplicationContext(), "Successfully registered client for GCM.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Successfully registered client for Firebase.", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
                 mainView.setVisibility(View.VISIBLE);
             }
@@ -113,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
      */
     public void toggleSubscription(View view) {
 
-        if (!stitchClient.isAuthenticated()) {
+        if (!stitchClient.getAuth().isLoggedIn()) {
             Log.e(TAG, "Not Logged In.");
             Toast.makeText(getApplicationContext(), "Error: Not logged in.", Toast.LENGTH_SHORT).show();
             return;
@@ -124,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         Log.d(TAG, (String)checkBox.getText());
 
         if (checkBox.isChecked()) {
-            pushClient.subscribeToTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+            FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull final Task<Void> task) {
                     if (!task.isSuccessful()) {
@@ -138,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
             });
         }
         else {
-            pushClient.unsubscribeFromTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull final Task<Void> task) {
                     if (!task.isSuccessful()) {
