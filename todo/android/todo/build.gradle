@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.mongodb.stitch.sdk.examples.todo"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -23,18 +23,14 @@ android {
 
 repositories {
     mavenCentral() // For Facebook Log  in
-
-    // TODO: Remove once BSON 3.5.0 is released
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
     google()
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'org.mongodb:stitch:3.0.0'
-    implementation 'com.facebook.android:facebook-android-sdk:4.21.1'
-    implementation 'com.android.support:design:25.0.0'
-    implementation 'com.google.android.gms:play-services-auth:11.6.0'
+    implementation 'org.mongodb:stitch-android-core:4.0.0-beta-3'
+    implementation 'org.mongodb:stitch-android-services-mongodb-remote:4.0.0-beta-3'
+    implementation 'com.facebook.android:facebook-android-sdk:4.23.0'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
 }
