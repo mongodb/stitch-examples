@@ -3,23 +3,17 @@ package com.mongodb.example.pushnotification;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.mongodb.stitch.android.push.PushMessage;
-import com.mongodb.stitch.android.push.gcm.GCMListenerService;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-public class MyGCMListenerService extends GCMListenerService {
-
-    public void onPushMessageReceived(PushMessage message) {
-        super.onPushMessageReceived(message);
-
-        Bundle notificationData = (Bundle)message.getRawData().get("notification");
-        String notificationMsg = notificationData.getString("body");
-        Log.d("Received message ", notificationMsg);
+    @Override
+    public void onMessageReceived(RemoteMessage message) {
+        RemoteMessage.Notification notification = message.getNotification();
+        if (notification == null) { return; }
 
         // By default, notifications will only appear if the app is in the background.
         // Create a new notification here to show in case the app is in the foreground.
@@ -32,8 +26,8 @@ public class MyGCMListenerService extends GCMListenerService {
             notificationBuilder = new Notification.Builder(getApplicationContext());
         }
 
-        notificationBuilder.setContentTitle("Stitch Sample Push Notification App")
-                .setContentText(notificationMsg)
+        notificationBuilder.setContentTitle(notification.getTitle())
+                .setContentText(notification.getBody())
                 .setSmallIcon(R.mipmap.ic_launcher);
 
         notificationBuilder.setAutoCancel(true)
