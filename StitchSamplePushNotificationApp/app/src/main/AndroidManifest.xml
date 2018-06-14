@@ -19,23 +19,13 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
+        <!-- Name of your Firebase ListenerService -->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <!-- Specify your app package name-->
-                <category android:name="com.mongodb.example.pushnotification" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Name of your GCM ListenerService -->
-        <service
-            android:name=".MyGCMListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
