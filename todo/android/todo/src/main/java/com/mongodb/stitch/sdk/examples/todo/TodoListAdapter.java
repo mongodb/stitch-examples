@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.mongodb.stitch.android.services.mongodb.MongoClient;
+import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoCollection;
+import com.mongodb.stitch.core.services.mongodb.remote.RemoteUpdateResult;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
-    private final MongoClient.Collection _itemSource;
+    private final RemoteMongoCollection _itemSource;
 
     // Store the expected state of the items based off the users intentions. This is to handle this
     // series of events:
@@ -41,7 +42,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             final Context context,
             final int resource,
             final List<TodoItem> items,
-            final MongoClient.Collection itemSource
+            final RemoteMongoCollection itemSource
     ) {
         super(context, resource, items);
         _itemSource = itemSource;
@@ -90,10 +91,9 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
                 update.put("$set", set);
 
                 _itemState.put(item.getId(), b);
-                _itemSource.updateOne(query, update).addOnCompleteListener(new OnCompleteListener<Document>() {
+                _itemSource.updateOne(query, update).addOnCompleteListener(new OnCompleteListener<RemoteUpdateResult>() {
                     @Override
-                    public void onComplete(@NonNull final Task<Document> task) {
-
+                    public void onComplete(@NonNull final Task<RemoteUpdateResult> task) {
                         // Our intent may no longer be valid, so clear the state
                         _itemState.remove(item.getId());
                     }

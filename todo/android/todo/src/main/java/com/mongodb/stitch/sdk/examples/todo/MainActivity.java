@@ -17,7 +17,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -26,19 +25,23 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
-import com.mongodb.stitch.android.AuthListener;
-import com.mongodb.stitch.android.StitchClient;
-import com.mongodb.stitch.android.auth.AvailableAuthProviders;
-import com.mongodb.stitch.android.auth.anonymous.AnonymousAuthProvider;
-import com.mongodb.stitch.android.auth.oauth2.facebook.FacebookAuthProvider;
-import com.mongodb.stitch.android.auth.oauth2.google.GoogleAuthProvider;
-import com.mongodb.stitch.android.services.mongodb.MongoClient;
+
+import com.mongodb.stitch.android.core.auth.StitchUser;
+import com.mongodb.stitch.android.services.mongodb.remote.RemoteFindIterable;
+import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoClient;
+import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoCollection;
+import com.mongodb.stitch.android.core.Stitch;
+import com.mongodb.stitch.android.core.auth.StitchAuth;
+import com.mongodb.stitch.android.core.auth.StitchAuthListener;
+import com.mongodb.stitch.android.core.StitchAppClient;
+import com.mongodb.stitch.core.auth.providers.anonymous.AnonymousCredential;
+import com.mongodb.stitch.core.auth.providers.facebook.FacebookCredential;
+import com.mongodb.stitch.core.auth.providers.google.GoogleCredential;
+import com.mongodb.stitch.core.services.mongodb.remote.RemoteInsertOneResult;
 
 import org.bson.Document;
 
@@ -50,16 +53,15 @@ import java.util.List;
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
 import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
 
-public class MainActivity extends AppCompatActivity implements StitchClientListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TodoApp";
-    private static final long REFRESH_INTERVAL_MILLIS = 1000;
     private static final int RC_SIGN_IN = 421;
 
     private CallbackManager _callbackManager;
     private GoogleApiClient _googleApiClient;
-    private StitchClient _client;
-    private MongoClient _mongoClient;
+    private StitchAppClient _client;
+    private RemoteMongoClient _mongoClient;
 
     private TodoListAdapter _itemAdapter;
     private Handler _handler;
@@ -74,33 +76,36 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         _handler = new Handler();
         _refresher = new ListRefresher(this);
 
-        StitchClientManager.initialize(this.getApplicationContext());
-        StitchClientManager.registerListener(this);
+        this._client = Stitch.getDefaultAppClient();
+        this._client.getAuth().addAuthListener(new MyAuthListener(this));
+
+        _mongoClient = this._client.getServiceClient(RemoteMongoClient.Factory, "mongodb-atlas");
+        setupLogin();
     }
 
-    @Override
-    public void onReady(StitchClient stitchClient) {
-        this._client = stitchClient;
-        this._client.addAuthListener(new MyAuthListener(this));
-
-        _mongoClient = new MongoClient(_client, "mongodb-atlas");
-        initLogin();
-    }
-
-    private static class MyAuthListener implements AuthListener {
+    private static class MyAuthListener implements StitchAuthListener {
 
         private WeakReference<MainActivity> _main;
+        private StitchUser _user;
 
         public MyAuthListener(final MainActivity activity) {
             _main = new WeakReference<>(activity);
         }
 
         @Override
-        public void onLogin() {
-            Log.d(TAG, "Logged into Stitch");
+        public void onAuthEvent(final StitchAuth auth) {
+            if (auth.isLoggedIn() && _user == null) {
+                Log.d(TAG, "Logged into Stitch");
+                _user = auth.getUser();
+                return;
+            }
+
+            if (!auth.isLoggedIn() && _user != null) {
+                _user = null;
+                onLogout();
+            }
         }
 
-        @Override
         public void onLogout() {
             final MainActivity activity = _main.get();
 
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
                 Tasks.whenAll(futures).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull final Task<Void> ignored) {
-                        activity.initLogin();
+                        activity.setupLogin();
                     }
                 });
             }
@@ -138,24 +143,15 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
 
         private WeakReference<MainActivity> _main;
 
-        public ListRefresher(final MainActivity activity) {
+        private ListRefresher(final MainActivity activity) {
             _main = new WeakReference<>(activity);
         }
 
         @Override
         public void run() {
             final MainActivity activity = _main.get();
-            if (activity != null && activity._client.isAuthenticated()) {
-                activity.refreshList().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull final Task<Void> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e(TAG, "Error refreshing list. Stopping auto refresh", task.getException());
-                            return;
-                        }
-                        activity._handler.postDelayed(ListRefresher.this, REFRESH_INTERVAL_MILLIS);
-                    }
-                });
+            if (activity != null && activity._client.getAuth().isLoggedIn()) {
+                activity.refreshList();
             }
         }
     }
@@ -185,11 +181,10 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
 
         Log.d(TAG, "handleGooglSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
-            final GoogleAuthProvider googleProvider =
-                    GoogleAuthProvider.fromAuthCode(result.getSignInAccount().getServerAuthCode());
-            _client.logInWithProvider(googleProvider).addOnCompleteListener(new OnCompleteListener<String>() {
+            final GoogleCredential googleCredential = new GoogleCredential(result.getSignInAccount().getServerAuthCode());
+            _client.getAuth().loginWithCredential(googleCredential).addOnCompleteListener(new OnCompleteListener<StitchUser>() {
                 @Override
-                public void onComplete(@NonNull final Task<String> task) {
+                public void onComplete(@NonNull final Task<StitchUser> task) {
                     if (task.isSuccessful()) {
                         initTodoView();
                     } else {
@@ -198,20 +193,6 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
                 }
             });
         }
-    }
-
-    private void initLogin() {
-        this._client.getAuthProviders().addOnCompleteListener(new OnCompleteListener<AvailableAuthProviders>() {
-            @Override
-            public void onComplete(Task<AvailableAuthProviders> task) {
-                if (task.isSuccessful()) {
-                    setupLogin(task.getResult());
-                } else {
-                    Log.e(TAG, "Error getting auth info", task.getException());
-                    // Maybe retry here...
-                }
-            }
-        });
     }
 
     private void initTodoView() {
@@ -242,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View ignored) {
-                _client.logout();
+                _client.getAuth().logout();
             }
         });
 
@@ -278,13 +259,14 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
 
     private void addItem(final String text) {
         final Document doc = new Document();
-        doc.put("owner_id", _client.getUserId());
+        doc.put("owner_id", _client.getAuth().getUser().getId());
         doc.put("text", text);
         doc.put("checked", false);
 
-        getItemsCollection().insertOne(doc).addOnCompleteListener(new OnCompleteListener<Document>() {
+        final Task<RemoteInsertOneResult> res = getItemsCollection().insertOne(doc);
+        res.addOnCompleteListener(new OnCompleteListener<RemoteInsertOneResult>() {
             @Override
-            public void onComplete(@NonNull final Task<Document> task) {
+            public void onComplete(@NonNull final Task<RemoteInsertOneResult> task) {
                 if (task.isSuccessful()) {
                     refreshList();
                 } else {
@@ -296,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
 
     private void clearChecked() {
         final Document query = new Document();
-        query.put("owner_id", _client.getUserId());
+        query.put("owner_id", _client.getAuth().getUser().getId());
         query.put("checked", true);
 
         getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Document>() {
@@ -311,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         });
     }
 
-    private MongoClient.Collection getItemsCollection() {
+    private RemoteMongoCollection getItemsCollection() {
         return _mongoClient.getDatabase("todo").getCollection("items");
     }
 
@@ -323,170 +305,136 @@ public class MainActivity extends AppCompatActivity implements StitchClientListe
         return items;
     }
 
-    private Task<Void> refreshList() {
-        return getItemsCollection().find(new Document("owner_id", _client.getUserId()), 100).continueWithTask(new Continuation<List<Document>, Task<Void>>() {
+    private void refreshList() {
+        Document filter = new Document("owner_id", _client.getAuth().getUser().getId());
+        RemoteFindIterable cursor = getItemsCollection().find(filter).limit(100);
+        final ArrayList<Document> documents = new ArrayList<>();
+        cursor.into(documents).addOnCompleteListener(new OnCompleteListener() {
             @Override
-            public Task<Void> then(@NonNull final Task<List<Document>> task) throws Exception {
-                if (task.isSuccessful()) {
-                    final List<Document> documents = task.getResult();
-                    _itemAdapter.clear();
-                    _itemAdapter.addAll(convertDocsToTodo(documents));
-                    _itemAdapter.notifyDataSetChanged();
-                    return Tasks.forResult(null);
-                } else {
-                    Log.e(TAG, "Error refreshing list", task.getException());
-                    return Tasks.forException(task.getException());
-                }
+            public void onComplete(@NonNull Task task) {
+                _itemAdapter.clear();
+                _itemAdapter.addAll(convertDocsToTodo(documents));
+                _itemAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    private void setupLogin(final AvailableAuthProviders info) {
-
-        if (_client.isAuthenticated()) {
+    private void setupLogin() {
+        if (_client.getAuth().isLoggedIn()) {
             initTodoView();
             return;
         }
 
-        final List<Task<Void>> initFutures = new ArrayList<>();
+        final String facebookAppId = getString(R.string.facebook_app_id);
+        final String googleClientId = getString(R.string.google_client_id);
 
-        if (info.hasFacebook()) {
-            FacebookSdk.setApplicationId(info.getFacebook().getConfig().getClientId());
-            final TaskCompletionSource<Void> fbInitFuture = new TaskCompletionSource<>();
-            FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
+        setContentView(R.layout.activity_main);
+
+        // If there is a valid Facebook App ID defined in strings.xml, offer Facebook as a login option.
+        if (!facebookAppId.equals("TBD")) {
+            findViewById(R.id.fb_login_button).setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onInitialized() {
-                    _fbInitOnce = true;
-                    fbInitFuture.setResult(null);
-                }
-            });
-            initFutures.add(fbInitFuture.getTask());
-        } else {
-            FacebookSdk.setApplicationId("INVALID");
-            final TaskCompletionSource<Void> fbInitFuture = new TaskCompletionSource<>();
-            FacebookSdk.sdkInitialize(getApplicationContext(), new FacebookSdk.InitializeCallback() {
-                @Override
-                public void onInitialized() {
-                    fbInitFuture.setResult(null);
-                }
-            });
-            initFutures.add(fbInitFuture.getTask());
-        }
+                public void onClick(final View ignored) {
 
-        Tasks.whenAll(initFutures).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(final Void ignored) {
-                setContentView(R.layout.activity_main);
-
-                if (info.hasFacebook()) {
-                    findViewById(R.id.fb_login_button).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View ignored) {
-
-                            // Check if already logged in
-                            if (AccessToken.getCurrentAccessToken() != null) {
-                                final FacebookAuthProvider fbProvider =
-                                        FacebookAuthProvider.fromAccessToken(AccessToken.getCurrentAccessToken().getToken());
-                                _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<String>() {
-                                    @Override
-                                    public void onComplete(@NonNull final Task<String> task) {
-                                        if (task.isSuccessful()) {
-                                            initTodoView();
-                                        } else {
-                                            Log.e(TAG, "Error logging in with Facebook", task.getException());
-                                        }
-                                    }
-                                });
-                                return;
+                    // Check if already logged in
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        final FacebookCredential fbCredential = new FacebookCredential(AccessToken.getCurrentAccessToken().getToken());
+                        _client.getAuth().loginWithCredential(fbCredential).addOnCompleteListener(new OnCompleteListener<StitchUser>() {
+                            @Override
+                            public void onComplete(@NonNull final Task<StitchUser> task) {
+                                if (task.isSuccessful()) {
+                                    initTodoView();
+                                } else {
+                                    Log.e(TAG, "Error logging in with Facebook", task.getException());
+                                }
                             }
-
-                            _callbackManager = CallbackManager.Factory.create();
-                            LoginManager.getInstance().registerCallback(_callbackManager,
-                                    new FacebookCallback<LoginResult>() {
-                                        @Override
-                                        public void onSuccess(LoginResult loginResult) {
-                                            final FacebookAuthProvider fbProvider =
-                                                    FacebookAuthProvider.fromAccessToken(loginResult.getAccessToken().getToken());
-
-                                            _client.logInWithProvider(fbProvider).addOnCompleteListener(new OnCompleteListener<String>() {
-                                                @Override
-                                                public void onComplete(@NonNull final Task<String> task) {
-                                                    if (task.isSuccessful()) {
-                                                        initTodoView();
-                                                    } else {
-                                                        Log.e(TAG, "Error logging in with Facebook", task.getException());
-                                                    }
-                                                }
-                                            });
-                                        }
-
-                                        @Override
-                                        public void onCancel() {}
-
-                                        @Override
-                                        public void onError(final FacebookException exception) {
-                                            initTodoView();
-                                        }
-                                    });
-                            LoginManager.getInstance().logInWithReadPermissions(
-                                    MainActivity.this,
-                                    Arrays.asList("public_profile"));
-                        }
-                    });
-                    findViewById(R.id.fb_login_button_frame).setVisibility(View.VISIBLE);
-                }
-
-                if (info.hasGoogle()) {
-                    final GoogleSignInOptions.Builder gsoBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestServerAuthCode(info.getGoogle().getConfig().getClientId(), false);
-                    final GoogleSignInOptions gso = gsoBuilder.build();
-
-                    if (_googleApiClient != null) {
-                        _googleApiClient.stopAutoManage(MainActivity.this);
-                        _googleApiClient.disconnect();
+                        });
+                        return;
                     }
 
-                    _googleApiClient = new GoogleApiClient.Builder(MainActivity.this)
-                            .enableAutoManage(MainActivity.this, new GoogleApiClient.OnConnectionFailedListener() {
+                    _callbackManager = CallbackManager.Factory.create();
+                    LoginManager.getInstance().registerCallback(_callbackManager,
+                            new FacebookCallback<LoginResult>() {
                                 @Override
-                                public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                                    Log.e(TAG, "Error connecting to google: " + connectionResult.getErrorMessage());
+                                public void onSuccess(LoginResult loginResult) {
+                                    final FacebookCredential fbCredential = new FacebookCredential(AccessToken.getCurrentAccessToken().getToken());
+
+                                    _client.getAuth().loginWithCredential(fbCredential).addOnCompleteListener(new OnCompleteListener<StitchUser>() {
+                                        @Override
+                                        public void onComplete(@NonNull final Task<StitchUser> task) {
+                                            if (task.isSuccessful()) {
+                                                initTodoView();
+                                            } else {
+                                                Log.e(TAG, "Error logging in with Facebook", task.getException());
+                                            }
+                                        }
+                                    });
                                 }
-                            })
-                            .addApi(GOOGLE_SIGN_IN_API, gso)
-                            .build();
 
-                    findViewById(R.id.google_login_button).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View ignored) {
-                            final Intent signInIntent =
-                                    GoogleSignInApi.getSignInIntent(_googleApiClient);
-                            startActivityForResult(signInIntent, RC_SIGN_IN);
-                        }
-                    });
-                    findViewById(R.id.google_login_button).setVisibility(View.VISIBLE);
-                }
-
-                if (info.hasAnonymous()) {
-                    findViewById(R.id.anonymous_login_button).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(final View ignored) {
-                            _client.logInWithProvider(new AnonymousAuthProvider()).addOnCompleteListener(new OnCompleteListener<String>() {
                                 @Override
-                                public void onComplete(@NonNull final Task<String> task) {
-                                    if (task.isSuccessful()) {
-                                        initTodoView();
-                                    } else {
-                                        Log.e(TAG, "Error logging in anonymously", task.getException());
-                                    }
+                                public void onCancel() {}
+
+                                @Override
+                                public void onError(final FacebookException exception) {
+                                    initTodoView();
                                 }
                             });
-                        }
-                    });
-                    findViewById(R.id.anonymous_login_button).setVisibility(View.VISIBLE);
+                    LoginManager.getInstance().logInWithReadPermissions(
+                            MainActivity.this,
+                            Arrays.asList("public_profile"));
                 }
+            });
+            findViewById(R.id.fb_login_button_frame).setVisibility(View.VISIBLE);
+        }
+
+        // If there is a valid Google Client ID defined in strings.xml, offer Google as a login option.
+        if (!googleClientId.equals("TBD")) {
+            final GoogleSignInOptions.Builder gsoBuilder = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestServerAuthCode(googleClientId, false);
+            final GoogleSignInOptions gso = gsoBuilder.build();
+
+            if (_googleApiClient != null) {
+                _googleApiClient.stopAutoManage(MainActivity.this);
+                _googleApiClient.disconnect();
+            }
+
+            _googleApiClient = new GoogleApiClient.Builder(MainActivity.this)
+                    .enableAutoManage(MainActivity.this, new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                            Log.e(TAG, "Error connecting to google: " + connectionResult.getErrorMessage());
+                        }
+                    })
+                    .addApi(GOOGLE_SIGN_IN_API, gso)
+                    .build();
+
+            findViewById(R.id.google_login_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View ignored) {
+                    final Intent signInIntent =
+                            GoogleSignInApi.getSignInIntent(_googleApiClient);
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
+                }
+            });
+            findViewById(R.id.google_login_button).setVisibility(View.VISIBLE);
+        }
+
+        // Anonymous login
+        findViewById(R.id.anonymous_login_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View ignored) {
+                _client.getAuth().loginWithCredential(new AnonymousCredential()).addOnCompleteListener(new OnCompleteListener<StitchUser>() {
+                    @Override
+                    public void onComplete(@NonNull final Task<StitchUser> task) {
+                        if (task.isSuccessful()) {
+                            initTodoView();
+                        } else {
+                            Log.e(TAG, "Error logging in anonymously", task.getException());
+                        }
+                    }
+                });
             }
         });
+        findViewById(R.id.anonymous_login_button).setVisibility(View.VISIBLE);
     }
 }
-
