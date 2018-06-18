@@ -13,7 +13,7 @@ protocol AuthenticationViewControllerDelegate {
     func authenticationViewControllerDidLogin()
 }
 
-class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSignInDelegate, LoginButtonDelegate, UITextFieldDelegate, UIStitchDelegate {
+class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSignInDelegate, LoginButtonDelegate, UITextFieldDelegate {
     
    
     
@@ -30,14 +30,17 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     
     @IBOutlet weak var errorLable: UILabel!
     
-    var stitchClient: StitchClient?
+    var stitchClient: StitchAppClient!
+    static var provider: StitchProviderType?
     
     var delegate: AuthenticationViewControllerDelegate?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        register(uiStitchDelegate: self)
+        
+        self.stitchClient = Stitch.defaultAppClient!
+        
         // Google
         googleSignInButton.isHidden = true
         authOptionsStackView.removeArrangedSubview(googleSignInButton)
@@ -53,54 +56,35 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
         skipButton.isHidden = true
         authOptionsStackView.removeArrangedSubview(skipButton)
         
+        handleAuthenticationProviders()
     }
-    
-    func onReady(_ stitchClient: StitchClient) {
-
-        self.stitchClient = stitchClient
-        // fetch auth providers
-        stitchClient.fetchAuthProviders().done { (authProviderInfo: AuthProviderInfo) in
-            
-            self.handleAuthenticationProviders(authInfo: authProviderInfo)
-           
-            }.catch { error in
-                print("failed to get Authentication Providers. error: \(error)")
-        }
-    }
-    
     
     //MARK: - Helpers
     
-    func handleAuthenticationProviders(authInfo: AuthProviderInfo) {
+    func handleAuthenticationProviders() {
         
         DispatchQueue.main.async { [weak self] in
             
             guard let strongSelf = self else { return }
-            var authAvailable = false
             
-            if let googleAuthInfo = authInfo.googleProviderInfo {
-                authAvailable = true
-                
-                var configureError: NSError?
-                GGLContext.sharedInstance().configureWithError(&configureError)
-                assert(configureError == nil, "Error configuring Google services: \(configureError)")
-                
-                GIDSignIn.sharedInstance().clientID = "<iOS-application-client-id>"
-                GIDSignIn.sharedInstance().serverClientID = "<Web-application-client-id>"
-                GIDSignIn.sharedInstance().uiDelegate = self
-                GIDSignIn.sharedInstance().delegate = self
-                
-                GIDSignIn.sharedInstance().scopes = googleAuthInfo.metadataFields?.map { $0.name }
-                strongSelf.googleSignInButton.isHidden = false
-                strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.googleSignInButton)
-            }
-            else {
-                strongSelf.googleSignInButton.removeFromSuperview()
-            }
+            // Google authentication
+            GIDSignIn.sharedInstance().clientID = "<iOS-application-client-id>"
+            GIDSignIn.sharedInstance().serverClientID = "<Web-application-client-id>"
+            GIDSignIn.sharedInstance().uiDelegate = self
+            GIDSignIn.sharedInstance().delegate = self
+
+            strongSelf.googleSignInButton.isHidden = false
+            strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.googleSignInButton)
             
-            if let facebookAuthInfo = authInfo.facebookProviderInfo {
-                authAvailable = true
-                var readPermissions: [FacebookCore.ReadPermission] = []
+            // Facebook authentication
+            let fbAppId = Bundle.main.object(forInfoDictionaryKey: "FacebookAppID") as? String
+            if fbAppId != nil && fbAppId != "<Your-FacebookAppID>" {
+                if let token = AccessToken.current {
+                    strongSelf.loginWithFacebook(token: token)
+                    return
+                }
+                
+                let readPermissions: [FacebookCore.ReadPermission] = []
                 
                 let loginButton = LoginButton(readPermissions: readPermissions)
                 loginButton.delegate = self
@@ -112,25 +96,15 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
                 strongSelf.fbLoginButtonContainer.removeFromSuperview()
             }
             
-            if let _ = authInfo.emailPasswordAuthProviderInfo {
-                authAvailable = true
-                strongSelf.emailPasswordContainer.isHidden = false
-                strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.emailPasswordContainer)
-            }
-            else {
-                strongSelf.skipButton.removeFromSuperview()
-            }
+            // Email/password authentication
+            strongSelf.emailPasswordContainer.isHidden = false
+            strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.emailPasswordContainer)
             
-            if let _ = authInfo.anonymousAuthProviderInfo {
-                authAvailable = true
-                strongSelf.skipButton.isHidden = false
-                strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.skipButton)
-            }
-            else {
-                strongSelf.skipButton.removeFromSuperview()
-            }
+            // Anonymous authentication
+            strongSelf.skipButton.isHidden = false
+            strongSelf.authOptionsStackView.addArrangedSubview(strongSelf.skipButton)
             
-            strongSelf.show(show: !authAvailable, errorMessage: authAvailable ? "" : "No Auth Providers Available.")
+            strongSelf.show(show: true, errorMessage: "")
         }        
     }
     
@@ -141,12 +115,15 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     
     @IBAction private func skipButtonPressed(_ sender: Any) {
         
-        stitchClient!.anonymousAuth().done { (userId: String) in
-            self.delegate?.authenticationViewControllerDidLogin()
-            
-            }.catch { error in
+        stitchClient.auth.login(withCredential: AnonymousCredential.init()) { result in
+            switch result {
+            case .success(_):
+                AuthenticationViewController.provider = StitchProviderType.anonymous
+                self.delegate?.authenticationViewControllerDidLogin()
+            case .failure(let error):
                 print("failed logging in Stitch with Anonymous Authentication. error: \(error)")
                 self.show(show: true, errorMessage: error.localizedDescription)
+            }
         }
         
     }
@@ -198,20 +175,18 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if (error == nil) {
-            guard let stitchClient = stitchClient else {
-                show(show: true, errorMessage: "Stitch client not found")
-                return
-            }
-            
-            stitchClient.login(withProvider: GoogleAuthProvider(authCode: user.serverAuthCode)).done { (userId: String) in
-                MongoDBManager.shared.provider = Provider.google
-                self.delegate?.authenticationViewControllerDidLogin()
-                }.catch { error in
+            let credential = GoogleCredential.init(withAuthCode: user.serverAuthCode)
+            stitchClient.auth.login(withCredential: credential) { result in
+                switch result {
+                case .success(_):
+                    AuthenticationViewController.provider = StitchProviderType.google
+                    self.delegate?.authenticationViewControllerDidLogin()
+                case .failure(let error):
                     print("failed logging in Stitch with Google. error: \(error)")
                     GIDSignIn.sharedInstance().signOut()
                     self.show(show: true, errorMessage: error.localizedDescription)
+                }
             }
-            
         } else {
             print("error received when logging in with Google: \(error.localizedDescription)")
             show(show: true, errorMessage: error.localizedDescription)
@@ -227,29 +202,27 @@ class AuthenticationViewController: UIViewController, GIDSignInUIDelegate, GIDSi
     func loginButtonDidCompleteLogin(_ loginButton: LoginButton, result: LoginResult) {
         switch result {
         case .success(_, _, let token):
-            
-            guard let stitchClient = stitchClient else {
-                show(show: true, errorMessage: "Stitch client not found")
-                return
-            }
-            
-            stitchClient.login(withProvider: FacebookAuthProvider(accessToken: token.authenticationToken))
-                .done {(userId: String) in
-                    MongoDBManager.shared.provider = Provider.facebook
-                    self.delegate?.authenticationViewControllerDidLogin()
-                }.catch { error in
-                    print("failed logging in Stitch with Facebook. error: \(error)")
-                    LoginManager().logOut()
-                    self.show(show: true, errorMessage: error.localizedDescription)
-            }
-            
-            break
+            loginWithFacebook(token: token)
         case .failed(let error):
             print("error received when logging in with Facebook: \(error.localizedDescription)")
             self.show(show: true, errorMessage: error.localizedDescription)
-            break
         default:
             break
+        }
+    }
+    
+    func loginWithFacebook(token: AccessToken) {
+        let credential = FacebookCredential.init(withAccessToken: token.authenticationToken)
+        stitchClient.auth.login(withCredential: credential) {result in
+            AuthenticationViewController.provider = StitchProviderType.facebook
+            switch result {
+            case .success(_):
+                self.delegate?.authenticationViewControllerDidLogin()
+            case .failure(let error):
+                print("failed logging in Stitch with Facebook. error: \(error)")
+                LoginManager().logOut()
+                self.show(show: true, errorMessage: error.localizedDescription)
+            }
         }
     }
     
