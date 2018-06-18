@@ -42,7 +42,7 @@ import UIKit
     
     var shapePath: UIBezierPath {
         let radius = bounds.size.width / 2
-        return UIBezierPath.init(arcCenter: CGPoint.init(x: radius, y: radius), radius: radius, startAngle: CGFloat(-M_PI_4), endAngle: CGFloat(2 * M_PI - M_PI_4), clockwise: true)
+        return UIBezierPath.init(arcCenter: CGPoint.init(x: radius, y: radius), radius: radius, startAngle: CGFloat.pi / 4.0, endAngle: CGFloat(2 * CGFloat.pi - (CGFloat.pi / 4.0)), clockwise: true)
     }
     
     var markPath: UIBezierPath {

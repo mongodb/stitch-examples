@@ -16,21 +16,18 @@ enum EmailAuthOperationType {
     case resetPassword(token: String, tokenId: String)
 }
 
-class EmailAuthViewController: UIViewController, UIStitchDelegate {
+class EmailAuthViewController: UIViewController {
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var infoLabel: UILabel!
     
-    var stitchClient: StitchClient?
+    var stitchClient: StitchAppClient!
     var delegate: EmailAuthViewControllerDelegate?
     var operationType: EmailAuthOperationType?    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        register(uiStitchDelegate: self)
-    }
-    
-    func onReady(_ stitchClient: StitchClient) {
+        self.stitchClient = Stitch.defaultAppClient
         
         if let operationType = operationType {
             switch operationType {

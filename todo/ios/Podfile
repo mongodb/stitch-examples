@@ -1,12 +1,11 @@
-platform :ios, '9.0'
+platform :ios, '11.0'
 
 target 'MongoDBSample' do
   use_frameworks!
 
   pod 'FacebookLogin'
+  pod 'Firebase'
   pod 'GoogleSignIn'
-  pod 'StitchLogger'
-  pod 'ExtendedJson', '~> 2.0.4'
-  pod 'StitchCore', '~> 3.0.2'
-  pod 'MongoDBService', '~> 3.0.2'
+  pod 'StitchCore', '~> 4.0.0-beta-1'
+  pod 'StitchRemoteMongoDBService', '~> 4.0.0-beta-1'
 end

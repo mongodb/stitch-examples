@@ -7,14 +7,23 @@ import UIKit
 import FacebookLogin
 import FacebookCore
 import StitchCore
-import ExtendedJson
-import MongoDBService
+import MongoSwiftMobile
+import StitchRemoteMongoDBService
 
-
-class TodoListViewController: UIViewController, UIStitchDelegate, AuthenticationViewControllerDelegate, EmailAuthViewControllerDelegate, TodoItemTableViewCellDelegate, UITableViewDataSource {
+class TodoListViewController: UIViewController, AuthenticationViewControllerDelegate, EmailAuthViewControllerDelegate, TodoItemTableViewCellDelegate, UITableViewDataSource {
     
-    private var stitchClient : StitchClient?
-    private var mongoClient: MongoDBClient?
+    private struct Consts {
+        static var AppId: String {
+            let path = Bundle.main.path(forResource: "Stitch-Info", ofType: "plist")
+            let infoDic = NSDictionary(contentsOfFile: path!) as? [String: AnyObject]
+            let appId = infoDic!["APP_ID"] as! String
+            assert(appId != "<Your-App-ID>", "Insert your App ID in Stitch-Info.plist")
+            return appId
+        }
+    }
+    
+    private var stitchClient : StitchAppClient!
+    private var mongoClient: RemoteMongoClient?
     
     private var authVC: AuthenticationViewController?
     private var emailAuthVC: EmailAuthViewController?
@@ -24,20 +33,41 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
     
     var emailAuthOpToPresentWhenOpened : EmailAuthOperationType?
     
-    
-    var collection: MongoDBService.Collection {
-        return mongoClient!.database(named: "todo").collection(named: "items")
+    var collection: RemoteMongoCollection<Document> {
+        return mongoClient!.db("todo").collection("items")
     }
     
     // MARK: - Init
     
+    required init?(coder aDecoder: NSCoder) {
+        mongoClient = nil;
+        super.init(coder: aDecoder)
+    }
     
-    func onReady(_ stitchClient: StitchClient) {
-        self.stitchClient = stitchClient
-        mongoClient = MongoDBClient(stitchClient: stitchClient, serviceName: "mongodb-atlas")
+    // MARK: - Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        do {
+            try Stitch.initialize()
+            
+            _ = try Stitch.initializeDefaultAppClient(withConfigBuilder:
+                StitchAppClientConfigurationBuilder.forApp(withClientAppID: Consts.AppId)
+            )
+        } catch {
+            print("Failed to initialize MongoDB Stitch iOS SDK: \(error.localizedDescription)")
+            // note: This initialization will only fail if an incomplete configuration is
+            // passed to a client initialization method, or if a client for a particular
+            // app ID is initialized multiple times. See the documentation of the "Stitch"
+            // class for more details.
+        }
+
+        self.stitchClient = Stitch.defaultAppClient
+        mongoClient = stitchClient.serviceClient(fromFactory: remoteMongoDBServiceClientFactory, withName: "mongodb-atlas")
         todoItemsTableView.tableFooterView = UIView(frame: .zero)
         
-        if !stitchClient.isAuthenticated {
+        if !stitchClient.auth.isLoggedIn {
             presentAuthViewController(animated: false)
         }
         else {
@@ -49,18 +79,6 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
         }
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        mongoClient = nil;
-        super.init(coder: aDecoder)
-    }
-    
-    // MARK: - Lifecycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        register(uiStitchDelegate: self)
-    }
-    
     // MARK: - Actions
     
     @IBAction func refreshButtonClicked(_ sender: Any) {
@@ -68,17 +86,22 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
     }
     
     @IBAction private func logoutButtonPressed(_ sender: Any) {
-        stitchClient!.logout().done {Void in
-            self.handleLogout(provider: MongoDBManager.shared.provider)
-        }
+        stitchClient.auth.logout({(result: StitchResult<Void>) in
+            switch result {
+            case .success:
+                self.handleLogout()
+            case .failure(_):
+                break
+            }
+        })
     }
     
     @IBAction func clearButtonPressed(_ sender: Any) {
         var document = Document()
-        document["owner_id"] = stitchClient!.auth?.userId
+        document["owner_id"] = stitchClient.auth.currentUser!.id
         document["checked"] = true
         
-        collection.deleteMany(query: document).done{ (result: Document) in
+        collection.deleteMany(document) { _ in
             self.refreshList()
         }
     }
@@ -120,29 +143,47 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
     // MARK: - Helpers
     
     private func update(item: ObjectId, checked: Bool) {
-        let query = Document(key: "_id", value: item)
-        let set = Document(key: "checked", value: checked)
-        let update = Document(key: "$set", value: set)
-        collection.updateOne(query: query, update: update).done{ (result: Document) in
-        }.catch {error in
-            print("failed inserting item: \(error.localizedDescription)")
+        let query: Document = ["_id": item]
+        let set: Document = ["checked": checked]
+        let update: Document = ["$set": set]
+        collection.updateOne(filter: query, update: update, options: nil) { result in
+            switch result {
+            case .failure(let error):
+                print("failed inserting item: \(error.localizedDescription)")
+            case .success:
+                break
+            }
         }
     }
     
     private func add(item text: String) {
         var itemDoc = Document()
-        itemDoc["owner_id"] = stitchClient!.auth?.userId
+        itemDoc["owner_id"] = stitchClient.auth.currentUser!.id
         itemDoc["text"] = text
         itemDoc["checked"] = false
-        collection.insertOne(document: itemDoc).done{ (result: ObjectId) in
-            self.refreshList()
-            }.catch {error in
+        collection.insertOne(itemDoc) { result in
+            switch result {
+            case .success:
+                self.refreshList()
+            case .failure(let error):
                 print("failed inserting item: \(error.localizedDescription)")
             }
+        }
     }
     
     func refreshList() {
-        collection.find(query: Document(key: "owner_id", value: (stitchClient!.auth?.userId)!), limit: 0).done{ (documents: [Document]) in
+        let options = RemoteFindOptions.init(limit: 0)
+        let readOperation = collection.find(["owner_id": stitchClient.auth.currentUser!.id], options: options)
+        readOperation.asArray { result in
+            var documents: [Document]
+            switch result {
+            case .success(let d):
+                documents = d
+            case .failure(let error):
+                print("failed refreshing item: \(error.localizedDescription)")
+                return
+            }
+            
             var todoItems: [TodoItem] = []
             for document in documents {
                 if let item = TodoItem(document: document) {
@@ -154,10 +195,7 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
                 self?.todoItems = todoItems
                 self?.todoItemsTableView.reloadData()
             }
-            }.catch {error in
-                print("failed refreshing item: \(error.localizedDescription)")
-                
-            }
+        }
     }
     
     // MARK: - UITableViewDataSource
@@ -249,8 +287,8 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
     
     // MARK: - StitchClient events
     
-    private func handleLogout(provider: Provider?) {
-        if let provider = provider {            
+    private func handleLogout() {
+        if let provider = AuthenticationViewController.provider {            
             switch provider {
             case .google:
                 GIDSignIn.sharedInstance().signOut()
@@ -258,7 +296,7 @@ class TodoListViewController: UIViewController, UIStitchDelegate, Authentication
             case .facebook:
                 LoginManager().logOut()
                 break
-            case .emailPassword,.anonymous:
+            default:
                 break
             }
         }
