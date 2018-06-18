@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import ExtendedJson
+import MongoSwiftMobile
 
 struct TodoItem: Equatable {
     
@@ -36,6 +36,6 @@ struct TodoItem: Equatable {
     // MARK: - Equatable
     
     public static func ==(lhs: TodoItem, rhs: TodoItem) -> Bool {
-        return lhs.objectId.hexString == rhs.objectId.hexString
+        return lhs.objectId.oid == rhs.objectId.oid
     }
 }
