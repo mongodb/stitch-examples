@@ -1,7 +1,5 @@
 // Set-up the Stitch client
 const stitch = require("mongodb-stitch-browser-sdk");
-// Add your App ID below
-const stitchClientPromise = stitch.StitchClientFactory.create("<STITCH APP ID>");
 
 // Send sample data while within this loop
 function generateData(stitchClient){
