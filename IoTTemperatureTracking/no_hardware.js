@@ -1,5 +1,5 @@
 // Set-up the Stitch client
-const stitch = require("mongodb-stitch");
+const stitch = require("mongodb-stitch-browser-sdk");
 // Add your App ID below
 const stitchClientPromise = stitch.StitchClientFactory.create("<STITCH APP ID>");
 
@@ -16,12 +16,12 @@ function generateData(stitchClient){
   console.log(data);
 
   // Simulate write to MongoDB every 2 minutes
-  stitchClient.executeFunction("Imp_Write", data).then(
+  stitchClient.callFunction("Imp_Write", data).then(
     setTimeout(() => generateData(stitchClient), 120000)
   );
 }
 
 // Use the API Key to load data
-stitchClientPromise.then(stitchClient => {
-  return stitchClient.authenticate("apiKey", "<STITCH API KEY>").then(() => generateData(stitchClient));
-})
+const stitchClient = Stitch.initializeDefaultAppClient("<STITCH API KEY>");
+generateData(stitchClient);
+
