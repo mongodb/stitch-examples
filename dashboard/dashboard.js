@@ -1,43 +1,39 @@
-const appId = "<YOUR APP ID>";
-
+// Get references to page elements
 const statusMessage = document.getElementById("auth-type-identifier");
 const loginForm = document.getElementById("login-form");
 const logoutButton = document.getElementById("logout-button");
 
-var stitchClient;
-stitch.StitchClientFactory.create(appId)
-  .then(client => {
-    stitchClient = client;
-    if (stitchClient.authedId()) {
-      stitchClient.logout()
-    }
-  })
-  .catch(err => console.error(err));
+// Setup MongoDB Stitch
+const APP_ID = "<YOUR APP ID>";
+const {
+  Stitch,
+  UserPasswordCredential,
+} = stitch;
+const stitchClient = Stitch.initializeDefaultAppClient(APP_ID);
 
-function handleLogin() {
-  getLoginFormInfo()
-    .then(user => emailPasswordAuth(user.email, user.password))
-    .then(() => build(Date.now()))
-    .catch(err => console.error(err));
+async function handleLogin() {
+  const { email, password } = getLoginFormInfo();
+  await emailPasswordAuth(email, password);
+  build(Date.now())
 }
 
 // Authenticate with Stitch as an email/password user
-function emailPasswordAuth(email, password) {
-  if (stitchClient.authedId()) {
-    return hideLoginForm()
+async function emailPasswordAuth(email, password) {
+  if (!stitchClient.auth.isLoggedIn) {
+    // Log the user in
+    const credential = new UserPasswordCredential(email, password);
+    await stitchClient.auth.loginWithCredential(credential);
   }
-  return stitchClient.login(email, password)
-           .then(hideLoginForm)
-           .then(revealDashboardContainer)
-           .catch(err => console.error('e', err))
+  hideLoginForm();
+  revealDashboardContainer();
 }
 
 function getPopularToppings() {
-  return stitchClient.executeFunction("getPopularToppings");
+  return stitchClient.callFunction("getPopularToppings");
 }
 
 function getSalesTimeline(start, end) {
-  return stitchClient.executeFunction("salesTimeline", start, end);
+  return stitchClient.callFunction("salesTimeline", [start, end]);
 }
 
 
@@ -99,16 +95,14 @@ function getLoginFormInfo() {
   // Remove text from login boxes
   emailEl.value = "";
   passwordEl.value = "";
-  return new Promise(resolve => resolve({ email: email, password: password }));
+  return { email: email, password: password };
 }
 
 function hideLoginForm() {
-  return stitchClient.userProfile().then(user => {
-    // Hide login form
-    loginForm.classList.add("hidden");
-    // Set login status message
-    statusMessage.innerText = "Logged in as: " + user.data.email;
-  });
+  const user = stitchClient.auth.user;
+  loginForm.classList.add("hidden");
+  // Set login status message
+  statusMessage.innerText = "Logged in as: " + user.profile.data.email;
 };
 
 function revealDashboardContainer() {
