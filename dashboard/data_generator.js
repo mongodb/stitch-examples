@@ -1,6 +1,7 @@
+const fetch = require('node-fetch');
+
 const getPopularToppingsWebhook = "<YOUR WEBHOOK>"; // <webhook url>?secret=<secret>
 
-const stitch = require("mongodb-stitch"); // Set-up the MongoDB connection
 const chance = require("chance").Chance(); // Package for random variables
 
 // Seeds for the random data
@@ -34,6 +35,7 @@ function generateReceipts() {
   };
 
   // Post the order to the addOrder webhook
+  
   fetch(getPopularToppingsWebhook, {
     method: "POST",
     mode: "CORS",
