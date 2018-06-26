@@ -15,11 +15,6 @@ let appId = "<your-app-id>";
 
 if (process.env.APP_ID) {
    appId = process.env.APP_ID;
-}  
-
-let mongodbService = "mongodb-atlas";
-   if (process.env.MONGODB_SERVICE) {
-   mongodbService = process.env.MONGODB_SERVICE;
 }
 
 let options = {};
@@ -30,7 +25,7 @@ let options = {};
 const client = Stitch.initializeDefaultAppClient(appId);
 
 const db = client.getServiceClient(RemoteMongoClient.factory, 
-   mongodbService).db('todo');
+   "mongodb-atlas").db('todo');
 
 let TodoItem = class extends React.Component {
    clicked() {
@@ -83,10 +78,6 @@ var AuthControls = class extends React.Component {
       super(props)
       this.state = {userData:null}
       this.client = props.client;
-   }
-
-componentDidMount() {
-   
    }
 
 render() {
