@@ -25,5 +25,4 @@ const stitchClient = Stitch.initializeDefaultAppClient("<your-app-id>");
 stitchClient.auth.loginWithCredential(new ServerApiKeyCredential("<STITCH API KEY>"))
    .then(() => {
       generateData(stitchClient);
-   });
-
+});
