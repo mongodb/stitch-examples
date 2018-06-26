@@ -21,6 +21,9 @@ function generateData(stitchClient){
 
 // Use the API Key to load data
 const stitchClient = Stitch.initializeDefaultAppClient("<your-app-id>");
-stitchClient.auth.loginWithCredential(new ServerApiKeyCredential("<STITCH API KEY>"));
-generateData(stitchClient);
+
+stitchClient.auth.loginWithCredential(new ServerApiKeyCredential("<STITCH API KEY>"))
+   .then(() => {
+      generateData(stitchClient);
+   });
 
