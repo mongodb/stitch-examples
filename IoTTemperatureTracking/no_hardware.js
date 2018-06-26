@@ -1,5 +1,5 @@
 // Set-up the Stitch client
-const stitch = require("mongodb-stitch-browser-sdk");
+import Stitch from 'mongodb-stitch-browser-sdk';
 
 // Send sample data while within this loop
 function generateData(stitchClient){
@@ -20,6 +20,7 @@ function generateData(stitchClient){
 }
 
 // Use the API Key to load data
-const stitchClient = Stitch.initializeDefaultAppClient("<STITCH API KEY>");
+const stitchClient = Stitch.initializeDefaultAppClient("<your-app-id>");
+stitchClient.auth.loginWithCredential(new ServerApiKeyCredential("<STITCH API KEY>"));
 generateData(stitchClient);
 
