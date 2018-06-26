@@ -13,15 +13,6 @@ require("../static/todo.scss");
 
 let appId = "<your-app-id>";
 
-if (process.env.APP_ID) {
-   appId = process.env.APP_ID;
-}
-
-let options = {};
-   if (process.env.STITCH_URL) {
-   options.baseUrl = process.env.STITCH_URL;
-}
-
 const client = Stitch.initializeDefaultAppClient(appId);
 
 const db = client.getServiceClient(RemoteMongoClient.factory, 
