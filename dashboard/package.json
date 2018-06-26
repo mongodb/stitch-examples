@@ -11,6 +11,6 @@
   "dependencies": {
     "chance": "^1.0.11",
     "http-server": "^0.10.0",
-    "mongodb-stitch": "^3.0.0"
+    "node-fetch": "^2.1.2"
   }
 }

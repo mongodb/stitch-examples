@@ -1,10 +1,22 @@
 {
-    "namespace": "quickstart.2fa",
-    "other_fields": {},
-    "write": {
-        "%%true": true
-    },
-    "read": {
-        "%%true": true
-    }
+    "database": "quickstart",
+    "collection": "2fa",
+    "roles": [
+        {
+            "name": "default",
+            "apply_when": {
+                "%%true": true
+            },
+            "read": true,
+            "write": true,
+            "insert": {
+                "%%true": true
+            },
+            "delete": {
+                "%%true": true
+            },
+            "additional_fields": {}
+        }
+    ],
+    "schema": {}
 }

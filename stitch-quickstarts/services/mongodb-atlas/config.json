@@ -2,7 +2,7 @@
     "name": "mongodb-atlas",
     "type": "mongodb-atlas",
     "config": {
-        "clusterName": "StitchDemoCluster"
+        "clusterName": "Cluster0"
     },
     "version": 1
 }
