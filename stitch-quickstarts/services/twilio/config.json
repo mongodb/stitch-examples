@@ -2,7 +2,7 @@
     "name": "twilio",
     "type": "twilio",
     "config": {
-        "sid": "<twilio SID>"
+        "sid": ""
     },
     "version": 1
 }
