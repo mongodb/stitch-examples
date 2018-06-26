@@ -1,27 +1,54 @@
 {
-    "namespace": "HR.direct_reports",
-    "other_fields": {},
-    "write": {
-        "%or": [
-            {
+    "database": "HR",
+    "collection": "direct_reports",
+    "roles": [
+        {
+            "name": "default",
+            "apply_when": {
                 "%%true": true
             },
-            {
-                "%%root.email": "%%user.data.email"
+            "read": {
+                "%or": [
+                    {
+                        "%%root.email": "%%user.data.email"
+                    },
+                    {
+                        "%%root.manager.email": "%%user.data.email"
+                    }
+                ]
             },
-            {
-                "%%root.manager.email": "%%user.data.email"
-            }
-        ]
-    },
-    "read": {
-        "%or": [
-            {
-                "%%root.email": "%%user.data.email"
+            "write": {
+                "%or": [
+                    {
+                        "%%root.email": "%%user.data.email"
+                    },
+                    {
+                        "%%root.manager.email": "%%user.data.email"
+                    }
+                ]
             },
-            {
-                "%%root.manager.email": "%%user.data.email"
-            }
-        ]
-    }
+            "insert": {
+                "%or": [
+                    {
+                        "%%root.email": "%%user.data.email"
+                    },
+                    {
+                        "%%root.manager.email": "%%user.data.email"
+                    }
+                ]
+            },
+            "delete": {
+                "%or": [
+                    {
+                        "%%root.email": "%%user.data.email"
+                    },
+                    {
+                        "%%root.manager.email": "%%user.data.email"
+                    }
+                ]
+            },
+            "additional_fields": {}
+        }
+    ],
+    "schema": {}
 }

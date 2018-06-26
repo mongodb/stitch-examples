@@ -1,8 +1,5 @@
 exports = function(payload, response) {
   // Parse the webhook payload
-  const formatPhoneNumber = () => context.functions.execute("lookupPhoneNumber", payload.From).then(response => {
-    return EJSON.parse(response.body.text()).phone_number;
-  });
   let [action, ...messageParts] = payload.Body.split(" ");
   action = action.toLowerCase();
   const message = messageParts.join(" ");
@@ -21,7 +18,7 @@ exports = function(payload, response) {
         return todos.updateOne(
           { "phoneNumber": fromPhone },
           { "$push": { "messages": message } },
-          { "upsert": true }
+          {  "upsert": true }
         );
       })
      .then(() => response.setBody("Successfully added your message!"));
@@ -35,3 +32,12 @@ exports = function(payload, response) {
   response.addHeader("Content-Type", "text/plain");
 };
 
+// Twilio expects phone numbers to have a particular format (e.164).
+// This function uses a Twilio API to format submitted phone numbers.
+function formatPhoneNumber(number) {
+  const formattedNumberPromise = context
+    .functions
+    .execute("lookupPhoneNumber", number)
+    .then(response => EJSON.parse(response.body.text()).phone_number);
+  return formattedNumberPromise;
+}

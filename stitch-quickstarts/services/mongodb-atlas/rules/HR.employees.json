@@ -1,13 +1,26 @@
 {
-    "namespace": "HR.employees",
-    "other_fields": {},
-    "write": {
-        "%%true": true
-    },
-    "read": {
-        "%%true": true
-    },
-    "valid": {
-        "%%true": true
+    "database": "HR",
+    "collection": "employees",
+    "roles": [
+        {
+            "name": "default",
+            "apply_when": {
+                "%%true": true
+            },
+            "read": true,
+            "write": true,
+            "insert": {
+                "%%true": true
+            },
+            "delete": {
+                "%%true": true
+            },
+            "additional_fields": {}
+        }
+    ],
+    "schema": {
+        "validate": {
+            "%%true": true
+        }
     }
 }

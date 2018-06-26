@@ -2,11 +2,10 @@
     "name": "local-userpass",
     "type": "local-userpass",
     "config": {
-        "emailConfirmationSubject": "Confirm your email",
-        "emailConfirmationUrl": "https://docs.mongodb.com/stitch/getting-started/user-management/confirm-email.html",
-        "resetPasswordSubject": "Reset your password",
-        "resetPasswordUrl": "https://docs.mongodb.com/stitch/getting-started/user-management/reset-password.html"
+        "emailConfirmationSubject": "Confirm your MongoDB Stitch Quickstart Email",
+        "emailConfirmationUrl": "https://docs.mongodb.com/stitch/getting-started/user-management/confirm-email/",
+        "resetPasswordSubject": "Reset your MongoDB Stitch Quickstart Password",
+        "resetPasswordUrl": "https://docs.mongodb.com/stitch/getting-started/user-management/reset-password/"
     },
     "disabled": false
 }
-
