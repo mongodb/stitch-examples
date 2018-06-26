@@ -1,17 +1,19 @@
 exports = function(phoneNumber){
   let finalNumber;
+  const atlas = context.services.get("mongodb-atlas");
+  const twoFactorCodes = atlas.db("quickstart").collection("2fa");
   const twilio = context.services.get("twilio");
-  const code = generateDeviceCode();
   const formatNumber = number => context.functions.execute("lookupPhoneNumber", number).then(response => {
     return EJSON.parse(response.body.text()).phone_number;
   });
+  const code = generateDeviceCode();
   
   
   // Store the code in MongoDB then send it to the user in a text message
   return formatNumber(phoneNumber)
     .then(formattedNumber => {
       finalNumber = formattedNumber;
-      return linkCodeWithPhoneNumber(code, formattedNumber);
+      return linkCodeWithPhoneNumber(code, formattedNumber, twoFactorCodes);
     })
     .then(() => twilio.send({
       to: finalNumber,
@@ -29,12 +31,11 @@ exports = function(phoneNumber){
     return code;
   }
 
-  function linkCodeWithPhoneNumber(code, phoneNumber) {
+  function linkCodeWithPhoneNumber(code, phoneNumber, collection) {
   // Update or insert the document for the submitted phone number.
   // The document has information on the most recent 2fa code for a
   // phone number, including when the code was generated.
-    const atlas = context.services.get("mongodb-atlas");
-    const twoFactorCodes = atlas.db("quickstart").collection("2fa");
+    const twoFactorCodes = collection;
     
     return twoFactorCodes.updateOne(
       { "phoneNumber": phoneNumber },
