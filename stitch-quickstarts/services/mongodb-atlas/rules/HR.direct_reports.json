@@ -3,52 +3,37 @@
     "collection": "direct_reports",
     "roles": [
         {
-            "name": "default",
+            "name": "isThisPerson",
             "apply_when": {
-                "%%true": true
+                "email": "%%user.data.email"
             },
-            "read": {
-                "%or": [
-                    {
-                        "%%root.email": "%%user.data.email"
-                    },
-                    {
-                        "%%root.manager.email": "%%user.data.email"
-                    }
-                ]
+            "read": true,
+            "insert": false,
+            "delete": false,
+            "additional_fields": {
+                "read": true
+            }
+        },
+        {
+            "name": "isManager",
+            "apply_when": {
+                "manager.email": "%%user.data.email"
             },
-            "write": {
-                "%or": [
-                    {
-                        "%%root.email": "%%user.data.email"
-                    },
-                    {
-                        "%%root.manager.email": "%%user.data.email"
-                    }
-                ]
-            },
-            "insert": {
-                "%or": [
-                    {
-                        "%%root.email": "%%user.data.email"
-                    },
-                    {
-                        "%%root.manager.email": "%%user.data.email"
-                    }
-                ]
-            },
-            "delete": {
-                "%or": [
-                    {
-                        "%%root.email": "%%user.data.email"
-                    },
-                    {
-                        "%%root.manager.email": "%%user.data.email"
-                    }
-                ]
-            },
-            "additional_fields": {}
+            "read": true,
+            "write": true,
+            "insert": true,
+            "delete": true,
+            "additional_fields": {
+                "write": true,
+                "read": true
+            }
         }
     ],
-    "schema": {}
+    "schema": {
+        "properties": {
+            "_id": {
+                "bsonType": "objectId"
+            }
+        }
+    }
 }
