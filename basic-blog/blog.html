@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.0/stitch.js"></script>
+    <script>
+      // Initialize the App Client
+      const client = stitch.Stitch.initializeDefaultAppClient("<your-app-id>");
+      // Get a MongoDB Service Client
+      const mongodb = client.getServiceClient(
+        stitch.RemoteMongoClient.factory,
+        "mongodb-atlas"
+      );
+      // Get a reference to the blog database
+      const db = mongodb.db("blog");
+
+      function displayComments() {
+        db.collection("comments")
+          .find({}, { limit: 1000 })
+          .asArray()
+          .then(docs => docs.map(doc => `<div>${doc.comment}</div>`))
+          .then(comments => document.getElementById("comments").innerHTML = comments)
+      }
+
+      function displayCommentsOnLoad() {
+        client.auth
+          .loginWithCredential(new stitch.AnonymousCredential())
+          .then(displayComments)
+          .catch(console.error);
+      }
+
+      function addComment() {
+        const newComment = document.getElementById("new_comment");
+        console.log("add comment", client.auth.user.id)
+        db.collection("comments")
+          .insertOne({ owner_id: client.auth.user.id, comment: newComment.value })
+          .then(displayComments);
+        newComment.value = "";
+      }
+    </script>
+  </head>
+
+  <body onLoad="displayCommentsOnLoad()">
+    <h3>This is a great blog post</h3>
+    <div id="content">
+      I like to write about technology because I want to get on the front page of hacker news.
+    </div>
+    <hr>
+    <div id="comments"></div>
+    <hr>
+    Add a Comment: <input id="new_comment"><input type="submit" onClick="addComment()">
+  </body>
+
+</html>
