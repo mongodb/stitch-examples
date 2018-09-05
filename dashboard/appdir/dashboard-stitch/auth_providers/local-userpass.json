@@ -2,7 +2,7 @@
     "name": "local-userpass",
     "type": "local-userpass",
     "config": {
-        "emailConfirmationSubject": "Confirm your MongoDB Stitch Dashboard Tutorial Email",
+        "confirmEmailSubject": "Confirm your MongoDB Stitch Dashboard Tutorial Email",
         "emailConfirmationUrl": "http://localhost:8080/confirm-email",
         "resetPasswordSubject": "Password Reset: MongoDB Stitch Dashboard Tutorial",
         "resetPasswordUrl": "http://localhost:8080/reset-password"
