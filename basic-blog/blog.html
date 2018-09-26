@@ -35,6 +35,12 @@
           .then(displayComments);
         newComment.value = "";
       }
+      
+      function deleteComments() {
+	console.log("deleting all comments");
+	db.collection("comments").deleteMany({});
+	document.getElementById("comments").innerHTML = "";	
+      }
     </script>
   </head>
 
@@ -47,6 +53,7 @@
     <div id="comments"></div>
     <hr>
     Add a Comment: <input id="new_comment"><input type="submit" onClick="addComment()">
+    <input id="delete_comments" type="button" value="Delete Comments" onClick="deleteComments()">
   </body>
 
 </html>
