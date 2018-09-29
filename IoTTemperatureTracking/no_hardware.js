@@ -20,7 +20,7 @@ function generateData(stitchClient) {
 }
 
 // Use the API Key to load data
-const stitchClient = Stitch.initializeDefaultAppClient("<your-app-id>");
+const stitchClient = Stitch.initializeDefaultAppClient("pithermo-ljcsl");
 
 stitchClient.auth.loginWithCredential(new ServerApiKeyCredential("<STITCH API KEY>"))
    .then(() => {
