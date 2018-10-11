@@ -72,6 +72,7 @@ var AuthControls = class extends React.Component {
    }
 
 render() {
+
    let authed = this.client.auth.isLoggedIn;
 
    if(client.auth.hasRedirectResult()){
@@ -272,7 +273,7 @@ checkCode(e) {
    if (e.keyCode == 13) {
       this.props.users
       .updateOne(
-         { _id: this.props.client.auth.authedId, verify_code: this._code.value },
+         { _id: this.props.client.auth.authInfo.userId, verify_code: this._code.value },
          { $set: { number_status: "verified" } }
       )
       .then(data => {
@@ -325,7 +326,7 @@ saveNumber(e) {
          .then(data => {
             this.props.users
             .updateOne(
-               { _id: this.props.client.auth.authedId, number_status: "unverified" },
+               { _id: this.props.client.auth.authInfo.userId, number_status: "unverified" },
                {
                   $set: {
                   phone_number: formatPhoneNum(this._number.value),
