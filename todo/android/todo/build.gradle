@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.mongodb.stitch.sdk.examples.todo"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,8 +28,8 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'org.mongodb:stitch-android-core:4.0.0-beta-3'
-    implementation 'org.mongodb:stitch-android-services-mongodb-remote:4.0.0-beta-3'
+    implementation 'org.mongodb:stitch-android-sdk:4+'
+    implementation 'org.mongodb:stitch-android-services-mongodb-local:4+'
     implementation 'com.facebook.android:facebook-android-sdk:4.23.0'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'

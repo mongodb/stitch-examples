@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         this._client = Stitch.getDefaultAppClient();
         this._client.getAuth().addAuthListener(new MyAuthListener(this));
 
-        _mongoClient = this._client.getServiceClient(RemoteMongoClient.Factory, "mongodb-atlas");
+        _mongoClient = this._client.getServiceClient(RemoteMongoClient.factory, "mongodb-atlas");
         setupLogin();
     }
 
