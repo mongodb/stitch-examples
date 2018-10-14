@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="stitch-0.1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/org.mongodb/stitch/0.1.0-SNAPSHOT/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/org.mongodb/stitch/0.1.0-SNAPSHOT/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch/0.1.0-SNAPSHOT/34c72b813bc14f4f4c0149db46b60adf3d78fcc7/stitch-0.1.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
