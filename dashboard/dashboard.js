@@ -11,10 +11,16 @@ const {
 } = stitch;
 const stitchClient = Stitch.initializeDefaultAppClient(APP_ID);
 
+if (stitchClient.auth.isLoggedIn) {
+  hideLoginForm();
+  revealDashboardContainer();
+  build(Date.now());
+}
+
 async function handleLogin() {
   const { email, password } = getLoginFormInfo();
   await emailPasswordAuth(email, password);
-  build(Date.now())
+  build(Date.now());
 }
 
 // Authenticate with Stitch as an email/password user
