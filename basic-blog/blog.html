@@ -16,8 +16,10 @@
         db.collection("comments")
           .find({}, { limit: 1000 })
           .asArray()
-          .then(docs => docs.map(doc => `<div>${doc.comment}</div>`))
-          .then(comments => document.getElementById("comments").innerHTML = comments)
+          .then(docs => {
+            const html = docs.map(doc => `<div>${doc.comment}</div>`));
+            document.getElementById("comments").innerHTML = html;
+          })
       }
 
       function displayCommentsOnLoad() {
