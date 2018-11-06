@@ -45,8 +45,8 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             final RemoteMongoCollection itemSource
     ) {
         super(context, resource, items);
-        _itemSource = itemSource;
         _itemState = new HashMap<>();
+        _itemSource = itemSource;
     }
 
     @NonNull
