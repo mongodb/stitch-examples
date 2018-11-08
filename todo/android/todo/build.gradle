@@ -19,17 +19,27 @@ android {
             debuggable true
         }
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 }
 
 repositories {
-    mavenCentral() // For Facebook Log  in
+    mavenCentral()
     google()
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.0'
+    }
+}
+
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'org.mongodb:stitch-android-sdk:4+'
-    implementation 'org.mongodb:stitch-android-services-mongodb-local:4+'
+    implementation 'org.mongodb:stitch-android-sdk:4.1.0'
     implementation 'com.facebook.android:facebook-android-sdk:4.23.0'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
