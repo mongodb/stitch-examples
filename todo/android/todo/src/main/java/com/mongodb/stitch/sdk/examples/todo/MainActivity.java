@@ -455,6 +455,7 @@ public class MainActivity extends AppCompatActivity {
             if (!event.hasUncommittedWrites()) {
                 // Add custom actions here
             }
+            refreshList();
         }
     }
 
@@ -469,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
                 // When errors have been resolved, call
                 _remoteCollection.sync().resumeSyncForDocument(doc_id);
             }
-
+            refreshList();
         }
     }
 }
