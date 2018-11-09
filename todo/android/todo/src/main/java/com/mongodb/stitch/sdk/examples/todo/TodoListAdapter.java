@@ -2,6 +2,7 @@ package com.mongodb.stitch.sdk.examples.todo;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoCollection;
 import com.mongodb.stitch.core.services.mongodb.remote.RemoteUpdateResult;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.ChangeEventListener;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.DefaultSyncConflictResolvers;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.internal.ChangeEvent;
 
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -38,6 +43,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
     // so no synchronization is necessary.
     private final Map<ObjectId, Boolean> _itemState;
 
+
     public TodoListAdapter(
             final Context context,
             final int resource,
@@ -45,8 +51,8 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             final RemoteMongoCollection itemSource
     ) {
         super(context, resource, items);
-        _itemSource = itemSource;
         _itemState = new HashMap<>();
+        _itemSource = itemSource;
     }
 
     @NonNull
@@ -71,7 +77,6 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
         ((TextView) row.findViewById(R.id.text)).setText(item.getText());
 
         final CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkBox);
-        checkBox.setOnCheckedChangeListener(null);
 
         if (_itemState.containsKey(item.getId())) {
             checkBox.setChecked(_itemState.get(item.getId()));
@@ -79,28 +84,24 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             checkBox.setChecked(item.getChecked());
         }
 
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                final Document query = new Document();
-                query.put("_id", item.getId());
+        checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            final Document query = new Document();
+            query.put("_id", item.getId());
 
-                final Document update = new Document();
-                final Document set = new Document();
-                set.put("checked", b);
-                update.put("$set", set);
+            final Document update = new Document();
+            final Document set = new Document();
+            set.put("checked", b);
+            update.put("$set", set);
 
-                _itemState.put(item.getId(), b);
-                _itemSource.updateOne(query, update).addOnCompleteListener(new OnCompleteListener<RemoteUpdateResult>() {
-                    @Override
-                    public void onComplete(@NonNull final Task<RemoteUpdateResult> task) {
-                        // Our intent may no longer be valid, so clear the state
-                        _itemState.remove(item.getId());
-                    }
-                });
-            }
+            _itemState.put(item.getId(), b);
+            _itemSource.sync().updateOne(query, update).addOnCompleteListener(
+                  (OnCompleteListener<RemoteUpdateResult>) task -> {
+                    // Our intent may no longer be valid, so clear the state
+                    _itemState.remove(item.getId());
+                  });
         });
 
         return row;
     }
+
 }

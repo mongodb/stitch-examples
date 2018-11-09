@@ -42,13 +42,19 @@ import com.mongodb.stitch.core.auth.providers.anonymous.AnonymousCredential;
 import com.mongodb.stitch.core.auth.providers.facebook.FacebookCredential;
 import com.mongodb.stitch.core.auth.providers.google.GoogleCredential;
 import com.mongodb.stitch.core.services.mongodb.remote.RemoteInsertOneResult;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.ChangeEventListener;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.DefaultSyncConflictResolvers;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.ErrorListener;
+import com.mongodb.stitch.core.services.mongodb.remote.sync.internal.ChangeEvent;
 
+import org.bson.BsonValue;
 import org.bson.Document;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.android.gms.auth.api.Auth.GOOGLE_SIGN_IN_API;
 import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
@@ -62,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleApiClient _googleApiClient;
     private StitchAppClient _client;
     private RemoteMongoClient _mongoClient;
+    private RemoteMongoCollection _remoteCollection;
 
     private TodoListAdapter _itemAdapter;
     private Handler _handler;
@@ -80,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
         this._client.getAuth().addAuthListener(new MyAuthListener(this));
 
         _mongoClient = this._client.getServiceClient(RemoteMongoClient.factory, "mongodb-atlas");
+        _remoteCollection = _mongoClient.getDatabase("todo").getCollection("items");
+
+        _remoteCollection.sync().configure(
+                DefaultSyncConflictResolvers.remoteWins(),
+                new MyUpdateListener(),
+                new MyErrorListener());
+
+
         setupLogin();
     }
 
@@ -202,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                 this,
                 R.layout.todo_item,
                 new ArrayList<TodoItem>(),
-                getItemsCollection());
+                _remoteCollection);
         ((ListView) findViewById(R.id.todoList)).setAdapter(_itemAdapter);
 
         // Set up button listeners
@@ -263,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
         doc.put("text", text);
         doc.put("checked", false);
 
-        final Task<RemoteInsertOneResult> res = getItemsCollection().insertOne(doc);
+        final Task<RemoteInsertOneResult> res = _remoteCollection.sync().insertOne(doc);
         res.addOnCompleteListener(new OnCompleteListener<RemoteInsertOneResult>() {
             @Override
             public void onComplete(@NonNull final Task<RemoteInsertOneResult> task) {
@@ -281,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
         query.put("owner_id", _client.getAuth().getUser().getId());
         query.put("checked", true);
 
-        getItemsCollection().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Document>() {
+        _remoteCollection.sync().deleteMany(query).addOnCompleteListener(new OnCompleteListener<Document>() {
             @Override
             public void onComplete(@NonNull final Task<Document> task) {
                 if (task.isSuccessful()) {
@@ -291,10 +306,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private RemoteMongoCollection getItemsCollection() {
-        return _mongoClient.getDatabase("todo").getCollection("items");
     }
 
     private List<TodoItem> convertDocsToTodo(final List<Document> documents) {
@@ -307,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshList() {
         Document filter = new Document("owner_id", _client.getAuth().getUser().getId());
-        RemoteFindIterable cursor = getItemsCollection().find(filter).limit(100);
+        RemoteFindIterable cursor = _remoteCollection.find(filter).limit(100);
         final ArrayList<Document> documents = new ArrayList<>();
         cursor.into(documents).addOnCompleteListener(new OnCompleteListener() {
             @Override
@@ -436,5 +447,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.anonymous_login_button).setVisibility(View.VISIBLE);
+    }
+
+    private class MyUpdateListener implements ChangeEventListener<Document> {
+        @Override
+        public void onEvent(final BsonValue documentId, final ChangeEvent<Document> event) {
+            if (!event.hasUncommittedWrites()) {
+                // Add custom actions here
+            }
+            refreshList();
+        }
+    }
+
+    private class MyErrorListener implements ErrorListener {
+        @Override
+        public void onError(BsonValue documentId, Exception error) {
+            Log.e("Stitch", error.getLocalizedMessage());
+
+            Set<BsonValue> docsThatNeedToBeFixed = _remoteCollection.sync().getPausedDocumentIds();
+            for (BsonValue doc_id : docsThatNeedToBeFixed) {
+                // Add your logic to inform the user.
+                // When errors have been resolved, call
+                _remoteCollection.sync().resumeSyncForDocument(doc_id);
+            }
+            refreshList();
+        }
     }
 }
