@@ -57,8 +57,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             final Document query = new Document();
             query.put("_id", item.getId());
-
-
+            
             final Document update = new Document();
             final Document set = new Document();
             set.put("checked", b);
