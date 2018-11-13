@@ -2,47 +2,24 @@ package com.mongodb.stitch.sdk.examples.todo;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoCollection;
 import com.mongodb.stitch.core.services.mongodb.remote.RemoteUpdateResult;
-import com.mongodb.stitch.core.services.mongodb.remote.sync.ChangeEventListener;
-import com.mongodb.stitch.core.services.mongodb.remote.sync.DefaultSyncConflictResolvers;
-import com.mongodb.stitch.core.services.mongodb.remote.sync.internal.ChangeEvent;
 
-import org.bson.BsonValue;
 import org.bson.Document;
-import org.bson.types.ObjectId;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
     private final RemoteMongoCollection _itemSource;
-
-    // Store the expected state of the items based off the users intentions. This is to handle this
-    // series of events:
-    // Check Item Request Begin - Item in state X
-    // Refresh List - Item in state Y, View is refreshed
-    // Check Item Request End - Item in State X
-    // Refresh List - Item in state X, View is refreshed
-    //
-    // In this example app, these updates happen on the UI thread,
-    // so no synchronization is necessary.
-    private final Map<ObjectId, Boolean> _itemState;
-
 
     public TodoListAdapter(
             final Context context,
@@ -51,7 +28,6 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             final RemoteMongoCollection itemSource
     ) {
         super(context, resource, items);
-        _itemState = new HashMap<>();
         _itemSource = itemSource;
     }
 
@@ -78,30 +54,17 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
         final CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkBox);
 
-        if (_itemState.containsKey(item.getId())) {
-            checkBox.setChecked(_itemState.get(item.getId()));
-        } else {
-            checkBox.setChecked(item.getChecked());
-        }
-
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             final Document query = new Document();
             query.put("_id", item.getId());
-
+            
             final Document update = new Document();
             final Document set = new Document();
             set.put("checked", b);
             update.put("$set", set);
 
-            _itemState.put(item.getId(), b);
-            _itemSource.sync().updateOne(query, update).addOnCompleteListener(
-                  (OnCompleteListener<RemoteUpdateResult>) task -> {
-                    // Our intent may no longer be valid, so clear the state
-                    _itemState.remove(item.getId());
-                  });
+            _itemSource.sync().updateOne(query, update);
         });
-
         return row;
     }
-
 }
