@@ -64,10 +64,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             set.put("checked", b);
             update.put("$set", set);
 
-            _itemSource.sync().updateOne(query, update).addOnCompleteListener(
-                    (OnCompleteListener<RemoteUpdateResult>) task -> {
-                        // Our intent may no longer be valid, so clear the state
-                    });
+            _itemSource.sync().updateOne(query, update);
         });
         return row;
     }
