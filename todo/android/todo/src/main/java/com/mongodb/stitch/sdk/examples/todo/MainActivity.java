@@ -456,7 +456,6 @@ public class MainActivity extends AppCompatActivity {
                 // Add custom actions here
                 refreshList();
             }
-
         }
     }
 
@@ -472,7 +471,6 @@ public class MainActivity extends AppCompatActivity {
                 _remoteCollection.sync().resumeSyncForDocument(doc_id);
                 refreshList();
             }
-
         }
     }
 }
