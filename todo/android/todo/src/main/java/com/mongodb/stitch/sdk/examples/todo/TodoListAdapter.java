@@ -51,6 +51,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
         ((TextView) row.findViewById(R.id.text)).setText(item.getText());
 
         final CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkBox);
+        checkBox.setChecked(item.getChecked());
 
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             final Document query = new Document();
