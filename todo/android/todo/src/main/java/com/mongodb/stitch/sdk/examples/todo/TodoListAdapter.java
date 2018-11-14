@@ -9,9 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoCollection;
-import com.mongodb.stitch.core.services.mongodb.remote.RemoteUpdateResult;
 
 import org.bson.Document;
 import java.util.List;
@@ -53,11 +51,12 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
         ((TextView) row.findViewById(R.id.text)).setText(item.getText());
 
         final CheckBox checkBox = (CheckBox) row.findViewById(R.id.checkBox);
+        checkBox.setChecked(item.getChecked());
 
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             final Document query = new Document();
             query.put("_id", item.getId());
-            
+
             final Document update = new Document();
             final Document set = new Document();
             set.put("checked", b);
