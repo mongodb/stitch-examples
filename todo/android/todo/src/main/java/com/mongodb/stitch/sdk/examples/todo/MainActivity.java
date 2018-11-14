@@ -454,8 +454,9 @@ public class MainActivity extends AppCompatActivity {
         public void onEvent(final BsonValue documentId, final ChangeEvent<Document> event) {
             if (!event.hasUncommittedWrites()) {
                 // Add custom actions here
+                refreshList();
             }
-            refreshList();
+
         }
     }
 
@@ -469,8 +470,9 @@ public class MainActivity extends AppCompatActivity {
                 // Add your logic to inform the user.
                 // When errors have been resolved, call
                 _remoteCollection.sync().resumeSyncForDocument(doc_id);
+                refreshList();
             }
-            refreshList();
+
         }
     }
 }
