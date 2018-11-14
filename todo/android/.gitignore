@@ -35,6 +35,7 @@ local.properties
 .idea/dictionaries
 .idea/libraries
 .idea/caches
+.idea/misc.xml
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
