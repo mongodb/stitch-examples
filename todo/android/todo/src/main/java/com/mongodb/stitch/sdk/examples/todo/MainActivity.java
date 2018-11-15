@@ -38,6 +38,7 @@ import com.mongodb.stitch.android.core.Stitch;
 import com.mongodb.stitch.android.core.auth.StitchAuth;
 import com.mongodb.stitch.android.core.auth.StitchAuthListener;
 import com.mongodb.stitch.android.core.StitchAppClient;
+import com.mongodb.stitch.android.services.mongodb.remote.SyncFindIterable;
 import com.mongodb.stitch.core.auth.providers.anonymous.AnonymousCredential;
 import com.mongodb.stitch.core.auth.providers.facebook.FacebookCredential;
 import com.mongodb.stitch.core.auth.providers.google.GoogleCredential;
@@ -318,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshList() {
         Document filter = new Document("owner_id", _client.getAuth().getUser().getId());
-        RemoteFindIterable cursor = _remoteCollection.find(filter).limit(100);
+        SyncFindIterable cursor = _remoteCollection.sync().find(filter).limit(100);
         final ArrayList<Document> documents = new ArrayList<>();
         cursor.into(documents).addOnCompleteListener(new OnCompleteListener() {
             @Override
@@ -454,7 +455,6 @@ public class MainActivity extends AppCompatActivity {
         public void onEvent(final BsonValue documentId, final ChangeEvent<Document> event) {
             if (!event.hasUncommittedWrites()) {
                 // Add custom actions here
-                refreshList();
             }
         }
     }
@@ -469,7 +469,6 @@ public class MainActivity extends AppCompatActivity {
                 // Add your logic to inform the user.
                 // When errors have been resolved, call
                 _remoteCollection.sync().resumeSyncForDocument(doc_id);
-                refreshList();
             }
         }
     }
