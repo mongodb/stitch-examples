@@ -455,6 +455,7 @@ public class MainActivity extends AppCompatActivity {
         public void onEvent(final BsonValue documentId, final ChangeEvent<Document> event) {
             if (!event.hasUncommittedWrites()) {
                 // Add custom actions here
+                refreshList();
             }
         }
     }
