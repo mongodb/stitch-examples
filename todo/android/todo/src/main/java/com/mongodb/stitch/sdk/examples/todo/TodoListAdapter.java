@@ -11,13 +11,18 @@ import android.widget.TextView;
 
 import com.mongodb.stitch.android.services.mongodb.remote.RemoteMongoCollection;
 
+import org.bson.BsonValue;
 import org.bson.Document;
+import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class TodoListAdapter extends ArrayAdapter<TodoItem> {
 
     private final RemoteMongoCollection _itemSource;
+    private List<BsonValue> pendingChanges;
 
     public TodoListAdapter(
             final Context context,
@@ -27,6 +32,7 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
     ) {
         super(context, resource, items);
         _itemSource = itemSource;
+        pendingChanges = new ArrayList<>();
     }
 
     @NonNull
@@ -65,5 +71,17 @@ public class TodoListAdapter extends ArrayAdapter<TodoItem> {
             _itemSource.sync().updateOne(query, update);
         });
         return row;
+    }
+
+    public void addToPending(BsonValue id){
+        this.pendingChanges.add(id);
+    }
+
+    public void removeFromPending(BsonValue id) {
+        this.pendingChanges.remove(id);
+    }
+
+    public boolean pendingContains(BsonValue id){
+        return this.pendingChanges.contains(id);
     }
 }

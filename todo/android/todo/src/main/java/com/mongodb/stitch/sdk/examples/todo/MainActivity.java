@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 new MyUpdateListener(),
                 new MyErrorListener());
 
-
         setupLogin();
     }
 
@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (activity._fbInitOnce) {
                     LoginManager.getInstance().logOut();
+                    activity._fbInitOnce = false;
                 }
 
                 Tasks.whenAll(futures).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -208,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+        } else {
+            Toast.makeText(MainActivity.this, "Failed to log on using Google. Result: " + result.getStatus(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -355,6 +358,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull final Task<StitchUser> task) {
                                 if (task.isSuccessful()) {
+                                    _fbInitOnce = true;
                                     initTodoView();
                                 } else {
                                     Log.e(TAG, "Error logging in with Facebook", task.getException());
@@ -375,20 +379,27 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull final Task<StitchUser> task) {
                                             if (task.isSuccessful()) {
+                                                _fbInitOnce = true;
                                                 initTodoView();
                                             } else {
-                                                Log.e(TAG, "Error logging in with Facebook", task.getException());
+                                                Log.e(TAG, "Error logging in with Facebook",
+                                                        task.getException());
                                             }
                                         }
                                     });
                                 }
 
                                 @Override
-                                public void onCancel() {}
+                                public void onCancel() {
+                                    Toast.makeText(MainActivity.this, "Facebook logon was " +
+                                            "cancelled.", Toast.LENGTH_LONG).show();
+                                }
 
                                 @Override
                                 public void onError(final FacebookException exception) {
-                                    initTodoView();
+                                    Toast.makeText(MainActivity.this, "Failed to logon with " +
+                                            "Facebook. Result: " + exception.toString(), Toast.LENGTH_LONG).show();
+
                                 }
                             });
                     LoginManager.getInstance().logInWithReadPermissions(
@@ -453,9 +464,20 @@ public class MainActivity extends AppCompatActivity {
     private class MyUpdateListener implements ChangeEventListener<Document> {
         @Override
         public void onEvent(final BsonValue documentId, final ChangeEvent<Document> event) {
-            if (!event.hasUncommittedWrites()) {
-                // Add custom actions here
-                refreshList();
+
+            // Is this change coming from local or remote?
+
+            if (event.hasUncommittedWrites()) { //change initiated on the device
+                Log.d("STITCH", "Local change to document " + documentId);
+
+                // Add to list of pending changes so we don't end up with a race condition
+                _itemAdapter.addToPending(documentId);
+
+            } else { //remote change
+                Log.d("STITCH", "Remote change to document " + documentId);
+
+                if (!_itemAdapter.pendingContains(documentId)) refreshList();
+                else _itemAdapter.removeFromPending(documentId);
             }
         }
     }
