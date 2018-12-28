@@ -17,7 +17,7 @@
           .find({}, { limit: 1000 })
           .asArray()
           .then(docs => {
-            const html = docs.map(doc => `<div>${doc.comment}</div>`));
+            const html = docs.map(doc => `<div>${doc.comment}</div>`);
             document.getElementById("comments").innerHTML = html;
           })
       }
