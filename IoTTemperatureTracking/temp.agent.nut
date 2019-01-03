@@ -10,11 +10,11 @@ const API_KEY = "<STITCH API KEY>";
 stitch.loginWithApiKey(API_KEY);
 
 function log(data) {
-    stitch.executeFunction("Imp_Write", [data], function (error, response) {
+    stitch.executeFunction("logTemperatureReading", [data], function (error, response) {
         if (error) {
             server.log("error: " + error.details);
         } else {
-            server.log("temperature sent");
+            server.log("temperature logged");
         }
     });
 }
