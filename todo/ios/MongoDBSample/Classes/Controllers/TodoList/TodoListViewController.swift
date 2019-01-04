@@ -6,8 +6,8 @@
 import UIKit
 import FacebookLogin
 import FacebookCore
+import MongoMobile
 import StitchCore
-import MongoSwiftMobile
 import StitchRemoteMongoDBService
 
 class TodoListViewController: UIViewController, AuthenticationViewControllerDelegate, EmailAuthViewControllerDelegate, TodoItemTableViewCellDelegate, UITableViewDataSource {
@@ -48,23 +48,13 @@ class TodoListViewController: UIViewController, AuthenticationViewControllerDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        do {
-            try Stitch.initialize()
-            
-            _ = try Stitch.initializeDefaultAppClient(withConfigBuilder:
-                StitchAppClientConfigurationBuilder.forApp(withClientAppID: Consts.AppId)
-            )
-        } catch {
-            print("Failed to initialize MongoDB Stitch iOS SDK: \(error.localizedDescription)")
-            // note: This initialization will only fail if an incomplete configuration is
-            // passed to a client initialization method, or if a client for a particular
-            // app ID is initialized multiple times. See the documentation of the "Stitch"
-            // class for more details.
-        }
+
+        let stitch = try! Stitch.initializeAppClient(withClientAppID: "<Your-App-ID>")
 
         self.stitchClient = Stitch.defaultAppClient
-        mongoClient = stitchClient.serviceClient(fromFactory: remoteMongoDBServiceClientFactory, withName: "mongodb-atlas")
+        
+        mongoClient = try! stitch.serviceClient(fromFactory: remoteMongoClientFactory,
+                                                    withName: "mongodb-atlas")
         todoItemsTableView.tableFooterView = UIView(frame: .zero)
         
         if !stitchClient.auth.isLoggedIn {

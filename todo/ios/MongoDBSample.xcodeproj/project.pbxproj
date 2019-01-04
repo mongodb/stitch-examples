@@ -18,7 +18,14 @@
 		369D1E4D1E6AF64D00ADE4DB /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */; };
 		369D1E4E1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */; };
 		36B1D4931EE36F88006B15B7 /* EmailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */; };
-		5A16D8552E2489B0685A97BF /* Pods_MongoDBSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEF5EA40BDB6BD11C6B865E0 /* Pods_MongoDBSample.framework */; };
+		3C15D0C921E00EB0006F2924 /* StitchCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0C821E00EB0006F2924 /* StitchCore.framework */; };
+		3C15D0CB21E00ECE006F2924 /* StitchCoreSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0CA21E00ECE006F2924 /* StitchCoreSDK.framework */; };
+		3C15D0CD21E00EEB006F2924 /* MongoSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0CC21E00EEB006F2924 /* MongoSwift.framework */; };
+		3C15D0CF21E00F3E006F2924 /* StitchRemoteMongoDBService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0CE21E00F3E006F2924 /* StitchRemoteMongoDBService.framework */; };
+		3C15D0D121E00F5E006F2924 /* MongoMobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0D021E00F5E006F2924 /* MongoMobile.framework */; };
+		3C15D0D321E00F5E006F2924 /* StitchCoreRemoteMongoDBService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0D221E00F5E006F2924 /* StitchCoreRemoteMongoDBService.framework */; };
+		3C15D0DE21E00F94006F2924 /* StitchCoreLocalMongoDBService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C15D0DD21E00F94006F2924 /* StitchCoreLocalMongoDBService.framework */; };
+		5D9FFA1078CCA54B3C71016C /* Pods_MongoDBSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF42C20195E66C9742FF1AD2 /* Pods_MongoDBSample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,8 +56,15 @@
 		369D1E4A1E6AF64D00ADE4DB /* TodoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItem.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItem.swift; sourceTree = SOURCE_ROOT; };
 		369D1E4B1E6AF64D00ADE4DB /* TodoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TodoItemTableViewCell.swift; path = MongoDBSample/Classes/Controllers/TodoList/TodoItemTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		36B1D4921EE36F88006B15B7 /* EmailAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAuthViewController.swift; sourceTree = "<group>"; };
+		3C15D0C821E00EB0006F2924 /* StitchCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C15D0CA21E00ECE006F2924 /* StitchCoreSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchCoreSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C15D0CC21E00EEB006F2924 /* MongoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MongoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C15D0CE21E00F3E006F2924 /* StitchRemoteMongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchRemoteMongoDBService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C15D0D021E00F5E006F2924 /* MongoMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MongoMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C15D0D221E00F5E006F2924 /* StitchCoreRemoteMongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchCoreRemoteMongoDBService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C15D0DD21E00F94006F2924 /* StitchCoreLocalMongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchCoreLocalMongoDBService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		45713EA09324062197D8A670 /* Pods-MongoDBSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MongoDBSample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample.debug.xcconfig"; sourceTree = "<group>"; };
-		AEF5EA40BDB6BD11C6B865E0 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF42C20195E66C9742FF1AD2 /* Pods_MongoDBSample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MongoDBSample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +72,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A16D8552E2489B0685A97BF /* Pods_MongoDBSample.framework in Frameworks */,
+				3C15D0DE21E00F94006F2924 /* StitchCoreLocalMongoDBService.framework in Frameworks */,
+				3C15D0D121E00F5E006F2924 /* MongoMobile.framework in Frameworks */,
+				3C15D0D321E00F5E006F2924 /* StitchCoreRemoteMongoDBService.framework in Frameworks */,
+				3C15D0CF21E00F3E006F2924 /* StitchRemoteMongoDBService.framework in Frameworks */,
+				3C15D0CD21E00EEB006F2924 /* MongoSwift.framework in Frameworks */,
+				3C15D0CB21E00ECE006F2924 /* StitchCoreSDK.framework in Frameworks */,
+				3C15D0C921E00EB0006F2924 /* StitchCore.framework in Frameworks */,
+				5D9FFA1078CCA54B3C71016C /* Pods_MongoDBSample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,7 +137,6 @@
 			isa = PBXGroup;
 			children = (
 				367E0C931E45D40300EE2C00 /* AppDelegate */,
-				367E0CA31E45E4D000EE2C00 /* BridgingHeader */,
 				367E0C941E45D40300EE2C00 /* Controllers */,
 			);
 			path = Classes;
@@ -137,13 +157,6 @@
 				369D1E381E6AF1C100ADE4DB /* TodoList */,
 			);
 			path = Controllers;
-			sourceTree = "<group>";
-		};
-		367E0CA31E45E4D000EE2C00 /* BridgingHeader */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = BridgingHeader;
 			sourceTree = "<group>";
 		};
 		369D1E381E6AF1C100ADE4DB /* TodoList */ = {
@@ -179,7 +192,14 @@
 		92273AC6F5ECAA8120F3435A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AEF5EA40BDB6BD11C6B865E0 /* Pods_MongoDBSample.framework */,
+				3C15D0DD21E00F94006F2924 /* StitchCoreLocalMongoDBService.framework */,
+				3C15D0D021E00F5E006F2924 /* MongoMobile.framework */,
+				3C15D0D221E00F5E006F2924 /* StitchCoreRemoteMongoDBService.framework */,
+				3C15D0CE21E00F3E006F2924 /* StitchRemoteMongoDBService.framework */,
+				3C15D0CC21E00EEB006F2924 /* MongoSwift.framework */,
+				3C15D0CA21E00ECE006F2924 /* StitchCoreSDK.framework */,
+				3C15D0C821E00EB0006F2924 /* StitchCore.framework */,
+				DF42C20195E66C9742FF1AD2 /* Pods_MongoDBSample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -197,7 +217,6 @@
 				367E0C501E4428BE00EE2C00 /* Resources */,
 				36D649781ECA0B7000ECC1F8 /* Embed Frameworks */,
 				6CB51E5C76B56308AC894B01 /* [CP] Embed Pods Frameworks */,
-				C50E9F84BC26EB3AC1AEABAB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -220,9 +239,8 @@
 				TargetAttributes = {
 					367E0C511E4428BE00EE2C00 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = KKJ5R7PP2E;
 						LastSwiftMigration = 0820;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -265,25 +283,22 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
 				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
-				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
-				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
-				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
-				"${PODS_ROOT}/MongoSwiftMobile/vendor/MobileSDKs/iphoneos/lib/libmongoc-1.0.dylib",
-				"${PODS_ROOT}/MongoSwiftMobile/vendor/MobileSDKs/iphoneos/lib/libmongoc-1.0.0.dylib",
-				"${PODS_ROOT}/MongoSwiftMobile/vendor/MobileSDKs/iphoneos/lib/libbson-1.0.dylib",
-				"${PODS_ROOT}/MongoSwiftMobile/vendor/MobileSDKs/iphoneos/lib/libbson-1.0.0.dylib",
-				"${BUILT_PRODUCTS_DIR}/MongoSwiftMobile/MongoSwiftMobile.framework",
-				"${BUILT_PRODUCTS_DIR}/StitchCore/StitchCore.framework",
-				"${BUILT_PRODUCTS_DIR}/StitchCoreRemoteMongoDBService/StitchCoreRemoteMongoDBService.framework",
-				"${BUILT_PRODUCTS_DIR}/StitchCoreSDK/StitchCoreSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/StitchRemoteMongoDBService/StitchRemoteMongoDBService.framework",
-				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+				"${BUILT_PRODUCTS_DIR}/MongoMobile/MongoMobile.framework",
+				"${BUILT_PRODUCTS_DIR}/MongoSwift/MongoSwift.framework",
+				"${PODS_ROOT}/mongo-embedded-c-driver/iPhoneOS/Frameworks/bson.framework",
+				"${PODS_ROOT}/mongo-embedded-c-driver/iPhoneOS/Frameworks/bson.framework.dSYM",
+				"${PODS_ROOT}/mongo-embedded-c-driver/iPhoneOS/Frameworks/mongoc.framework",
+				"${PODS_ROOT}/mongo-embedded-c-driver/iPhoneOS/Frameworks/mongoc.framework.dSYM",
+				"${PODS_ROOT}/mongo_embedded/iPhoneOS/Frameworks/mongo_embedded.framework",
+				"${PODS_ROOT}/mongo_embedded/iPhoneOS/Frameworks/mongo_embedded.framework.dSYM",
+				"${PODS_ROOT}/mongoc_embedded/iPhoneOS/Frameworks/mongoc_embedded.framework",
+				"${PODS_ROOT}/mongoc_embedded/iPhoneOS/Frameworks/mongoc_embedded.framework.dSYM",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -292,23 +307,20 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libmongoc-1.0.dylib",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libmongoc-1.0.0.dylib",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libbson-1.0.dylib",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libbson-1.0.0.dylib",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MongoSwiftMobile.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchCoreRemoteMongoDBService.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchCoreSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StitchRemoteMongoDBService.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MongoMobile.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MongoSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bson.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/bson.framework.dSYM",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mongoc.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/mongoc.framework.dSYM",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mongo_embedded.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/mongo_embedded.framework.dSYM",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mongoc_embedded.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/mongoc_embedded.framework.dSYM",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		899CE9F9139C6F9B371F4145 /* [CP] Check Pods Manifest.lock */ = {
@@ -327,24 +339,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C50E9F84BC26EB3AC1AEABAB /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-resources.sh",
-				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MongoDBSample/Pods-MongoDBSample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -483,8 +477,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = KKJ5R7PP2E;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = MongoDBSample/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -553,10 +549,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mongo.MongoDBSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "a1c88464-0500-4831-82f5-76f96cf8af1d";
-				PROVISIONING_PROFILE_SPECIFIER = ZemingoTeamDevProfile;
-				SWIFT_OBJC_BRIDGING_HEADER = "MongoDBSample/Classes/BridgingHeader/MongoDBSample-Bridging-Header.h";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -566,6 +562,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = MongoDBSample/Resources/Info.plist;
@@ -573,8 +571,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mongo.MongoDBSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MongoDBSample/Classes/BridgingHeader/MongoDBSample-Bridging-Header.h";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

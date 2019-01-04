@@ -4,7 +4,8 @@
 //
 
 import Foundation
-import MongoSwiftMobile
+import MongoMobile
+import MongoSwift
 
 struct TodoItem: Equatable {
     
