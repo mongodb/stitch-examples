@@ -1,3 +1,0 @@
-[submodule "MongoDBSample/MongoSDK"]
-	path = MongoDBSample/MongoSDK/stitch-ios-sdk
-	url = https://github.com/mongodb/stitch-ios-sdk
