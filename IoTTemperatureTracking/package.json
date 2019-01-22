@@ -9,6 +9,6 @@
   "author": "Drew DiPalma",
   "license": "MIT",
   "dependencies": {
-    "mongodb-stitch": "^3.0.0"
+    "mongodb-stitch-server-sdk": "^4.0.0"
   }
 }
