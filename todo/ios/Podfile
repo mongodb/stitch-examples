@@ -6,7 +6,7 @@ target 'ToDoSync' do
     use_frameworks!
 
   # Pod for MongoDB / Stitch
-    pod 'StitchSDK', '~> 5.0.0-alpha.1'
+    pod 'StitchSDK', '~> 5.0.0-beta'
 
   # UI Extras
     pod 'Toast-Swift', '~> 4.0.0'
