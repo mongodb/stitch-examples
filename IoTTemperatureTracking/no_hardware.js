@@ -1,5 +1,5 @@
 // Set-up the Stitch client
-import Stitch from 'mongodb-stitch-browser-sdk';
+const stitch = require('mongodb-stitch-server-sdk');
 
 // Send sample data while within this loop
 function generateData(stitchClient) {
@@ -14,15 +14,15 @@ function generateData(stitchClient) {
    console.log(data);
 
    // Simulate write to MongoDB every 2 minutes
-   stitchClient.callFunction("Imp_Write", data).then(
+   stitchClient.callFunction("logTemperatureReading", [data]).then(
       setTimeout(() => generateData(stitchClient), 120000)
    );
 }
 
 // Use the API Key to load data
-const stitchClient = Stitch.initializeDefaultAppClient("<your-app-id>");
+const stitchClient = stitch.Stitch.initializeDefaultAppClient("<your-app-id>");
 
-stitchClient.auth.loginWithCredential(new ServerApiKeyCredential("<STITCH API KEY>"))
+stitchClient.auth.loginWithCredential(new stitch.ServerApiKeyCredential("<STITCH API KEY>"))
    .then(() => {
       generateData(stitchClient);
 });
