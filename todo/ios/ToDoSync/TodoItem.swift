@@ -26,7 +26,7 @@ struct TodoItem: Codable, Hashable, Comparable {
         didSet {
             itemsCollection.sync.updateOne(
                 filter: ["_id": id],
-                update: ["$set": [CodingKeys.doneDate.rawValue: doneDate] as Document],
+                update: ["$set": [CodingKeys.doneDate.rawValue: doneDate ?? BSONNull()] as Document],
                 options: nil) { _ in
 
             }

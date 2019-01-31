@@ -7,7 +7,7 @@ private let todoItemsCollection = "items"
 private let todoListsCollection = "lists"
 private let todoIndexSwapsCollection = "index_swaps"
 
-let stitch = try! Stitch.initializeAppClient(withClientAppID: "tutorials-ucvnz")
+let stitch = try! Stitch.initializeAppClient(withClientAppID: "<APP_ID>")
 
 var itemsCollection: RemoteMongoCollection<TodoItem>!
 var listsCollection: RemoteMongoCollection<TodoList>!
