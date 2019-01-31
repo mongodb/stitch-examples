@@ -1,11 +1,15 @@
-platform :ios, '11.0'
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
 
-target 'MongoDBSample' do
-  use_frameworks!
+target 'ToDoSync' do
+  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+    use_frameworks!
 
-  pod 'FacebookLogin'
-  pod 'Firebase'
-  pod 'GoogleSignIn'
-  pod 'StitchCore', '~> 4.0.0-beta-1'
-  pod 'StitchRemoteMongoDBService', '~> 4.0.0-beta-1'
+  # Pod for MongoDB / Stitch
+    pod 'StitchSDK', '~> 5.0.0'
+
+  # UI Extras
+    pod 'Toast-Swift', '~> 4.0.0'
+    pod 'BEMCheckBox'
+
 end
