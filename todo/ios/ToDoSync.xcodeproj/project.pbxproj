@@ -22,12 +22,11 @@
 		499CD1B221C184F700CB4EBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 499CD1B121C184F700CB4EBF /* Assets.xcassets */; };
 		499CD1B521C184F700CB4EBF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 499CD1B321C184F700CB4EBF /* LaunchScreen.storyboard */; };
 		499CD1C221C189A200CB4EBF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 499CD1C121C189A200CB4EBF /* GoogleService-Info.plist */; };
-		7579D8295FDBEB752DF4EC3B /* Pods_ToDoSync.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 071A56DDC6C954D5C53B6B96 /* Pods_ToDoSync.framework */; };
+		6B642EEE0ECBB4637DDBD574 /* Pods_ToDoSync.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F3B5C349E0DD8901D54B0A /* Pods_ToDoSync.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		071A56DDC6C954D5C53B6B96 /* Pods_ToDoSync.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ToDoSync.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		0DEEFF5049ED21C6E6A14C35 /* Pods-ToDoSync.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoSync.debug.xcconfig"; path = "Target Support Files/Pods-ToDoSync/Pods-ToDoSync.debug.xcconfig"; sourceTree = "<group>"; };
+		27F3B5C349E0DD8901D54B0A /* Pods_ToDoSync.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ToDoSync.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C3A42B821E7B457004239AE /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4931698D21C982BE004C867C /* StitchRemoteMongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchRemoteMongoDBService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4931698F21C982D2004C867C /* StitchCoreRemoteMongoDBService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StitchCoreRemoteMongoDBService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,7 +44,8 @@
 		499CD1B421C184F700CB4EBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		499CD1B621C184F700CB4EBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		499CD1C121C189A200CB4EBF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		E8F007183DDB70FAECED24D8 /* Pods-ToDoSync.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoSync.release.xcconfig"; path = "Target Support Files/Pods-ToDoSync/Pods-ToDoSync.release.xcconfig"; sourceTree = "<group>"; };
+		828261CC17A930306D17EADE /* Pods-ToDoSync.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoSync.release.xcconfig"; path = "Pods/Target\ Support\ Files/Pods-ToDoSync/Pods-ToDoSync.release.xcconfig"; sourceTree = "<group>"; };
+		AE54F0E57017B65459CC23BB /* Pods-ToDoSync.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoSync.debug.xcconfig"; path = "Pods/Target\ Support\ Files/Pods-ToDoSync/Pods-ToDoSync.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 				4931699221C98327004C867C /* StitchCoreLocalMongoDBService.framework in Frameworks */,
 				4931699021C982D2004C867C /* StitchCoreRemoteMongoDBService.framework in Frameworks */,
 				4931698E21C982BE004C867C /* StitchRemoteMongoDBService.framework in Frameworks */,
-				7579D8295FDBEB752DF4EC3B /* Pods_ToDoSync.framework in Frameworks */,
+				6B642EEE0ECBB4637DDBD574 /* Pods_ToDoSync.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,10 +68,10 @@
 		479E00C0EA908C6AB996E5BE /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				0DEEFF5049ED21C6E6A14C35 /* Pods-ToDoSync.debug.xcconfig */,
-				E8F007183DDB70FAECED24D8 /* Pods-ToDoSync.release.xcconfig */,
+				AE54F0E57017B65459CC23BB /* Pods-ToDoSync.debug.xcconfig */,
+				828261CC17A930306D17EADE /* Pods-ToDoSync.release.xcconfig */,
 			);
-			path = Pods;
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		499CD19E21C184F400CB4EBF = {
@@ -118,7 +118,7 @@
 				4931699121C98327004C867C /* StitchCoreLocalMongoDBService.framework */,
 				4931698F21C982D2004C867C /* StitchCoreRemoteMongoDBService.framework */,
 				4931698D21C982BE004C867C /* StitchRemoteMongoDBService.framework */,
-				071A56DDC6C954D5C53B6B96 /* Pods_ToDoSync.framework */,
+				27F3B5C349E0DD8901D54B0A /* Pods_ToDoSync.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -130,11 +130,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 499CD1B921C184F700CB4EBF /* Build configuration list for PBXNativeTarget "ToDoSync" */;
 			buildPhases = (
-				A61B0370C70F82A2F035E021 /* [CP] Check Pods Manifest.lock */,
+				D7A0C89746C92246A5A6E63C /* [CP] Check Pods Manifest.lock */,
 				499CD1A321C184F400CB4EBF /* Sources */,
 				499CD1A421C184F400CB4EBF /* Frameworks */,
 				499CD1A521C184F400CB4EBF /* Resources */,
-				5A18083ED3789AC073515B5D /* [CP] Embed Pods Frameworks */,
+				07E4E4D3026852DC80A060D2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -194,13 +194,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5A18083ED3789AC073515B5D /* [CP] Embed Pods Frameworks */ = {
+		07E4E4D3026852DC80A060D2 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ToDoSync/Pods-ToDoSync-frameworks.sh",
+				"${SRCROOT}/Pods/Target\ Support\ Files/Pods-ToDoSync/Pods-ToDoSync-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/BEMCheckBox/BEMCheckBox.framework",
 				"${BUILT_PRODUCTS_DIR}/MongoMobile/MongoMobile.framework",
 				"${BUILT_PRODUCTS_DIR}/MongoSwift/MongoSwift.framework",
@@ -215,10 +217,13 @@
 				"${PODS_ROOT}/mongo-embedded-c-driver/iPhoneOS/Frameworks/mongoc.framework",
 				"${PODS_ROOT}/mongo-embedded-c-driver/iPhoneOS/Frameworks/mongoc.framework.dSYM",
 				"${PODS_ROOT}/mongo_embedded/iPhoneOS/Frameworks/mongo_embedded.framework",
+				"${PODS_ROOT}/mongo_embedded/iPhoneOS/Frameworks/mongo_embedded.framework.dSYM",
 				"${PODS_ROOT}/mongoc_embedded/iPhoneOS/Frameworks/mongoc_embedded.framework",
 				"${PODS_ROOT}/mongoc_embedded/iPhoneOS/Frameworks/mongoc_embedded.framework.dSYM",
 			);
 			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BEMCheckBox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MongoMobile.framework",
@@ -234,15 +239,16 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mongoc.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/mongoc.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mongo_embedded.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/mongo_embedded.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mongoc_embedded.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/mongoc_embedded.framework.dSYM",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ToDoSync/Pods-ToDoSync-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target\ Support\ Files/Pods-ToDoSync/Pods-ToDoSync-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A61B0370C70F82A2F035E021 /* [CP] Check Pods Manifest.lock */ = {
+		D7A0C89746C92246A5A6E63C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -419,7 +425,7 @@
 		};
 		499CD1BA21C184F700CB4EBF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0DEEFF5049ED21C6E6A14C35 /* Pods-ToDoSync.debug.xcconfig */;
+			baseConfigurationReference = AE54F0E57017B65459CC23BB /* Pods-ToDoSync.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -442,7 +448,7 @@
 		};
 		499CD1BB21C184F700CB4EBF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8F007183DDB70FAECED24D8 /* Pods-ToDoSync.release.xcconfig */;
+			baseConfigurationReference = 828261CC17A930306D17EADE /* Pods-ToDoSync.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
